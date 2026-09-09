@@ -54,34 +54,43 @@ function createNewTab() {
     switchTab(tabName);
 }
 
+// ===== 📱 獨立大按鈕桌號渲染（按鈕分開、具備專屬刪除 ×） =====
 function renderTabButtons() {
     const listEl = document.getElementById("tabList");
     if (!listEl) return;
     listEl.innerHTML = "";
 
     Object.keys(openTabs).forEach(name => {
-        const btn = document.createElement("button");
-        btn.className = `tab-btn ${name === activeTabName ? "active" : ""}`;
+        const wrapper = document.createElement("div");
+        wrapper.className = `tab-wrapper ${name === activeTabName ? "active" : ""}`;
         
-        // 計算該桌商品總數量
         const totalQty = openTabs[name].cart.reduce((sum, item) => sum + item.quantity, 0);
-        
+
+        // 桌號按鈕本體
+        const btn = document.createElement("button");
+        btn.className = `tab-btn`;
         btn.innerHTML = `${name} ${totalQty > 0 ? `<span class="tab-badge">${totalQty}</span>` : ""}`;
-        
         btn.onclick = () => switchTab(name);
-        
-        // 允許長按或雙擊關閉空桌 (保留預設「外帶 / 一般」不刪除)
+        wrapper.appendChild(btn);
+
+        // 獨立的刪除按鈕 (×)
         if (name !== "外帶 / 一般") {
-            btn.oncontextmenu = (e) => {
-                e.preventDefault();
-                if (confirm(`是否關閉/刪除空桌「${name}」？`)) {
+            const closeBtn = document.createElement("button");
+            closeBtn.className = `tab-close-btn`;
+            closeBtn.innerHTML = "×";
+            closeBtn.title = "關閉此桌";
+            closeBtn.onclick = (e) => {
+                e.stopPropagation(); // 避免觸發切換桌子
+                if (confirm(`是否關閉/刪除桌號「${name}」？`)) {
                     delete openTabs[name];
                     if (activeTabName === name) switchTab("外帶 / 一般");
                     else renderTabButtons();
                 }
             };
+            wrapper.appendChild(closeBtn);
         }
-        listEl.appendChild(btn);
+
+        listEl.appendChild(wrapper);
     });
 }
 
@@ -322,7 +331,7 @@ function addPOSItem(p, forceStore = false) {
     }
 
     renderCart();
-    renderTabButtons(); // 即時更新桌號徽章數量
+    renderTabButtons(); 
 }
 
 function initPOSButtons() {
@@ -353,52 +362,81 @@ function initPOSButtons() {
 
 document.addEventListener("DOMContentLoaded", initPOSButtons);
 
+/*********************************
+ * ===== 渲染購物車（原邏輯保留）=====
+ *********************************/
 function renderCart() {
     const box = document.getElementById("posCart");
     box.innerHTML = "";
     let totalBeforeTax = 0;
-    let totalForMinConsume = 0; 
-
+    let totalForMinConsume = 0; // ⭐ 只算非開瓶費
     posCart.forEach((item, i) => {
         let sub = item.quantity * item.price;
 
         if (item.discount) {
             switch (item.discount.type) {
-                case "第二件減10": sub -= Math.floor(item.quantity / 2) * 10; break;
-                case "買二送一": sub -= Math.floor(item.quantity / 3) * item.price; break;
-                case "買一送一": sub -= Math.floor(item.quantity / 2) * item.price; break;
-                case "第二件6折": sub -= Math.floor(item.quantity / 2) * item.price * 0.4; break;
-                default: sub *= item.discount.rate || 1; break;
+                case "第二件減10":
+                    sub -= Math.floor(item.quantity / 2) * 10;
+                    break;
+                case "買二送一":
+                    sub -= Math.floor(item.quantity / 3) * item.price;
+                    break;
+                case "買一送一":
+                    sub -= Math.floor(item.quantity / 2) * item.price;
+                    break;
+                case "第二件6折":
+                    sub -= Math.floor(item.quantity / 2) * item.price * 0.4;
+                    break;
+                default:
+                    sub *= item.discount.rate || 1;
+                    break;
             }
         }
 
         totalBeforeTax += sub;
-        if (!item.isCorkage) totalForMinConsume += sub;
+        if (!item.isCorkage) {
+        totalForMinConsume += sub;
+        }
 
         const row = document.createElement("div");
         row.className = "cartRow";
         row.innerHTML = `
-            <span class="name" onclick="openPromoModal(posCart[${i}])">${item.name} ${item.isStored ? "<b style='color:#27ae60;'>🧊存酒</b>" : ""}</span>
-            <span class="qty" onclick="openEditModal(${i},'quantity')">${item.quantity.toFixed(0)} ${item.unit}</span>
+            <span class="name" onclick="openPromoModal(posCart[${i}])">
+              ${item.name}
+              ${item.isStored ? "<b style='color:#27ae60;'>🧊存酒</b>" : ""}
+            </span>
+            <span class="qty" onclick="openEditModal(${i},'quantity')">
+              ${item.quantity.toFixed(0)} ${item.unit}
+            </span>
             <span class="price" onclick="openEditModal(${i},'price')">${item.price}</span>
             <span class="subtotal">${formatNumber(Math.round(sub))}</span>
-            <span class="remove"><button onclick="removeItem(${i})">刪</button></span>
+            <span class="remove">
+              <button onclick="removeItem(${i})">刪</button>
+            </span>
         `;
         box.appendChild(row);
     });
 
+    // ===== 計算稅額 =====
     let beforeTax = Math.round(totalBeforeTax);
     let tax = currentTax === "應稅" ? Math.round(beforeTax * 0.05) : 0;
     let afterTax = beforeTax + tax;
 
-    let discountValue = Number(document.getElementById("discount").value) || 0;
+    // ===== 計算折扣/低消 =====
+    let discountValue =      Number(document.getElementById("discount").value) || 0;
     let actualAmount = afterTax - discountValue;
 
-    let minConsume = getMinConsumeTotal();
-    let baseAmount = Math.max(totalForMinConsume, minConsume);
-    let corkageAmount = totalBeforeTax - totalForMinConsume;
-    let receivable = baseAmount + corkageAmount;
+// ⭐ 低消只看「非開瓶費」
+let minConsume = getMinConsumeTotal();
+let baseAmount = Math.max(totalForMinConsume, minConsume);
 
+// ⭐ 開瓶費（從總額扣掉商品）
+let corkageAmount = totalBeforeTax - totalForMinConsume;
+
+// ⭐ 最終應收
+let receivable = baseAmount + corkageAmount;
+
+    // ===== 更新 UI =====
     document.getElementById("beforeTax").innerText = formatNumber(beforeTax);
     document.getElementById("taxAmount").innerText = formatNumber(tax);
     document.getElementById("afterTax").innerText = formatNumber(afterTax);
@@ -407,8 +445,9 @@ function renderCart() {
     posTotalEl.dataset.value = receivable;
     posTotalEl.innerText = formatNumber(receivable);
 
-    updateChange();
+    updateChange(); // 更新找零（現金場景）
 
+    // ===== 低消顯示 =====
     const alertEl = document.getElementById("minConsumeAlert");
     const checkoutBtn = document.getElementById("posCheckout");
     if (actualAmount < minConsume && minConsume > 0) {
@@ -422,21 +461,38 @@ function renderCart() {
     }
 }
 
+
 function updateChange() {
     const paymentMethod = document.getElementById("posPayment").value;
     const cash = Number(document.getElementById("cashInput").value) || 0;
+
     const totalEl = document.getElementById("posTotal");
     const receivable = Number(totalEl.dataset.value || totalEl.innerText.replace(/,/g, "")) || 0;
-    const change = paymentMethod === "現金" ? Math.max(cash - receivable, 0) : 0;
+
+    const change = paymentMethod === "現金"
+        ? Math.max(cash - receivable, 0)
+        : 0;
+
     document.getElementById("changeOut").innerText = formatNumber(change);
 }
 
-document.getElementById('checkWineBtn').addEventListener('click', () => {
-    window.open('https://excdl.github.io/wine/', '_blank');
-});
+// 取得查詢存酒按鈕
+  const checkWineBtn = document.getElementById('checkWineBtn');
 
+  // 點擊事件：開啟新視窗
+  checkWineBtn.addEventListener('click', () => {
+    window.open('https://excdl.github.io/wine/', '_blank');
+  });
+
+// ===== 千分位格式化 =====
+function formatNumber(num) {
+    return num.toLocaleString("zh-TW");
+}
+
+// ===== 監聽折扣與現金輸入變動，立即更新找零 =====
 document.getElementById("discount").addEventListener("input", renderCart);
 document.getElementById("cashInput").addEventListener("input", updateChange);
+
 
 async function updateTodaySales() {
   const now = new Date();
@@ -802,7 +858,6 @@ async function startCheckoutFlow(checkoutBtn, originalText) {
 
         alert("結帳完成，已送出列印");
 
-        // ===== 結帳成功：自動清除當前桌號的暫存資料 =====
         posCart = [];
         openTabs[activeTabName] = { cart: [], people: 1, minConsume: 400, sales: "", discount: "" };
 
