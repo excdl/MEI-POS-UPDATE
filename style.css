@@ -107,7 +107,6 @@ button{cursor:pointer;outline:none;transition:0.2s;}
 #cashPanel{display:block;margin-top:5px;}
 #cashPanel input{width:100%;padding:8px;margin-top:5px;border:2px solid #ccc;border-radius:6px;text-align:right;font-size:1em;cursor:pointer;}
 #posCheckout{margin-top:8px;padding:12px;font-size:1.2em;background:#27ae60;color:white;border:none;border-radius:6px;}
-
 #editModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);justify-content:center;align-items:center;z-index:9999;}
 #editModal .modalContent{background:white;padding:20px;border-radius:12px;width:90%;max-width:350px;text-align:center;}
 
@@ -120,20 +119,16 @@ button{cursor:pointer;outline:none;transition:0.2s;}
 .confirm{background:#27ae60;color:white;}
 .cancel{background:#e74c3c;color:white;}
 .convert{background:#f39c12;color:white;}
-
 @media (max-width:600px){
   #numpad button{padding:20px;font-size:1.5em;}
   #editModal input{font-size:1.8em;}
 }
-
 #editModal.promoMode #modalInput {display: none !important; margin: 0 !important; padding: 0 !important; height: 0 !important;}  
-
 #printArea{display:none;width:58mm;font-size:12px;line-height:1.2em;}
 #printArea h4{text-align:center;margin:2px 0;}
 #printArea table{width:100%;border-collapse:collapse;}
 #printArea td{text-align:left;}
 #printArea td.right{text-align:right;}
-
 #taxSummary {
     margin-top: 8px;
     padding: 12px 14px;
@@ -189,7 +184,6 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     font-size: 15px;
     color: #2980b9;
 }
-
 #paymentButtons {
     display: flex;
     gap: 10px;
@@ -222,6 +216,181 @@ button{cursor:pointer;outline:none;transition:0.2s;}
 #discountContainer, .taxRow.total, #paymentButtons {
     margin: 12px 0;
 }
+#logoutBtn.active {
+    background-color: #ccc;
+}
+
+#posKeypadModal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
+
+.keypadBox {
+  background: #2b2b2b;
+  padding: 18px;
+  width: 340px;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0,0,0,0.35);
+  position: relative;
+}
+
+#posCloseBtn {
+  display: block !important;
+}
+
+.closeModal {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  text-align: center;
+  border-radius: 50%;
+  background: #ccc;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 18px;
+  transition: background 0.2s;
+  z-index: 10;
+}
+
+.closeModal:hover {
+  background: #999;
+  color: white;
+}
+
+#posKeypadTitle {
+  margin-bottom: 10px;
+  font-size: 22px;
+  font-weight: bold;
+  color: #fff;
+}
+
+#posKeypadInput {
+  width: 100%;
+  font-size: 32px;
+  padding: 12px;
+  margin-bottom: 15px;
+  text-align: right;
+  border: none;
+  border-radius: 8px;
+  box-sizing: border-box;
+  background: #111;
+  color: #0f0;
+  letter-spacing: 2px;
+}
+
+.posKeypadGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.posKeypadGrid button {
+  height: 60px;
+  font-size: 20px;
+  border: none;
+  border-radius: 8px;
+  background: #444;
+  color: #fff;
+  box-shadow: inset 0 -3px 0 rgba(0,0,0,0.35);
+}
+
+.posKeypadGrid button:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.posKeypadGrid button.big {
+  background: #0277bd;
+  font-weight: bold;
+}
+
+.posKeypadGrid button.confirm {
+  background: #43a047;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+#editModal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.45);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+#editModal .modalContent {
+  background: #2b2b2b;
+  padding: 20px;
+  width: 340px;
+  border-radius: 14px;
+  box-shadow: 0 0 25px rgba(0,0,0,0.35);
+  text-align: center;
+  position: relative;
+}
+
+#modalInput {
+  width: 80%;
+  margin: 0 auto 15px auto;
+  display: block;
+  font-size: 30px;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  border: none;
+  background: #111;
+  color: #0f0;
+  letter-spacing: 2px;
+  box-sizing: border-box;
+}
+
+#numpad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+#numpad button {
+  height: 60px;
+  font-size: 22px;
+  background: #444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+}
+
+.modalActions {
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.modalActions .cancel,
+.modalActions .confirm {
+  flex: 1;
+  height: 50px;
+  font-size: 20px;
+  border: none;
+  border-radius: 8px;
+  margin: 0 5px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.modalActions .cancel { background: #d32f2f; }
+.modalActions .confirm { background: #43a047; }
 
 #logoutBtn {
     color: white;
@@ -293,46 +462,51 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     border-radius: 5px;
 }
 
-/* 桌號管理專用樣式 */
-#tableInfo {
-    background: #fff;
-    padding: 8px 10px;
-    border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+@media (max-width: 480px) {
+  .search-container button, .search-container input {
+    flex: 1;
+  }
 }
 
-#tableNoInput {
-    border: 2px solid #e74c3c;
+/* 暫存桌號導覽列樣式 */
+#openTabsContainer {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    background: #2c3e50;
+    padding: 8px;
     border-radius: 6px;
-    text-align: center;
-    background: #fff5f5;
+    align-items: center;
+}
+.tab-btn {
+    background: #7f8c8d;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    position: relative;
+}
+.tab-btn.active {
+    background: #e67e22;
     font-weight: bold;
 }
-
-#activeTablesBar {
-    display: flex;
-    gap: 6px;
-    margin: 8px 0;
-    overflow-x: auto;
-    align-items: center;
-    background: #eef2f3;
+.tab-badge {
+    background: #e74c3c;
+    color: white;
+    border-radius: 50%;
+    padding: 1px 5px;
+    font-size: 10px;
+    margin-left: 4px;
+}
+#addTabBtn {
+    background: #27ae60;
+    color: white;
+    border: none;
     padding: 6px 10px;
-    border-radius: 8px;
-    font-size: 13px;
-    border-left: 4px solid #3498db;
-}
-
-#activeTablesBar button {
-    padding: 4px 10px;
-    border: 1px solid #bdc3c7;
-    border-radius: 6px;
-    background: #ffffff;
-    cursor: pointer;
+    border-radius: 4px;
     font-size: 12px;
-    white-space: nowrap;
-    transition: 0.2s;
-}
-
-#activeTablesBar button:hover {
-    background: #dfe6e9;
+    cursor: pointer;
 }
