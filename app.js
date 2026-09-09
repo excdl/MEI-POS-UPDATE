@@ -407,8 +407,10 @@ function renderCart() {
     let baseAmount = Math.max(totalForMinConsume, minConsume);
     let corkageAmount = totalBeforeTax - totalForMinConsume;
     
-    // 應收金額計算：(基本低消 + 開瓶費) - 折扣，並確保不會小於 0
-    let receivable = Math.max((baseAmount + corkageAmount) - discountValue, 0);
+    // 💡 【修正處】應收金額改為直接由「稅後總額 (afterTax) 扣除整筆折扣 (discountValue)」
+    // 同時考慮低消補差額（若基準加開瓶費大於購物車，取大者後再扣除折扣或依低消計算）
+    let subtotalOrMin = Math.max(baseAmount + corkageAmount, afterTax);
+    let receivable = Math.max(subtotalOrMin - discountValue, 0);
 
     document.getElementById("beforeTax").innerText = formatNumber(beforeTax);
     document.getElementById("taxAmount").innerText = formatNumber(tax);
@@ -601,7 +603,6 @@ function confirmEdit() {
         posCart[editIndex][editingField] = Number(val);
     }
     closeModal();
-    // 💡 確保每次透過彈跳視窗修改數量或單價後，畫面與應收總額會立即動態重新計算
     renderCart();
     renderTabButtons();
     saveCurrentTabState();
