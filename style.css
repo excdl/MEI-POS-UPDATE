@@ -1,0 +1,338 @@
+body{margin:0;font-family:"Microsoft JhengHei",Arial,sans-serif;background:#f5f5f5;}
+button{cursor:pointer;outline:none;transition:0.2s;}
+#posApp{display:flex;height:100vh;}
+#posCategories{width:18%;background:#3498db;padding:15px;color:white;overflow-y:auto;border-radius:0 12px 12px 0;}
+#posCategories h3{margin-top:0;margin-bottom:10px;font-weight:600;}
+#posCategories button{width:100%;margin:5px 0;padding:12px;font-size:0.9em;border:none;border-radius:6px;background:#2980b9;color:white;}
+#posCategories button.active{background:#f1c40f;color:#2c3e50;font-weight:bold;}
+#posProducts {
+    flex: 1;
+    padding: 15px 0 15px 5%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: flex-start;
+    align-content: flex-start;
+    overflow-y: auto;
+}
+
+.product-card {
+    background: white;
+    border-radius: 12px;
+    padding: 10px 5px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    text-align: center;
+    transition: 0.3s;
+    cursor: pointer;
+    width: 120px;
+    height: auto;
+    flex-shrink: 0;
+    min-height: 60px;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.product-card h4 {
+    margin: 0;
+    font-size: 1.5em;
+    line-height: 1.6em;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.product-card p {
+    margin: 3px 0 0 0;
+    font-size: 0.975em;
+    color: #555;
+}
+
+#posCartContainer {
+    width: 27%;
+    background: #f7f7f7;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    border-left: 2px solid #ddd;
+}
+
+.cartHeader {
+    font-weight: bold;
+    background: #eee;
+    font-size: 80%;
+    display: grid;
+    grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr;
+    gap: 5px;
+    padding: 5px;
+    border-radius: 6px;
+    text-align: center;
+}
+
+#posCart div.cartRow {
+    display: grid;
+    grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr;
+    gap: 5px;
+    background: white;
+    padding: 5px;
+    margin-bottom: 5px;
+    border-radius: 6px;
+    align-items: center;
+    text-align: center;
+    font-size: 0.675em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#posCart div.cartRow span.name {
+    text-align: left;
+    cursor: pointer;
+    white-space: normal;
+    word-break: break-word;
+}
+
+#discountContainer{display:flex;gap:5px;margin:5px 0;}
+#discountContainer input{flex:1;padding:6px;border:2px solid #ccc;border-radius:6px;text-align:right;font-size:0.9em;cursor:pointer;}
+#taxContainer{display:flex;flex-wrap:wrap;gap:5px;margin:5px 0;}
+#taxContainer button{flex:1 1 30%;padding:6px;border:none;border-radius:6px;background:#bdc3c7;cursor:pointer;}
+#taxContainer button.active{background:#f1c40f;color:#333;font-weight:bold;}
+#cashPanel{display:block;margin-top:5px;}
+#cashPanel input{width:100%;padding:8px;margin-top:5px;border:2px solid #ccc;border-radius:6px;text-align:right;font-size:1em;cursor:pointer;}
+#posCheckout{margin-top:8px;padding:12px;font-size:1.2em;background:#27ae60;color:white;border:none;border-radius:6px;}
+
+#editModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);justify-content:center;align-items:center;z-index:9999;}
+#editModal .modalContent{background:white;padding:20px;border-radius:12px;width:90%;max-width:350px;text-align:center;}
+
+#numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:5px;}
+#numpad button{padding:15px;background:#3498db;color:white;font-size:1.2em;border:none;border-radius:6px;}
+#promoButtons{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:10px;}
+#promoButtons button{padding:8px;background:#3498db;color:white;font-size:0.9em;border:none;border-radius:6px;}
+.modalActions{display:flex;gap:5px;margin-top:10px;}
+.modalActions button{flex:1;padding:10px;border:none;border-radius:6px;}
+.confirm{background:#27ae60;color:white;}
+.cancel{background:#e74c3c;color:white;}
+.convert{background:#f39c12;color:white;}
+
+@media (max-width:600px){
+  #numpad button{padding:20px;font-size:1.5em;}
+  #editModal input{font-size:1.8em;}
+}
+
+#editModal.promoMode #modalInput {display: none !important; margin: 0 !important; padding: 0 !important; height: 0 !important;}  
+
+#printArea{display:none;width:58mm;font-size:12px;line-height:1.2em;}
+#printArea h4{text-align:center;margin:2px 0;}
+#printArea table{width:100%;border-collapse:collapse;}
+#printArea td{text-align:left;}
+#printArea td.right{text-align:right;}
+
+#taxSummary {
+    margin-top: 8px;
+    padding: 12px 14px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    border-left: 5px solid #f1c40f;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    font-size: 0.95em;
+}
+
+#taxSummary .taxRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 6px 0;
+    white-space: nowrap;
+}
+
+#taxSummary .label {
+    width: 90px;
+    color: #2c3e50;
+}
+
+#taxSummary .value {
+    min-width: 110px;
+    text-align: right;
+    font-family: 'Courier New', monospace;
+    font-size: 1.05em;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+#taxSummary .total .value {
+    color: #c0392b;
+    font-weight: bold;
+    font-size: 1.15em;
+}
+
+#todaySalesDisplay {
+    margin-top: 10px;
+    padding: 12px 15px;
+    border-radius: 10px;
+    background: #ecf0f1;
+    border-left: 6px solid #2980b9;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    font-size: 14px;
+    line-height: 1.6em;
+    color: #2c3e50;
+    white-space: pre-line;
+}
+
+#todaySalesDisplay b {
+    font-size: 15px;
+    color: #2980b9;
+}
+
+#paymentButtons {
+    display: flex;
+    gap: 10px;
+    margin: 12px 0;
+}
+
+#paymentButtons .payBtn {
+    height: 42px;
+    border-radius: 6px;
+    background-color: #bdc3c7;
+    color: #333;
+    border: none;
+    flex: 1;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: normal;
+    transition: 0.2s;
+}
+
+#paymentButtons .payBtn:hover {
+    background-color: #95a5a6;
+}
+
+#paymentButtons .payBtn.active {
+    background-color: #f1c40f;
+    color: #333;
+    font-weight: bold;
+}
+
+#discountContainer, .taxRow.total, #paymentButtons {
+    margin: 12px 0;
+}
+
+#logoutBtn {
+    color: white;
+    background-color: #d35400;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+#logoutBtn.active {
+    animation: btnPulse 1s infinite;
+    color: #ffffff;
+    position: relative;
+}
+
+@keyframes btnPulse {
+    0%   { background-color: #e67e22; color: #ffffff; }
+    50%  { background-color: #f39c12; color: #ffffff; }
+    100% { background-color: #e67e22; color: #ffffff; }
+}
+
+#logoutBtn.active::after {
+    content: '•';
+    animation: blink 1s infinite;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+}
+
+@keyframes blink {
+    0%, 50%, 100% { opacity: 0; }
+    25%, 75% { opacity: 1; }
+}
+
+#posCheckout.minAlert {
+  background:#f39c12 !important;
+}
+
+.search-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+
+.search-container button {
+    width: 120px;
+    height: 40px;
+    font-size: 14px;
+    background-color: #8e44ad;
+    border: none;
+    cursor: pointer;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    border-radius: 5px;
+}
+
+.search-container input {
+    flex: 1;
+    min-width: 120px;
+    height: 40px;
+    padding: 0 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* 桌號管理專用樣式 */
+#tableInfo {
+    background: #fff;
+    padding: 8px 10px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+#tableNoInput {
+    border: 2px solid #e74c3c;
+    border-radius: 6px;
+    text-align: center;
+    background: #fff5f5;
+    font-weight: bold;
+}
+
+#activeTablesBar {
+    display: flex;
+    gap: 6px;
+    margin: 8px 0;
+    overflow-x: auto;
+    align-items: center;
+    background: #eef2f3;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    border-left: 4px solid #3498db;
+}
+
+#activeTablesBar button {
+    padding: 4px 10px;
+    border: 1px solid #bdc3c7;
+    border-radius: 6px;
+    background: #ffffff;
+    cursor: pointer;
+    font-size: 12px;
+    white-space: nowrap;
+    transition: 0.2s;
+}
+
+#activeTablesBar button:hover {
+    background: #dfe6e9;
+}
