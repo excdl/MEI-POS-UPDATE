@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS 點餐結帳系統</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="posApp">
+    <!-- 左側分類欄 -->
+    <div id="posCategories">
+        <h3>商品分類</h3>
+        <div id="categoryList"></div>
+    </div>
+
+    <!-- 中間商品展示區 -->
+    <div style="flex: 1; display: flex; flex-direction: column; padding: 15px; overflow: hidden;">
+        <div class="search-container">
+            <input type="text" id="productSearch" placeholder="搜尋商品名稱...">
+            <button id="logoutBtn" onclick="handleLogout()">登出系統</button>
+        </div>
+        <div id="posProducts"></div>
+    </div>
+
+    <!-- 右側購物車與結帳區 -->
+    <div id="posCartContainer">
+        <!-- 桌號 / 人數 / 低消 / 業代 資訊列 -->
+        <div id="tableInfo" style="margin-bottom:8px; font-size:13.2px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <label style="white-space:nowrap;">
+                桌號：<input id="tableNoInput" placeholder="例: A01" style="width:50px; font-size:13.2px; padding:2px 4px; font-weight:bold; color:#c0392b;">
+            </label>
+            <label style="white-space:nowrap;">
+                人數：<input id="peopleCount" type="number" min="1" value="1" style="width:40px; font-size:13.2px; padding:2px 4px;">
+            </label>
+            <label style="white-space:nowrap;">
+                低消：<input id="minConsumeInput" type="number" min="0" value="400" style="width:55px; font-size:13.2px; text-align:right; padding:2px 4px;">元
+            </label>
+            <label style="white-space:nowrap;">
+                業代：<input id="salesInput" list="salesList" placeholder="請選擇" style="width:90px; font-size:13.2px; padding:2px 4px;">
+                <datalist id="salesList"></datalist>
+            </label>
+            <button type="button" onclick="saveCurrentTableTab()" style="background:#e67e22; color:white; border:none; border-radius:4px; padding:4px 8px; cursor:pointer; font-size:12px;">暫存此桌</button>
+        </div>
+
+        <!-- 未結帳快速切換列 -->
+        <div id="activeTablesBar">
+            <span style="font-weight:bold; color:#555; white-space:nowrap;">未結帳：</span>
+            <span id="tablesBarList" style="display:flex; gap:6px;">(目前無暫存桌)</span>
+        </div>
+
+        <!-- 購物車清單標頭 -->
+        <div class="cartHeader">
+            <span>品名</span><span>單價</span><span>數量</span><span>小計</span><span>操作</span>
+        </div>
+
+        <!-- 購物車商品內容 -->
+        <div id="posCart" style="flex: 1; overflow-y: auto; margin-top: 5px;"></div>
+
+        <!-- 結帳與金額加總區 -->
+        <div id="taxSummary">
+            <div class="taxRow"><span class="label">合計總額：</span><span id="subTotalOut" class="value">0</span></div>
+            <div class="taxRow"><span class="label">折扣金額：</span><span id="discountOut" class="value">0</span></div>
+            <div class="taxRow total"><span class="label">應付總額：</span><span id="grandTotalOut" class="value">0</span></div>
+        </div>
+
+        <button id="posCheckout" onclick="startCheckoutFlow()">確認結帳</button>
+    </div>
+</div>
+
+<!-- 互動彈跳鍵盤 Modal -->
+<div id="editModal">
+    <div class="modalContent">
+        <input type="text" id="modalInput" readonly>
+        <div id="numpad">
+            <button onclick="numpadInput('7')">7</button>
+            <button onclick="numpadInput('8')">8</button>
+            <button onclick="numpadInput('9')">9</button>
+            <button onclick="numpadInput('4')">4</button>
+            <button onclick="numpadInput('5')">5</button>
+            <button onclick="numpadInput('6')">6</button>
+            <button onclick="numpadInput('1')">1</button>
+            <button onclick="numpadInput('2')">2</button>
+            <button onclick="numpadInput('3')">3</button>
+            <button onclick="numpadInput('0')">0</button>
+            <button onclick="numpadInput('00')">00</button>
+            <button onclick="numpadInput('DEL')">⌫</button>
+        </div>
+        <div class="modalActions">
+            <button class="cancel" onclick="closeModal()">取消</button>
+            <button class="confirm" onclick="confirmModal()">確定</button>
+        </div>
+    </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
