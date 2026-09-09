@@ -407,7 +407,7 @@ function renderCart() {
     let baseAmount = Math.max(totalForMinConsume, minConsume);
     let corkageAmount = totalBeforeTax - totalForMinConsume;
     
-    // 🟢 【修正處】計算應收金額時，必須將整筆折扣 (discountValue) 扣除
+    // 應收金額計算：(基本低消 + 開瓶費) - 折扣，並確保不會小於 0
     let receivable = Math.max((baseAmount + corkageAmount) - discountValue, 0);
 
     document.getElementById("beforeTax").innerText = formatNumber(beforeTax);
@@ -601,8 +601,10 @@ function confirmEdit() {
         posCart[editIndex][editingField] = Number(val);
     }
     closeModal();
+    // 💡 確保每次透過彈跳視窗修改數量或單價後，畫面與應收總額會立即動態重新計算
     renderCart();
     renderTabButtons();
+    saveCurrentTabState();
 }
 
 function closeModal() {
