@@ -468,45 +468,77 @@ button{cursor:pointer;outline:none;transition:0.2s;}
   }
 }
 
-/* 暫存桌號導覽列樣式 */
+/* ================================================= */
+/* 📱 觸控優化：桌號改為獨立卡片式大按鈕（間距分開好按） */
+/* ================================================= */
 #openTabsContainer {
     display: flex;
-    gap: 5px;
-    flex-wrap: wrap;
-    margin-bottom: 10px;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
     background: #2c3e50;
-    padding: 8px;
-    border-radius: 6px;
+    padding: 12px;
+    border-radius: 10px;
+}
+#tabList {
+    display: flex;
+    gap: 10px; /* 按鈕與按鈕之間的獨立間距 */
+    flex-wrap: wrap;
+}
+.tab-wrapper {
+    display: inline-flex;
     align-items: center;
+    background: #7f8c8d;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.25);
+    border: 2px solid transparent;
+}
+.tab-wrapper.active {
+    background: #e67e22;
+    border-color: #f39c12;
 }
 .tab-btn {
-    background: #7f8c8d;
+    background: transparent;
     color: white;
     border: none;
-    padding: 6px 10px;
-    border-radius: 4px;
-    font-size: 12px;
+    padding: 12px 16px; /* 加大觸控面積 */
+    font-size: 15px;     /* 放大字體 */
     cursor: pointer;
-    position: relative;
-}
-.tab-btn.active {
-    background: #e67e22;
     font-weight: bold;
+}
+.tab-close-btn {
+    background: rgba(0,0,0,0.25);
+    color: white;
+    border: none;
+    padding: 12px 12px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-left: 1px solid rgba(255,255,255,0.2);
+}
+.tab-close-btn:hover {
+    background: rgba(231, 76, 60, 0.9);
 }
 .tab-badge {
     background: #e74c3c;
     color: white;
     border-radius: 50%;
-    padding: 1px 5px;
-    font-size: 10px;
-    margin-left: 4px;
+    padding: 2px 7px;
+    font-size: 12px;
+    margin-left: 6px;
 }
 #addTabBtn {
     background: #27ae60;
     color: white;
     border: none;
-    padding: 6px 10px;
-    border-radius: 4px;
-    font-size: 12px;
+    padding: 12px 18px; /* 獨立的大開桌按鈕 */
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: bold;
     cursor: pointer;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+}
+#addTabBtn:hover {
+    background: #219653;
 }
