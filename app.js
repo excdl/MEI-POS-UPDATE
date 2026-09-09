@@ -406,7 +406,9 @@ function renderCart() {
     let minConsume = getMinConsumeTotal();
     let baseAmount = Math.max(totalForMinConsume, minConsume);
     let corkageAmount = totalBeforeTax - totalForMinConsume;
-    let receivable = baseAmount + corkageAmount;
+    
+    // 🟢 【修正處】計算應收金額時，必須將整筆折扣 (discountValue) 扣除
+    let receivable = Math.max((baseAmount + corkageAmount) - discountValue, 0);
 
     document.getElementById("beforeTax").innerText = formatNumber(beforeTax);
     document.getElementById("taxAmount").innerText = formatNumber(tax);
@@ -444,7 +446,10 @@ document.getElementById('checkWineBtn').addEventListener('click', () => {
     window.open('https://excdl.github.io/wine/', '_blank');
 });
 
-document.getElementById("discount").addEventListener("input", renderCart);
+document.getElementById("discount").addEventListener("input", () => {
+    saveCurrentTabState();
+    renderCart();
+});
 document.getElementById("cashInput").addEventListener("input", updateChange);
 
 async function updateTodaySales() {
@@ -572,6 +577,7 @@ function openPromoModal(item) {
             }
             closeModal();
             renderCart();
+            renderTabButtons();
         };
         promoDiv.appendChild(btn);
     });
@@ -633,6 +639,7 @@ function kpConfirm() {
     const v = document.getElementById("posKeypadInput").value;
     if (kpTarget === "discount") {
         document.getElementById("discount").value = v;
+        saveCurrentTabState();
         renderCart();
     }
     if (kpTarget === "cash") {
@@ -649,8 +656,15 @@ function getMinConsumeTotal() {
   return people * perMin;
 }
 
-document.getElementById("minConsumeInput").addEventListener("input", renderCart);
-document.getElementById("peopleCount").addEventListener("input", renderCart);
+document.getElementById("minConsumeInput").addEventListener("input", () => {
+    saveCurrentTabState();
+    renderCart();
+});
+document.getElementById("peopleCount").addEventListener("input", () => {
+    saveCurrentTabState();
+    renderCart();
+});
+document.getElementById("salesInput")?.addEventListener("input", saveCurrentTabState);
 
 function showMinConsumeConfirm(actual, min) {
   document.getElementById("minConsumeConfirmText").innerHTML = `實際消費 ${formatNumber(actual)} 元<br>低消 ${formatNumber(min)} 元<br>需補差 <b style="color:#c0392b">${formatNumber(min-actual)}</b> 元`;
