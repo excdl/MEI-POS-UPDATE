@@ -837,3 +837,6 @@ async function startCheckoutFlow(checkoutBtn, originalText) {
         checkoutBtn.disabled = false;
     }
 }
+document.getElementById('checkSongBtn').addEventListener('click', () => {
+    window.open('https://excdl.github.io/songs/', '_blank');
+});
