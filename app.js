@@ -54,43 +54,34 @@ function createNewTab() {
     switchTab(tabName);
 }
 
-// ===== 📱 獨立大按鈕桌號渲染（按鈕分開、具備專屬刪除 ×） =====
 function renderTabButtons() {
     const listEl = document.getElementById("tabList");
     if (!listEl) return;
     listEl.innerHTML = "";
 
     Object.keys(openTabs).forEach(name => {
-        const wrapper = document.createElement("div");
-        wrapper.className = `tab-wrapper ${name === activeTabName ? "active" : ""}`;
-        
-        const totalQty = openTabs[name].cart.reduce((sum, item) => sum + item.quantity, 0);
-
-        // 桌號按鈕本體
         const btn = document.createElement("button");
-        btn.className = `tab-btn`;
+        btn.className = `tab-btn ${name === activeTabName ? "active" : ""}`;
+        
+        // 計算該桌商品總數量
+        const totalQty = openTabs[name].cart.reduce((sum, item) => sum + item.quantity, 0);
+        
         btn.innerHTML = `${name} ${totalQty > 0 ? `<span class="tab-badge">${totalQty}</span>` : ""}`;
+        
         btn.onclick = () => switchTab(name);
-        wrapper.appendChild(btn);
-
-        // 獨立的刪除按鈕 (×)
+        
+        // 允許長按或雙擊關閉空桌 (保留預設「外帶 / 一般」不刪除)
         if (name !== "外帶 / 一般") {
-            const closeBtn = document.createElement("button");
-            closeBtn.className = `tab-close-btn`;
-            closeBtn.innerHTML = "×";
-            closeBtn.title = "關閉此桌";
-            closeBtn.onclick = (e) => {
-                e.stopPropagation(); // 避免觸發切換桌子
-                if (confirm(`是否關閉/刪除桌號「${name}」？`)) {
+            btn.oncontextmenu = (e) => {
+                e.preventDefault();
+                if (confirm(`是否關閉/刪除空桌「${name}」？`)) {
                     delete openTabs[name];
                     if (activeTabName === name) switchTab("外帶 / 一般");
                     else renderTabButtons();
                 }
             };
-            wrapper.appendChild(closeBtn);
         }
-
-        listEl.appendChild(wrapper);
+        listEl.appendChild(btn);
     });
 }
 
@@ -331,7 +322,7 @@ function addPOSItem(p, forceStore = false) {
     }
 
     renderCart();
-    renderTabButtons(); 
+    renderTabButtons(); // 即時更新桌號徽章數量
 }
 
 function initPOSButtons() {
@@ -811,6 +802,7 @@ async function startCheckoutFlow(checkoutBtn, originalText) {
 
         alert("結帳完成，已送出列印");
 
+        // ===== 結帳成功：自動清除當前桌號的暫存資料 =====
         posCart = [];
         openTabs[activeTabName] = { cart: [], people: 1, minConsume: 400, sales: "", discount: "" };
 
