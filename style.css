@@ -468,45 +468,66 @@ button{cursor:pointer;outline:none;transition:0.2s;}
   }
 }
 
-/* 暫存桌號導覽列樣式 */
+/* ================================================= */
+/* 📱 觸控優化：放大桌號按鈕與加上刪除小按鈕 (×)     */
+/* ================================================= */
 #openTabsContainer {
     display: flex;
-    gap: 5px;
+    gap: 8px;
     flex-wrap: wrap;
     margin-bottom: 10px;
     background: #2c3e50;
-    padding: 8px;
-    border-radius: 6px;
+    padding: 10px;
+    border-radius: 8px;
     align-items: center;
 }
-.tab-btn {
+.tab-wrapper {
+    display: inline-flex;
+    align-items: center;
     background: #7f8c8d;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+.tab-wrapper.active {
+    background: #e67e22;
+}
+.tab-btn {
+    background: transparent;
     color: white;
     border: none;
-    padding: 6px 10px;
-    border-radius: 4px;
-    font-size: 12px;
+    padding: 10px 14px; /* 加大觸控面積 */
+    font-size: 14px;     /* 放大字體 */
     cursor: pointer;
-    position: relative;
+    font-weight: 500;
 }
-.tab-btn.active {
-    background: #e67e22;
-    font-weight: bold;
+.tab-close-btn {
+    background: rgba(0,0,0,0.2);
+    color: white;
+    border: none;
+    padding: 10px 10px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.tab-close-btn:hover {
+    background: rgba(231, 76, 60, 0.8);
 }
 .tab-badge {
     background: #e74c3c;
     color: white;
     border-radius: 50%;
-    padding: 1px 5px;
-    font-size: 10px;
-    margin-left: 4px;
+    padding: 2px 6px;
+    font-size: 11px;
+    margin-left: 6px;
 }
 #addTabBtn {
     background: #27ae60;
     color: white;
     border: none;
-    padding: 6px 10px;
-    border-radius: 4px;
-    font-size: 12px;
+    padding: 10px 16px; /* 加大開桌按鈕 */
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
     cursor: pointer;
 }
