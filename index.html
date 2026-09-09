@@ -1,98 +1,209 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POS 點餐結帳系統</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>meimei POS 系統</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div id="posApp">
-    <!-- 左側分類欄 -->
-    <div id="posCategories">
-        <h3>商品分類</h3>
-        <div id="categoryList"></div>
-    </div>
-
-    <!-- 中間商品展示區 -->
-    <div style="flex: 1; display: flex; flex-direction: column; padding: 15px; overflow: hidden;">
-        <div class="search-container">
-            <input type="text" id="productSearch" placeholder="搜尋商品名稱...">
-            <button id="logoutBtn" onclick="handleLogout()">登出系統</button>
-        </div>
-        <div id="posProducts"></div>
-    </div>
-
-    <!-- 右側購物車與結帳區 -->
-    <div id="posCartContainer">
-        <!-- 桌號 / 人數 / 低消 / 業代 資訊列 -->
-        <div id="tableInfo" style="margin-bottom:8px; font-size:13.2px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-            <label style="white-space:nowrap;">
-                桌號：<input id="tableNoInput" placeholder="例: A01" style="width:50px; font-size:13.2px; padding:2px 4px; font-weight:bold; color:#c0392b;">
-            </label>
-            <label style="white-space:nowrap;">
-                人數：<input id="peopleCount" type="number" min="1" value="1" style="width:40px; font-size:13.2px; padding:2px 4px;">
-            </label>
-            <label style="white-space:nowrap;">
-                低消：<input id="minConsumeInput" type="number" min="0" value="400" style="width:55px; font-size:13.2px; text-align:right; padding:2px 4px;">元
-            </label>
-            <label style="white-space:nowrap;">
-                業代：<input id="salesInput" list="salesList" placeholder="請選擇" style="width:90px; font-size:13.2px; padding:2px 4px;">
-                <datalist id="salesList"></datalist>
-            </label>
-            <button type="button" onclick="saveCurrentTableTab()" style="background:#e67e22; color:white; border:none; border-radius:4px; padding:4px 8px; cursor:pointer; font-size:12px;">暫存此桌</button>
-        </div>
-
-        <!-- 未結帳快速切換列 -->
-        <div id="activeTablesBar">
-            <span style="font-weight:bold; color:#555; white-space:nowrap;">未結帳：</span>
-            <span id="tablesBarList" style="display:flex; gap:6px;">(目前無暫存桌)</span>
-        </div>
-
-        <!-- 購物車清單標頭 -->
-        <div class="cartHeader">
-            <span>品名</span><span>單價</span><span>數量</span><span>小計</span><span>操作</span>
-        </div>
-
-        <!-- 購物車商品內容 -->
-        <div id="posCart" style="flex: 1; overflow-y: auto; margin-top: 5px;"></div>
-
-        <!-- 結帳與金額加總區 -->
-        <div id="taxSummary">
-            <div class="taxRow"><span class="label">合計總額：</span><span id="subTotalOut" class="value">0</span></div>
-            <div class="taxRow"><span class="label">折扣金額：</span><span id="discountOut" class="value">0</span></div>
-            <div class="taxRow total"><span class="label">應付總額：</span><span id="grandTotalOut" class="value">0</span></div>
-        </div>
-
-        <button id="posCheckout" onclick="startCheckoutFlow()">確認結帳</button>
-    </div>
+<!-- 登入頁面 -->
+<div id="loginPage" style="display:flex;justify-content:center;align-items:center;height:100vh;background:#3498db;">
+  <div style="background:white;padding:40px 30px;border-radius:12px;box-shadow:0 5px 20px rgba(0,0,0,0.2);width:320px;text-align:center;">
+    <h2>
+      <span class="line1">MeiMeiの店</span>
+      <span class="line2">登入</span>
+    </h2>
+    <input id="storeInput" placeholder="門市編號" style="width:100%;padding:10px;margin:10px 0;border-radius:6px;border:1px solid #ccc;font-size:1em;">
+    <input id="passwordInput" placeholder="密碼" type="password" style="width:100%;padding:10px;margin:10px 0;border-radius:6px;border:1px solid #ccc;font-size:1em;">
+    <button id="loginBtn" style="width:100%;padding:12px;margin-top:15px;border:none;border-radius:6px;background:#27ae60;color:white;font-size:1em;cursor:pointer;transition:0.2s;">登入</button>
+    <p id="loginMsg" style="color:red;margin-top:10px;font-size:0.9em;"></p>
+  </div>
 </div>
 
-<!-- 互動彈跳鍵盤 Modal -->
+<!-- POS 主頁 -->
+<div id="posApp" style="display:none;">
+  <div id="posCategories">
+    <div id="storeInfo" style="font-size:14px; font-weight:bold; margin-bottom:10px;"></div>
+    <div id="loginTime" style="font-size:12px; color: white; margin-bottom: 10px;"></div>
+    <button id="logoutBtn" style="margin-bottom:10px; font-size:13px; background-color:#d35400; border:none; padding:5px 10px; cursor:pointer; color:white;">
+      登出
+    </button>
+
+    <!-- 查詢存酒按鈕 + 搜尋框 -->
+    <div class="search-container">
+      <button id="checkWineBtn">🍾 查詢存酒</button>
+      <input type="text" id="searchBox" placeholder="搜尋商品">
+    </div>
+      
+    <h3>分類</h3>
+  </div>
+
+  <div id="posProducts"></div>
+
+  <div id="posCartContainer">
+    <!-- ===== 桌號暫存列 ===== -->
+    <div id="openTabsContainer">
+      <div id="tabList" style="display:flex; gap:5px; flex-wrap:wrap; flex:1;"></div>
+      <button id="addTabBtn" onclick="createNewTab()">＋ 開桌</button>
+    </div>
+
+    <h3 style="font-size:85%; margin-top:0;">訂單明細</h3>
+    <div class="cartHeader">
+      <span>商品</span><span>數量</span><span>單價</span><span>小計</span><span>刪除</span>
+    </div>
+    <div id="posCart"></div>
+  
+    <!-- ===== 業代 / 人數 / 低消 同行 ===== -->
+    <div id="tableInfo" style="margin:8px 0; font-size:13.2px; display:flex; align-items:center; gap:10px; flex-wrap:nowrap;">
+      人數：
+      <input id="peopleCount" type="number" min="1" value="1" style="width:55px; font-size:13.2px; padding:2px 4px;">
+
+      <label style="white-space:nowrap;">
+        低消：
+        <input id="minConsumeInput" type="number" min="0" value="400" style="width:77px; font-size:13.2px; text-align:right; padding:2px 4px;">
+        元/人
+      </label>
+
+      <label style="white-space:nowrap;">
+        業代：
+        <input id="salesInput" list="salesList" placeholder="請選擇業代" style="width:132px; font-size:13.2px; padding:2px 4px;">
+        <datalist id="salesList"></datalist>
+      </label>
+    </div>
+  
+    <div id="taxContainer">
+      <button id="taxIncluded" class="active" onclick="setTax('應稅')">應稅</button>
+      <button id="taxExempt" onclick="setTax('免稅')">免稅</button>
+    </div>
+
+    <div id="taxSummary">
+      <div class="taxRow">
+        <span class="label">稅前金額：</span>
+        <span class="value"><span id="beforeTax">0</span> 元</span>
+      </div>
+      <div class="taxRow">
+        <span class="label">稅額：</span>
+        <span class="value"><span id="taxAmount">0</span> 元</span>
+      </div>
+      <div class="taxRow total">
+        <span class="label">稅後總額：</span>
+        <span class="value"><span id="afterTax">0</span> 元</span>
+      </div>
+    </div>
+
+    <div id="discountContainer">
+      <input type="text" id="discount" placeholder="折扣金額" readonly>
+    </div>
+
+    <div class="taxRow total">
+      <span class="label">應收總額：</span>
+      <span class="value"><span id="posTotal">0</span> 元</span>
+    </div>
+
+    <div id="minConsumeAlert" style="display:none;color:#c0392b;font-weight:bold;font-size:13px;">
+      ⚠ 未達低消，已以低消計算
+    </div>
+
+    <div id="paymentButtons">
+      <button class="payBtn" data-pay="現金">現金</button>
+      <button class="payBtn" data-pay="刷卡">刷卡</button>
+      <button class="payBtn" data-pay="Line Pay">Line Pay</button>
+    </div>
+
+    <div id="cashPanel" style="display:none; margin-top:10px;">
+      收現金：<input type="number" id="cashInput" value="0" placeholder="收現金額">
+      找零：<span id="changeOut">0</span> 元
+    </div>
+
+    <input type="hidden" id="posPayment" value="">
+    <input id="customerName" placeholder="客戶姓名（存酒必填）">
+    <input id="customerPhone" placeholder="手機（存酒必填）">
+
+    <!-- 結帳按鈕 -->
+    <button id="posCheckout">結帳列印</button>
+
+    <div id="shiftDailyContainer" style="display:flex; gap:10px; margin:20px 0;">
+      <button id="shiftEndBtn" style="flex:1; background:#c0392b; color:white; border:none; border-radius:6px; padding:10px;">交班結算</button>
+      <button id="dailySalesBtn" style="flex:1; background:#2980b9; color:white; border:none; border-radius:6px; padding:10px;">當日營業額</button>
+    </div>
+
+    <div id="todaySalesDisplay" style="margin-top:10px; white-space:pre-line;"></div>
+  </div>
+</div>
+
+<!-- ======== 小鍵盤 / 優惠方案共用 Modal ======== -->
 <div id="editModal">
-    <div class="modalContent">
-        <input type="text" id="modalInput" readonly>
-        <div id="numpad">
-            <button onclick="numpadInput('7')">7</button>
-            <button onclick="numpadInput('8')">8</button>
-            <button onclick="numpadInput('9')">9</button>
-            <button onclick="numpadInput('4')">4</button>
-            <button onclick="numpadInput('5')">5</button>
-            <button onclick="numpadInput('6')">6</button>
-            <button onclick="numpadInput('1')">1</button>
-            <button onclick="numpadInput('2')">2</button>
-            <button onclick="numpadInput('3')">3</button>
-            <button onclick="numpadInput('0')">0</button>
-            <button onclick="numpadInput('00')">00</button>
-            <button onclick="numpadInput('DEL')">⌫</button>
-        </div>
-        <div class="modalActions">
-            <button class="cancel" onclick="closeModal()">取消</button>
-            <button class="confirm" onclick="confirmModal()">確定</button>
-        </div>
+  <div class="modalContent">
+    <span class="closeModal" id="editCloseBtn" onclick="closeModal()">×</span>
+    <h4 id="modalProductName" style="color:#fff;">輸入</h4>
+    <input id="modalInput">
+
+    <!-- 小鍵盤 -->
+    <div id="numpad">
+      <button onclick="np('7')">7</button><button onclick="np('8')">8</button><button onclick="np('9')">9</button>
+      <button onclick="np('4')">4</button><button onclick="np('5')">5</button><button onclick="np('6')">6</button>
+      <button onclick="np('1')">1</button><button onclick="np('2')">2</button><button onclick="np('3')">3</button>
+      <button onclick="np('0')">0</button><button onclick="np('.')">.</button><button onclick="backspace()">←</button>
     </div>
+
+    <!-- 優惠方案按鈕 -->
+    <div id="promoButtons"></div>
+
+    <div class="modalActions">
+      <button class="cancel" onclick="closeModal()">取消</button>
+      <button class="confirm" onclick="confirmEdit()">確定</button>
+    </div>
+  </div>
 </div>
+
+<!-- ======= POS 大鍵盤（折扣 / 收現金 專用） ======= -->
+<div id="posKeypadModal">
+  <div class="keypadBox">
+    <span class="closeModal" id="posCloseBtn" onclick="closeModal()">×</span>
+    <h3 id="posKeypadTitle">輸入</h3>
+    <input id="posKeypadInput" readonly>
+    <div class="posKeypadGrid">
+      <button class="big" onclick="kpInput('1000')">1000</button>
+      <button onclick="kpInput('7')">7</button><button onclick="kpInput('8')">8</button><button onclick="kpInput('9')">9</button>
+      <button class="big" onclick="kpInput('500')">500</button>
+      <button onclick="kpInput('4')">4</button><button onclick="kpInput('5')">5</button><button onclick="kpInput('6')">6</button>
+      <button class="big" onclick="kpInput('100')">100</button>
+      <button onclick="kpInput('1')">1</button><button onclick="kpInput('2')">2</button><button onclick="kpInput('3')">3</button>
+      <button class="confirm" onclick="kpConfirm()">確認</button>
+      <button onclick="kpInput('00')">00</button><button onclick="kpInput('0')">0</button>
+      <button onclick="kpBack()">←</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 低消補差確認視窗 ===== -->
+<div id="minConsumeConfirm" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.45);z-index:100000;justify-content:center;align-items:center;">
+  <div style="background:white;padding:20px;border-radius:12px;width:90%;max-width:360px;text-align:center;">
+    <h3 style="color:#e67e22;margin-top:0;">⚠ 低消補差確認</h3>
+    <p id="minConsumeConfirmText"></p>
+    <div style="display:flex;gap:10px;">
+      <button onclick="cancelMinConsumeCheckout()" style="flex:1;">取消</button>
+      <button onclick="confirmMinConsumeCheckout()" style="flex:1;background:#e67e22;color:white;">確認結帳</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 存酒選擇 Modal ===== -->
+<div id="storeWineModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.45);z-index:100000;justify-content:center;align-items:center;">
+  <div style="background:white;padding:20px;border-radius:12px;width:90%;max-width:320px;text-align:center;">
+    <h3 id="storeWineTitle"></h3>
+    <p>是否要將此商品設為存酒？</p>
+    <div style="display:flex;gap:10px;">
+      <button onclick="confirmStoreWine(false)" style="flex:1;">直接販售</button>
+      <button onclick="confirmStoreWine(true)" style="flex:1;background:#27ae60;color:white;">存酒</button>
+    </div>
+  </div>
+</div>
+
+<!-- 列印收據區 -->
+<div id="printArea"></div>
 
 <script src="app.js"></script>
 </body>
