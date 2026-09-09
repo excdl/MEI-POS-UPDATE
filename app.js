@@ -1,27 +1,49 @@
 let posCart = [];
-let openTabs = {};          // 儲存各桌未結帳暫存資料 { "A01": { cart: [...], peopleCount: 2, ... } }
+let openTabs = {};          // 儲存各桌未結帳暫存資料 { "A01": { cart: [...], ... } }
 let currentTableNo = "";    // 目前操作中的桌號
 
-// 範例商品與分類資料 (可依您的實際載入方式調整)
-const categories = ["全部", "主食", "飲料", "點心"];
-const products = [
-    { id: 1, name: "招牌牛肉麵", price: 180, category: "主食" },
-    { id: 2, name: "排骨飯", price: 150, category: "主食" },
-    { id: 3, name: "珍珠奶茶", price: 60, category: "飲料" },
-    { id: 4, name: "綠茶", price: 40, category: "飲料" },
-    { id: 5, name: "炸雞塊", price: 90, category: "點心" }
-];
+// 全域商品與分類資料（會從 Google Sheet 動態填入）
+let products = [];
+let categories = ["全部"];
 
 document.addEventListener("DOMContentLoaded", () => {
-    renderCategories();
-    renderProducts(products);
+    // ⭐ 當頁面載入時，直接呼叫您原本讀取 Google 試算表的函式
+    loadGoogleSheetProducts();
     renderCart();
     renderActiveTablesBar();
 });
 
+// ==========================================
+// 1. 讀取 Google 試算表商品清單的範例函式
+// ==========================================
+function loadGoogleSheetProducts() {
+    // 這裡替換成您原本用來讀取 Google Sheet 的網址或 API
+    // 例如：fetch('您的Google Apps Script 網址')
+    //     .then(res => res.json())
+    //     .then(data => { ... });
+
+    // 以下為示意，假設您從 Sheet 取得資料後，處理成陣列：
+    /*
+    products = data.map(item => ({
+        id: item.id,
+        name: item.name,
+        price: Number(item.price),
+        category: item.category
+    }));
+    */
+
+    // 萃取出不重複的分類
+    // const uniqueCats = [...new Set(products.map(p => p.category))];
+    // categories = ["全部", ...uniqueCats];
+
+    // renderCategories();
+    // renderProducts(products);
+}
+
 // 渲染分類按鈕
 function renderCategories() {
     const catList = document.getElementById("categoryList");
+    if (!catList) return;
     catList.innerHTML = "";
     categories.forEach((cat, index) => {
         const btn = document.createElement("button");
@@ -38,7 +60,7 @@ function renderCategories() {
 
 // 篩選商品
 function filterProducts(category) {
-    if (category === "1" || category === "全部") {
+    if (category === "全部") {
         renderProducts(products);
     } else {
         renderProducts(products.filter(p => p.category === category));
@@ -48,6 +70,7 @@ function filterProducts(category) {
 // 渲染商品卡片
 function renderProducts(list) {
     const prodContainer = document.getElementById("posProducts");
+    if (!prodContainer) return;
     prodContainer.innerHTML = "";
     list.forEach(p => {
         const card = document.createElement("div");
@@ -72,6 +95,7 @@ function addToCart(product) {
 // 渲染購物車畫面與計算金額
 function renderCart() {
     const cartContainer = document.getElementById("posCart");
+    if (!cartContainer) return;
     cartContainer.innerHTML = "";
     
     let subTotal = 0;
@@ -91,8 +115,8 @@ function renderCart() {
         cartContainer.appendChild(row);
     });
 
-    document.getElementById("subTotalOut").innerText = subTotal;
-    document.getElementById("grandTotalOut").innerText = subTotal;
+    if(document.getElementById("subTotalOut")) document.getElementById("subTotalOut").innerText = subTotal;
+    if(document.getElementById("grandTotalOut")) document.getElementById("grandTotalOut").innerText = subTotal;
 }
 
 function changeQty(index, delta) {
@@ -108,9 +132,10 @@ function removeFromCart(index) {
     renderCart();
 }
 
-// ===== 桌號暫存與加點管理核心函式 =====
+// ==========================================
+// 2. 桌號暫存與加點管理核心（保持不變）
+// ==========================================
 
-// 1. 暫存（掛單）當前桌號
 function saveCurrentTableTab() {
     const tableInput = document.getElementById("tableNoInput");
     const tableNo = tableInput ? tableInput.value.trim() : "";
@@ -140,7 +165,6 @@ function saveCurrentTableTab() {
     renderActiveTablesBar();
 }
 
-// 2. 叫出指定桌號繼續點單（加點）
 function loadTableTab(tableNo) {
     if (posCart.length > 0 && currentTableNo !== tableNo) {
         if (!confirm(`當前畫面還有未暫存的品項，是否切換至【桌號 ${tableNo}】？`)) {
@@ -163,7 +187,6 @@ function loadTableTab(tableNo) {
     renderActiveTablesBar();
 }
 
-// 3. 清空當前畫面
 function clearPOSScreenKeepTable() {
     posCart = [];
     currentTableNo = "";
@@ -171,7 +194,6 @@ function clearPOSScreenKeepTable() {
     renderCart();
 }
 
-// 4. 渲染未結帳桌號快速按鈕列
 function renderActiveTablesBar() {
     const listEl = document.getElementById("tablesBarList");
     if (!listEl) return;
@@ -199,7 +221,6 @@ function renderActiveTablesBar() {
     });
 }
 
-// 5. 確認結帳流程
 function startCheckoutFlow() {
     if (posCart.length === 0) {
         alert("購物車無商品，無法結帳！");
@@ -223,12 +244,10 @@ function startCheckoutFlow() {
     renderActiveTablesBar();
 }
 
-// 模擬登出
 function handleLogout() {
     alert("已登出系統");
 }
 
-// 簡易 Modal 佔位函式
 function closeModal() { document.getElementById("editModal").style.display = "none"; }
 function numpadInput(val) {}
 function confirmModal() {}
