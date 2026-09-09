@@ -542,3 +542,18 @@ button{cursor:pointer;outline:none;transition:0.2s;}
 #addTabBtn:hover {
     background: #219653;
 }
+/* CSS：簡單的按鈕樣式美化 */
+.playlist-btn {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #4A90E2; /* 可根據您的網站主題調整顏色 */
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.playlist-btn:hover {
+  background-color: #357ABD;
+}
