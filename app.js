@@ -10,6 +10,9 @@ let kpTarget = null;
 let products = [];
 let categories = [];
 
+// ===== 結帳防重複送出旗標 =====
+let isCheckingOut = false;
+
 // ===== 桌號暫存系統 (Open Tabs) =====
 let openTabs = {
     "外帶 / 一般": { cart: [], people: 1, minConsume: 400, sales: "", discount: "" }
@@ -202,6 +205,7 @@ async function fetchProducts() {
     if (categories.length > 0) renderProducts(categories[0]);
 }
 
+// ===== 修正後：保留預設選項，確保下拉選單能選全部 =====
 async function fetchSalesList() {
   try {
     const res = await fetch(`${API_URL}?action=salesList&storeCode=${POS_STORE}`);
@@ -209,12 +213,27 @@ async function fetchSalesList() {
     if (data.status !== "success") return;
 
     const listEl = document.getElementById("salesList");
+    if (!listEl) return;
+
+    const currentVal = listEl.value;
     listEl.innerHTML = "";
+
+    // 建立預設選項（不指定 / 全部）
+    const defaultOpt = document.createElement("option");
+    defaultOpt.value = "";
+    defaultOpt.textContent = "請選擇業代 (或不指定)";
+    listEl.appendChild(defaultOpt);
+
     data.list.forEach(name => {
       const opt = document.createElement("option");
       opt.value = name;
+      opt.textContent = name;
       listEl.appendChild(opt);
     });
+
+    if (currentVal) {
+        listEl.value = currentVal;
+    }
   } catch (err) {
     console.error("載入業代失敗", err);
   }
@@ -407,8 +426,6 @@ function renderCart() {
     let baseAmount = Math.max(totalForMinConsume, minConsume);
     let corkageAmount = totalBeforeTax - totalForMinConsume;
     
-    // 💡 【修正處】應收金額改為直接由「稅後總額 (afterTax) 扣除整筆折扣 (discountValue)」
-    // 同時考慮低消補差額（若基準加開瓶費大於購物車，取大者後再扣除折扣或依低消計算）
     let subtotalOrMin = Math.max(baseAmount + corkageAmount, afterTax);
     let receivable = Math.max(subtotalOrMin - discountValue, 0);
 
@@ -778,19 +795,19 @@ async function sendCheckoutToSheet() {
     await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
 }
 
+// ===== 修正後：結帳防重複送出邏輯 =====
 document.getElementById("posCheckout").onclick = async function () {
     const checkoutBtn = document.getElementById("posCheckout");
-    if (checkoutBtn.disabled) return;
-
-    const originalText = checkoutBtn.innerText;
-    checkoutBtn.disabled = true;
-    checkoutBtn.innerText = "結帳中...";
+    if (checkoutBtn.disabled || isCheckingOut) return;
 
     const paymentMethod = document.getElementById("posPayment").value;
     if (!paymentMethod) {
         alert("請先選擇付款方式！");
-        checkoutBtn.innerText = originalText;
-        checkoutBtn.disabled = false;
+        return;
+    }
+
+    if (posCart.length === 0) {
+        alert("購物車是空的。");
         return;
     }
 
@@ -801,27 +818,17 @@ document.getElementById("posCheckout").onclick = async function () {
         if (confirm(`您的消費金額為 ${actual} 元，低於最低消費額 ${min} 元，是否確認結帳？`)) {
             allowMinConsumeCheckout = true;
             document.getElementById("afterTax").innerText = min;
-            startCheckoutFlow(checkoutBtn, originalText);
         } else {
-            checkoutBtn.innerText = originalText;
-            checkoutBtn.disabled = false;
+            return;
         }
-        return;
     }
 
     allowMinConsumeCheckout = false;
+    isCheckingOut = true; // 上鎖
+    checkoutBtn.disabled = true;
+    const originalText = checkoutBtn.innerText;
+    checkoutBtn.innerText = "結帳中...";
 
-    if (posCart.length === 0) {
-        alert("購物車是空的。");
-        checkoutBtn.innerText = originalText;
-        checkoutBtn.disabled = false;
-        return;
-    }
-
-    startCheckoutFlow(checkoutBtn, originalText);
-};
-
-async function startCheckoutFlow(checkoutBtn, originalText) {
     try {
         await sendCheckoutToSheet();
         setTimeout(updateTodaySales, 0);
@@ -844,16 +851,16 @@ async function startCheckoutFlow(checkoutBtn, originalText) {
 
         document.querySelector('#paymentButtons .payBtn[data-pay="現金"]')?.click();
 
-        checkoutBtn.innerText = originalText;
-        checkoutBtn.disabled = false;
-
     } catch (error) {
         console.error("結帳錯誤：", error);
         alert("結帳失敗，請重試。");
+    } finally {
+        isCheckingOut = false; // 解除鎖定
         checkoutBtn.innerText = originalText;
         checkoutBtn.disabled = false;
     }
-}
+};
+
 document.getElementById('checkSongBtn').addEventListener('click', () => {
     window.open('https://excdl.github.io/songs/', '_blank');
 });
