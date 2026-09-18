@@ -825,7 +825,6 @@ async function startCheckoutFlow(checkoutBtn, originalText) {
 
         alert("結帳完成，已送出列印");
 
-        // 💡 清空購物車及當前桌號資料（包含業代欄位與儲存狀態）
         posCart = [];
         openTabs[activeTabName] = { cart: [], people: 1, minConsume: 400, sales: "", discount: "" };
 
@@ -835,8 +834,6 @@ async function startCheckoutFlow(checkoutBtn, originalText) {
         if (document.getElementById("peopleCount")) document.getElementById("peopleCount").value = "1";
         if (document.getElementById("customerName")) document.getElementById("customerName").value = "";
         if (document.getElementById("customerPhone")) document.getElementById("customerPhone").value = "";
-        
-        // 💡 結帳後清空業代輸入框
         if (document.getElementById("salesInput")) document.getElementById("salesInput").value = "";
 
         fetchSalesList();
@@ -849,7 +846,6 @@ async function startCheckoutFlow(checkoutBtn, originalText) {
         console.error("結帳錯誤：", error);
         alert("結帳失敗，請重試。");
     } finally {
-        // 💡 確保無論成功或失敗，按鈕一定會被解鎖恢復
         checkoutBtn.innerText = originalText;
         checkoutBtn.disabled = false;
     }
@@ -863,10 +859,8 @@ document.getElementById('checkSongBtn').addEventListener('click', async () => {
     btn.disabled = true;
 
     try {
-        // 1. 取得當前 IP (使用您原本的 getIP() 函式)
         const userIP = await getIP();
 
-        // 2. 取得當前 GPS 座標
         const getGeoLocation = () => {
             return new Promise((resolve) => {
                 if (!navigator.geolocation) {
@@ -883,12 +877,13 @@ document.getElementById('checkSongBtn').addEventListener('click', async () => {
 
         const geo = await getGeoLocation();
 
-        // 3. 呼叫後端驗證 API（帶入 store、ip、lat、lng）
-        const res = await fetch(`${API_URL}?action=verifySongAccess&store=${POS_STORE}&ip=${userIP}&lat=${geo.lat}&lng=${geo.lng}`);
+        // 確保未登入時也有防呆或預設處理
+        const currentStore = POS_STORE || document.getElementById("storeInput")?.value || "";
+
+        const res = await fetch(`${API_URL}?action=verifySongAccess&store=${currentStore}&ip=${userIP}&lat=${geo.lat}&lng=${geo.lng}`);
         const data = await res.json();
 
         if (data.status === "success") {
-            // 驗證成功：以安全互動視窗開啟，隱藏真實網址
             openSecureSongViewer(data.tokenOrUrl); 
         } else {
             alert("據點驗證失敗：" + data.message);
@@ -918,4 +913,4 @@ function openSecureSongViewer(targetUrl) {
     } else {
         alert("請允許彈出視窗以檢視歌單");
     }
-
+} // 修正處：將原本多餘的 }); 改回正確的 }
