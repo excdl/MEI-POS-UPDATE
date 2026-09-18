@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbweObw0QgfOgoBiGa2w77kRJEvbZESs5gyvVF4u5vf99AOFoyx2qiFRB9f8_Sf1fJNLMQ/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxIONfqq50nNi5V0XKYaWN1k4-1pBhUChyOLsFOkCYGUr55y6FfG_Vb5f3Jrl7l9xk0Kg/exec";
 function formatNumber(num) { if (num === null || num === undefined || num === "") return "0"; let n = Number(num); if (isNaN(n)) return "0"; return n.toLocaleString('zh-TW'); }
 
 let POS_STORE = "";
@@ -9,9 +9,6 @@ let modalType = null;
 let kpTarget = null;
 let products = [];
 let categories = [];
-
-// ===== 結帳防重複送出旗標 =====
-let isCheckingOut = false;
 
 // ===== 桌號暫存系統 (Open Tabs) =====
 let openTabs = {
@@ -24,7 +21,7 @@ function saveCurrentTabState() {
         cart: [...posCart],
         people: document.getElementById("peopleCount")?.value || 1,
         minConsume: document.getElementById("minConsumeInput")?.value || 400,
-        sales: document.getElementById("salesList")?.value || "", // 修正：改抓 salesList
+        sales: document.getElementById("salesInput")?.value || "",
         discount: document.getElementById("discount")?.value || ""
     };
     renderTabButtons();
@@ -38,7 +35,7 @@ function switchTab(tabName) {
     posCart = [...tabData.cart];
     document.getElementById("peopleCount").value = tabData.people;
     document.getElementById("minConsumeInput").value = tabData.minConsume;
-    document.getElementById("salesList").value = tabData.sales; // 修正：改賦值給 salesList
+    document.getElementById("salesInput").value = tabData.sales;
     document.getElementById("discount").value = tabData.discount;
 
     renderCart();
@@ -206,39 +203,22 @@ async function fetchProducts() {
 }
 
 async function fetchSalesList() {
-    try {
-        const res = await fetch(`${API_URL}?action=salesList&storeCode=${POS_STORE}`);
-        const data = await res.json();
-        if (data.status !== "success") return;
-        
-        const listEl = document.getElementById("salesList");
-        if (!listEl) return;
-        
-        // 記錄當前選中的值，避免重新整理時被重置
-        const currentVal = listEl.value;
-        listEl.innerHTML = "";
-        
-        // 建立預設選項
-        const defaultOpt = document.createElement("option");
-        defaultOpt.value = "";
-        defaultOpt.textContent = "請選擇業代 (或不指定)";
-        listEl.appendChild(defaultOpt);
-        
-        // 直接將後端拿到的全部業代清單印出來
-        data.list.forEach(name => {
-            const opt = document.createElement("option");
-            opt.value = name;
-            opt.textContent = name;
-            listEl.appendChild(opt);
-        });
-        
-        if (currentVal) {
-            listEl.value = currentVal;
-        }
-    } catch (err) {
-        console.error("載入業代失敗", err);
-    }
-}
+  try {
+    const res = await fetch(`${API_URL}?action=salesList&storeCode=${POS_STORE}`);
+    const data = await res.json();
+    if (data.status !== "success") return;
+
+    const listEl = document.getElementById("salesList");
+    listEl.innerHTML = "";
+    data.list.forEach(name => {
+      const opt = document.createElement("option");
+      opt.value = name;
+      listEl.appendChild(opt);
+    });
+  } catch (err) {
+    console.error("載入業代失敗", err);
+  }
+}    
 
 function renderCategories() {
     const box = document.getElementById("posCategories");
@@ -427,6 +407,8 @@ function renderCart() {
     let baseAmount = Math.max(totalForMinConsume, minConsume);
     let corkageAmount = totalBeforeTax - totalForMinConsume;
     
+    // 💡 【修正處】應收金額改為直接由「稅後總額 (afterTax) 扣除整筆折扣 (discountValue)」
+    // 同時考慮低消補差額（若基準加開瓶費大於購物車，取大者後再扣除折扣或依低消計算）
     let subtotalOrMin = Math.max(baseAmount + corkageAmount, afterTax);
     let receivable = Math.max(subtotalOrMin - discountValue, 0);
 
@@ -685,7 +667,7 @@ document.getElementById("peopleCount").addEventListener("input", () => {
     saveCurrentTabState();
     renderCart();
 });
-document.getElementById("salesList")?.addEventListener("change", saveCurrentTabState);
+document.getElementById("salesInput")?.addEventListener("input", saveCurrentTabState);
 
 function showMinConsumeConfirm(actual, min) {
   document.getElementById("minConsumeConfirmText").innerHTML = `實際消費 ${formatNumber(actual)} 元<br>低消 ${formatNumber(min)} 元<br>需補差 <b style="color:#c0392b">${formatNumber(min-actual)}</b> 元`;
@@ -744,7 +726,7 @@ async function sendCheckoutToSheet() {
         checkoutDateTime: now.toLocaleString("zh-TW", { hour12: false }),
         storeName: document.getElementById("storeInfo").innerText.split("（")[0],
         storeCode: POS_STORE,
-        salesName: document.getElementById("salesList")?.value || "", // 修正：改抓 salesList
+        salesName: document.getElementById("salesInput")?.value || "",
         peopleCount: Number(document.getElementById("peopleCount")?.value) || 0,
         taxStatus: currentTax,
         totalAmount: parseNumber(document.getElementById("posTotal").innerText),
@@ -796,19 +778,19 @@ async function sendCheckoutToSheet() {
     await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
 }
 
-// ===== 修正後：結帳防重複送出邏輯 =====
 document.getElementById("posCheckout").onclick = async function () {
     const checkoutBtn = document.getElementById("posCheckout");
-    if (checkoutBtn.disabled || isCheckingOut) return;
+    if (checkoutBtn.disabled) return;
+
+    const originalText = checkoutBtn.innerText;
+    checkoutBtn.disabled = true;
+    checkoutBtn.innerText = "結帳中...";
 
     const paymentMethod = document.getElementById("posPayment").value;
     if (!paymentMethod) {
         alert("請先選擇付款方式！");
-        return;
-    }
-
-    if (posCart.length === 0) {
-        alert("購物車是空的。");
+        checkoutBtn.innerText = originalText;
+        checkoutBtn.disabled = false;
         return;
     }
 
@@ -819,17 +801,27 @@ document.getElementById("posCheckout").onclick = async function () {
         if (confirm(`您的消費金額為 ${actual} 元，低於最低消費額 ${min} 元，是否確認結帳？`)) {
             allowMinConsumeCheckout = true;
             document.getElementById("afterTax").innerText = min;
+            startCheckoutFlow(checkoutBtn, originalText);
         } else {
-            return;
+            checkoutBtn.innerText = originalText;
+            checkoutBtn.disabled = false;
         }
+        return;
     }
 
     allowMinConsumeCheckout = false;
-    isCheckingOut = true; // 上鎖
-    checkoutBtn.disabled = true;
-    const originalText = checkoutBtn.innerText;
-    checkoutBtn.innerText = "結帳中...";
 
+    if (posCart.length === 0) {
+        alert("購物車是空的。");
+        checkoutBtn.innerText = originalText;
+        checkoutBtn.disabled = false;
+        return;
+    }
+
+    startCheckoutFlow(checkoutBtn, originalText);
+};
+
+async function startCheckoutFlow(checkoutBtn, originalText) {
     try {
         await sendCheckoutToSheet();
         setTimeout(updateTodaySales, 0);
@@ -852,16 +844,16 @@ document.getElementById("posCheckout").onclick = async function () {
 
         document.querySelector('#paymentButtons .payBtn[data-pay="現金"]')?.click();
 
+        checkoutBtn.innerText = originalText;
+        checkoutBtn.disabled = false;
+
     } catch (error) {
         console.error("結帳錯誤：", error);
         alert("結帳失敗，請重試。");
-    } finally {
-        isCheckingOut = false; // 解除鎖定
         checkoutBtn.innerText = originalText;
         checkoutBtn.disabled = false;
     }
-};
-
+}
 document.getElementById('checkSongBtn').addEventListener('click', () => {
     window.open('https://excdl.github.io/songs/', '_blank');
 });
