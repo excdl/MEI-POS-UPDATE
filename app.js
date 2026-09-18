@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbxIONfqq50nNi5V0XKYaWN1k4-1pBhUChyOLsFOkCYGUr55y6FfG_Vb5f3Jrl7l9xk0Kg/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbx8J7CxQzTKXYoE9fONp5Y1Cf-KZwRcT7FSUfBy9abSLve5tMfS_SCI5I7VncNvePH_YQ/exec";
 function formatNumber(num) { if (num === null || num === undefined || num === "") return "0"; let n = Number(num); if (isNaN(n)) return "0"; return n.toLocaleString('zh-TW'); }
 
 let POS_STORE = "";
@@ -446,6 +446,51 @@ document.getElementById('checkWineBtn').addEventListener('click', () => {
     window.open('https://excdl.github.io/wine/', '_blank');
 });
 
+// ⭐ 結合位置與IP驗證的點歌系統按鈕事件
+document.getElementById('checkSongBtn').addEventListener('click', async () => {
+    if (!POS_STORE) {
+        alert("請先登入門市！");
+        return;
+    }
+
+    const btn = document.getElementById('checkSongBtn');
+    const originalText = btn.innerText;
+    btn.innerText = "驗證中...";
+    btn.disabled = true;
+
+    try {
+        const userIP = await getIP();
+        let lat = 0, lng = 0;
+        
+        if (navigator.geolocation) {
+            try {
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 });
+                });
+                lat = position.coords.latitude;
+                lng = position.coords.longitude;
+            } catch (geoErr) {
+                console.log("無法取得 GPS，將以 IP 進行驗證", geoErr);
+            }
+        }
+
+        const res = await fetch(`${API_URL}?action=checkLocation&storeCode=${POS_STORE}&ip=${userIP}&lat=${lat}&lng=${lng}`);
+        const data = await res.json();
+
+        if (data.status === "success") {
+            window.open('https://excdl.github.io/songs/', '_blank');
+        } else {
+            alert(data.message || "不在公司允許的範圍或 IP 內，無法開啟點歌系統！");
+        }
+    } catch (err) {
+        console.error("驗證發生錯誤", err);
+        alert("連線驗證失敗，請稍後再試。");
+    } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
+});
+
 document.getElementById("discount").addEventListener("input", () => {
     saveCurrentTabState();
     renderCart();
@@ -825,7 +870,6 @@ async function startCheckoutFlow(checkoutBtn, originalText) {
 
         alert("結帳完成，已送出列印");
 
-        // 💡 清空購物車及當前桌號資料（包含業代欄位與儲存狀態）
         posCart = [];
         openTabs[activeTabName] = { cart: [], people: 1, minConsume: 400, sales: "", discount: "" };
 
@@ -835,8 +879,6 @@ async function startCheckoutFlow(checkoutBtn, originalText) {
         if (document.getElementById("peopleCount")) document.getElementById("peopleCount").value = "1";
         if (document.getElementById("customerName")) document.getElementById("customerName").value = "";
         if (document.getElementById("customerPhone")) document.getElementById("customerPhone").value = "";
-        
-        // 💡 結帳後清空業代輸入框
         if (document.getElementById("salesInput")) document.getElementById("salesInput").value = "";
 
         fetchSalesList();
@@ -849,7 +891,6 @@ async function startCheckoutFlow(checkoutBtn, originalText) {
         console.error("結帳錯誤：", error);
         alert("結帳失敗，請重試。");
     } finally {
-        // 💡 確保無論成功或失敗，按鈕一定會被解鎖恢復
         checkoutBtn.innerText = originalText;
         checkoutBtn.disabled = false;
     }
