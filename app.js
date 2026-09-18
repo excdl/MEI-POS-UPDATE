@@ -407,8 +407,6 @@ function renderCart() {
     let baseAmount = Math.max(totalForMinConsume, minConsume);
     let corkageAmount = totalBeforeTax - totalForMinConsume;
     
-    // 💡 【修正處】應收金額改為直接由「稅後總額 (afterTax) 扣除整筆折扣 (discountValue)」
-    // 同時考慮低消補差額（若基準加開瓶費大於購物車，取大者後再扣除折扣或依低消計算）
     let subtotalOrMin = Math.max(baseAmount + corkageAmount, afterTax);
     let receivable = Math.max(subtotalOrMin - discountValue, 0);
 
@@ -472,7 +470,7 @@ async function updateTodaySales() {
 setInterval(updateTodaySales, 30000);
 
 document.getElementById("shiftEndBtn").onclick = async function() {
-  if (posCart.length > 0 && !confirm("購物車尚有未結帳商品，是否仍交班？")) return;
+  if (posCart.length > 0 && !confirm("購物車尚有無結帳商品，是否仍交班？")) return;
 
   const now = new Date();
   const formatDate = now.getFullYear() + "/" + String(now.getMonth() + 1).padStart(2, "0") + "/" + String(now.getDate()).padStart(2, "0");
@@ -794,6 +792,13 @@ document.getElementById("posCheckout").onclick = async function () {
         return;
     }
 
+    if (posCart.length === 0) {
+        alert("購物車是空的。");
+        checkoutBtn.innerText = originalText;
+        checkoutBtn.disabled = false;
+        return;
+    }
+
     let actual = parseNumber(document.getElementById("afterTax").innerText) - (Number(document.getElementById("discount").value) || 0);
     let min = getMinConsumeTotal();
 
@@ -810,14 +815,6 @@ document.getElementById("posCheckout").onclick = async function () {
     }
 
     allowMinConsumeCheckout = false;
-
-    if (posCart.length === 0) {
-        alert("購物車是空的。");
-        checkoutBtn.innerText = originalText;
-        checkoutBtn.disabled = false;
-        return;
-    }
-
     startCheckoutFlow(checkoutBtn, originalText);
 };
 
@@ -828,6 +825,7 @@ async function startCheckoutFlow(checkoutBtn, originalText) {
 
         alert("結帳完成，已送出列印");
 
+        // 💡 清空購物車及當前桌號資料（包含業代欄位與儲存狀態）
         posCart = [];
         openTabs[activeTabName] = { cart: [], people: 1, minConsume: 400, sales: "", discount: "" };
 
@@ -837,6 +835,9 @@ async function startCheckoutFlow(checkoutBtn, originalText) {
         if (document.getElementById("peopleCount")) document.getElementById("peopleCount").value = "1";
         if (document.getElementById("customerName")) document.getElementById("customerName").value = "";
         if (document.getElementById("customerPhone")) document.getElementById("customerPhone").value = "";
+        
+        // 💡 結帳後清空業代輸入框
+        if (document.getElementById("salesInput")) document.getElementById("salesInput").value = "";
 
         fetchSalesList();
         renderCart();
@@ -844,16 +845,16 @@ async function startCheckoutFlow(checkoutBtn, originalText) {
 
         document.querySelector('#paymentButtons .payBtn[data-pay="現金"]')?.click();
 
-        checkoutBtn.innerText = originalText;
-        checkoutBtn.disabled = false;
-
     } catch (error) {
         console.error("結帳錯誤：", error);
         alert("結帳失敗，請重試。");
+    } finally {
+        // 💡 確保無論成功或失敗，按鈕一定會被解鎖恢復
         checkoutBtn.innerText = originalText;
         checkoutBtn.disabled = false;
     }
 }
+
 document.getElementById('checkSongBtn').addEventListener('click', () => {
     window.open('https://excdl.github.io/songs/', '_blank');
 });
