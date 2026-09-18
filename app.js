@@ -24,7 +24,7 @@ function saveCurrentTabState() {
         cart: [...posCart],
         people: document.getElementById("peopleCount")?.value || 1,
         minConsume: document.getElementById("minConsumeInput")?.value || 400,
-        sales: document.getElementById("salesInput")?.value || "",
+        sales: document.getElementById("salesList")?.value || "", // 修正：改抓 salesList
         discount: document.getElementById("discount")?.value || ""
     };
     renderTabButtons();
@@ -38,7 +38,7 @@ function switchTab(tabName) {
     posCart = [...tabData.cart];
     document.getElementById("peopleCount").value = tabData.people;
     document.getElementById("minConsumeInput").value = tabData.minConsume;
-    document.getElementById("salesInput").value = tabData.sales;
+    document.getElementById("salesList").value = tabData.sales; // 修正：改賦值給 salesList
     document.getElementById("discount").value = tabData.discount;
 
     renderCart();
@@ -224,7 +224,7 @@ async function fetchSalesList() {
         defaultOpt.textContent = "請選擇業代 (或不指定)";
         listEl.appendChild(defaultOpt);
         
-        // 直接將後端拿到的全部業代清單印出來（確保沒有陣列過濾 .filter() 限制班別）
+        // 直接將後端拿到的全部業代清單印出來
         data.list.forEach(name => {
             const opt = document.createElement("option");
             opt.value = name;
@@ -685,7 +685,7 @@ document.getElementById("peopleCount").addEventListener("input", () => {
     saveCurrentTabState();
     renderCart();
 });
-document.getElementById("salesInput")?.addEventListener("input", saveCurrentTabState);
+document.getElementById("salesList")?.addEventListener("change", saveCurrentTabState);
 
 function showMinConsumeConfirm(actual, min) {
   document.getElementById("minConsumeConfirmText").innerHTML = `實際消費 ${formatNumber(actual)} 元<br>低消 ${formatNumber(min)} 元<br>需補差 <b style="color:#c0392b">${formatNumber(min-actual)}</b> 元`;
@@ -744,7 +744,7 @@ async function sendCheckoutToSheet() {
         checkoutDateTime: now.toLocaleString("zh-TW", { hour12: false }),
         storeName: document.getElementById("storeInfo").innerText.split("（")[0],
         storeCode: POS_STORE,
-        salesName: document.getElementById("salesInput")?.value || "",
+        salesName: document.getElementById("salesList")?.value || "", // 修正：改抓 salesList
         peopleCount: Number(document.getElementById("peopleCount")?.value) || 0,
         taxStatus: currentTax,
         totalAmount: parseNumber(document.getElementById("posTotal").innerText),
