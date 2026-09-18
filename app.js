@@ -918,4 +918,4 @@ function openSecureSongViewer(targetUrl) {
     } else {
         alert("請允許彈出視窗以檢視歌單");
     }
-});
+
