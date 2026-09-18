@@ -855,10 +855,6 @@ async function startCheckoutFlow(checkoutBtn, originalText) {
     }
 }
 
-document.getElementById('checkSongBtn').addEventListener('click', () => {
-    window.open('https://excdl.github.io/songs/', '_blank');
-});
-
 // ====== 安全驗證並查詢歌單（防盜用：支援 IP 或 GPS 其中一組符合即可） ======
 document.getElementById('checkSongBtn').addEventListener('click', async () => {
     const btn = document.getElementById('checkSongBtn');
