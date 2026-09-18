@@ -205,7 +205,7 @@ async function fetchProducts() {
     if (categories.length > 0) renderProducts(categories[0]);
 }
 
-// ===== 修正後：保留預設選項，確保下拉選單能選全部 =====
+// ===== 業代選框：直接顯示全部，不進行任何篩選 =====
 async function fetchSalesList() {
   try {
     const res = await fetch(`${API_URL}?action=salesList&storeCode=${POS_STORE}`);
@@ -215,15 +215,17 @@ async function fetchSalesList() {
     const listEl = document.getElementById("salesList");
     if (!listEl) return;
 
+    // 記錄當前選中的值，避免重新整理時被重置
     const currentVal = listEl.value;
     listEl.innerHTML = "";
 
-    // 建立預設選項（不指定 / 全部）
+    // 建立預設選項（不指定 / 請選擇）
     const defaultOpt = document.createElement("option");
     defaultOpt.value = "";
     defaultOpt.textContent = "請選擇業代 (或不指定)";
     listEl.appendChild(defaultOpt);
 
+    // 直接將後端拿到的全部業代清單印出來
     data.list.forEach(name => {
       const opt = document.createElement("option");
       opt.value = name;
@@ -237,7 +239,7 @@ async function fetchSalesList() {
   } catch (err) {
     console.error("載入業代失敗", err);
   }
-}    
+}
 
 function renderCategories() {
     const box = document.getElementById("posCategories");
