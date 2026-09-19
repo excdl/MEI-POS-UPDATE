@@ -55,22 +55,26 @@
     </div>
     <div id="posCart"></div>
   
-    <!-- ===== 業代 / 人數 / 低消 同行 ===== -->
-    <div id="tableInfo" style="margin:8px 0; font-size:13.2px; display:flex; align-items:center; gap:10px; flex-wrap:nowrap;">
-      人數：
-      <input id="peopleCount" type="number" min="1" value="1" style="width:55px; font-size:13.2px; padding:2px 4px;">
+    <!-- ===== 人數 / 低消 與 業代分行 ===== -->
+    <div id="tableInfo" style="margin:8px 0; font-size:13.2px; display:flex; flex-direction:column; gap:6px;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        人數：
+        <input id="peopleCount" type="number" min="1" value="1" style="width:55px; font-size:13.2px; padding:2px 4px;">
 
-      <label style="white-space:nowrap;">
-        低消：
-        <input id="minConsumeInput" type="number" min="0" value="400" style="width:77px; font-size:13.2px; text-align:right; padding:2px 4px;">
-        元/人
-      </label>
+        <label style="white-space:nowrap;">
+          低消：
+          <input id="minConsumeInput" type="number" min="0" value="400" style="width:77px; font-size:13.2px; text-align:right; padding:2px 4px;">
+          元/人
+        </label>
+      </div>
 
-      <label style="white-space:nowrap;">
-        業代：
-        <input id="salesInput" list="salesList" placeholder="請選擇業代" style="width:132px; font-size:13.2px; padding:2px 4px;">
-        <datalist id="salesList"></datalist>
-      </label>
+      <div>
+        <label style="white-space:nowrap; display:flex; align-items:center;">
+          業代：
+          <input id="salesInput" list="salesList" placeholder="請選擇業代" style="flex:1; font-size:13.2px; padding:4px 6px;">
+          <datalist id="salesList"></datalist>
+        </label>
+      </div>
     </div>
   
     <div id="taxContainer">
