@@ -199,9 +199,15 @@ async function fetchProducts() {
     products = await res.json();
     categories = [...new Set(products.map(x => x["類別"]))];
     renderCategories();
-    if (categories.length > 0) renderProducts(categories[0]);
+    
+    // 👇 確保這裡有正確抓到類別並呼叫 renderProducts 渲染商品
+    if (categories.length > 0) {
+        renderProducts(categories[0]);
+    } else {
+        // 如果沒有分類，直接渲染全部商品或清空
+        renderProducts(null);
+    }
 }
-
 async function fetchSalesList() {
   try {
     const res = await fetch(`${API_URL}?action=salesList&storeCode=${POS_STORE}`);
