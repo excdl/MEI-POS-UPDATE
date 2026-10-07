@@ -449,7 +449,8 @@ function renderCart() {
     // ===== 低消顯示 =====
     const alertEl = document.getElementById("minConsumeAlert");
     const checkoutBtn = document.getElementById("posCheckout");
-    if (actualAmount < minConsume && minConsume > 0) {
+    // 💡 必須用扣除開瓶費後的「一般餐飲消費」來判斷是否達到低消
+    if (generalConsumption < minConsume && minConsume > 0) {
         if (alertEl) alertEl.style.display = "block";
         posTotalEl.style.color = "#c0392b";
         checkoutBtn.classList.add("minAlert");
@@ -458,8 +459,6 @@ function renderCart() {
         posTotalEl.style.color = "#2c3e50";
         checkoutBtn.classList.remove("minAlert");
     }
-}
-
 
 function updateChange() {
     const paymentMethod = document.getElementById("posPayment").value;
