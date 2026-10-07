@@ -368,45 +368,7 @@ function initPOSButtons() {
 
 document.addEventListener("DOMContentLoaded", initPOSButtons);
 
-function renderCart() {
-    const box = document.getElementById("posCart");
-    box.innerHTML = "";
-    let totalBeforeTax = 0;
-    let totalForMinConsume = 0; 
-
-    posCart.forEach((item, i) => {
-        let sub = item.quantity * item.price;
-
-        if (item.discount) {
-            switch (item.discount.type) {
-                case "第二件減10": sub -= Math.floor(item.quantity / 2) * 10; break;
-                case "買二送一": sub -= Math.floor(item.quantity / 3) * item.price; break;
-                case "買一送一": sub -= Math.floor(item.quantity / 2) * item.price; break;
-                case "第二件6折": sub -= Math.floor(item.quantity / 2) * item.price * 0.4; break;
-                default: sub *= item.discount.rate || 1; break;
-            }
-        }
-
-        totalBeforeTax += sub;
-        if (!item.isCorkage) totalForMinConsume += sub;
-
-        const row = document.createElement("div");
-        row.className = "cartRow";
-        row.innerHTML = `
-            <span class="name" onclick="openPromoModal(posCart[${i}])">${item.name} ${item.isStored ? "<b style='color:#27ae60;'>🧊存酒</b>" : ""}</span>
-            <span class="qty" onclick="openEditModal(${i},'quantity')">${item.quantity.toFixed(0)} ${item.unit}</span>
-            <span class="price" onclick="openEditModal(${i},'price')">${item.price}</span>
-            <span class="subtotal">${formatNumber(Math.round(sub))}</span>
-            <span class="remove"><button onclick="removeItem(${i})">刪</button></span>
-        `;
-        box.appendChild(row);
-    });
-
-    let beforeTax = Math.round(totalBeforeTax);
-    let tax = currentTax === "應稅" ? Math.round(beforeTax * 0.05) : 0;
-    let afterTax = beforeTax + tax;
-
-    // ===== 計算折扣/低消 =====
+// ===== 計算折扣/低消 =====
     let discountValue = Number(document.getElementById("discount").value) || 0;
     let actualAmount = afterTax - discountValue;
 
@@ -431,7 +393,6 @@ function renderCart() {
     if (perMin <= 300 && perMin > 0) {
         receivable = actualAmount + minConsume;
     } else {
-        // 💡 關鍵：用一般餐飲消費去比對低消。若不足低消，補足差額，並將開瓶費完整保留。
         let shortFall = Math.max(0, minConsume - generalConsumption);
         receivable = generalConsumption + corkageTotal + shortFall;
     }
