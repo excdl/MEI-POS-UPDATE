@@ -406,24 +406,39 @@ function renderCart() {
     let tax = currentTax === "應稅" ? Math.round(beforeTax * 0.05) : 0;
     let afterTax = beforeTax + tax;
 
-        // ===== 計算折扣/低消 =====
-let discountValue = Number(document.getElementById("discount").value) || 0;
-let actualAmount = afterTax - discountValue;
+    // ===== 計算折扣/低消 =====
+    let discountValue = Number(document.getElementById("discount").value) || 0;
+    let actualAmount = afterTax - discountValue;
 
-let people = Number(document.getElementById("peopleCount")?.value) || 0;
-let perMin = Number(document.getElementById("minConsumeInput")?.value) || 0;
-let minConsume = people * perMin;
+    // 💡 計算開瓶費總金額（含稅或依比例，此處以未稅小計或對應比例計算，若開瓶費免稅則直接加總 sub）
+    let corkageTotal = 0;
+    posCart.forEach(item => {
+        if (item.isCorkage) {
+            let sub = item.quantity * item.price;
+            if (item.discount) {
+                // 若開瓶費有折扣也可在此處理
+            }
+            corkageTotal += sub;
+        }
+    });
+    // 💡 實際可用來達低消的金額 = 總消費 - 開瓶費 - 折扣（確保不會小於0）
+    let actualForMinConsume = Math.max(0, actualAmount - corkageTotal);
 
-let receivable = 0;
+    let people = Number(document.getElementById("peopleCount")?.value) || 0;
+    let perMin = Number(document.getElementById("minConsumeInput")?.value) || 0;
+    let minConsume = people * perMin;
 
-// ✅ 新規則（300 為界）
-if (perMin <= 300 && perMin > 0) {
-    // 低消 <= 300 → 低消 + 消費
-    receivable = actualAmount + minConsume;
-} else {
-    // > 300 → 原本邏輯
-    receivable = Math.max(actualAmount, minConsume);
-}
+    let receivable = 0;
+
+    // ✅ 新規則（300 為界）
+    if (perMin <= 300 && perMin > 0) {
+        // 低消 <= 300 → 低消 + 實際總金額
+        receivable = actualAmount + minConsume;
+    } else {
+        // > 300 → 以「扣除開瓶費後」的消費來判斷是否達低消，若未達低消則補足差額
+        let shortFall = Math.max(0, minConsume - actualForMinConsume);
+        receivable = actualAmount + shortFall;
+    }
     // ===== 更新 UI =====
     document.getElementById("beforeTax").innerText = formatNumber(beforeTax);
     document.getElementById("taxAmount").innerText = formatNumber(tax);
