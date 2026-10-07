@@ -406,16 +406,25 @@ function renderCart() {
     let tax = currentTax === "應稅" ? Math.round(beforeTax * 0.05) : 0;
     let afterTax = beforeTax + tax;
 
-    let discountValue = Number(document.getElementById("discount").value) || 0;
-    let actualAmount = afterTax - discountValue;
+        // ===== 計算折扣/低消 =====
+let discountValue = Number(document.getElementById("discount").value) || 0;
+let actualAmount = afterTax - discountValue;
 
-    let minConsume = getMinConsumeTotal();
-    let baseAmount = Math.max(totalForMinConsume, minConsume);
-    let corkageAmount = totalBeforeTax - totalForMinConsume;
-    
-    let subtotalOrMin = Math.max(baseAmount + corkageAmount, afterTax);
-    let receivable = Math.max(subtotalOrMin - discountValue, 0);
+let people = Number(document.getElementById("peopleCount")?.value) || 0;
+let perMin = Number(document.getElementById("minConsumeInput")?.value) || 0;
+let minConsume = people * perMin;
 
+let receivable = 0;
+
+// ✅ 新規則（300 為界）
+if (perMin <= 300 && perMin > 0) {
+    // 低消 <= 300 → 低消 + 消費
+    receivable = actualAmount + minConsume;
+} else {
+    // > 300 → 原本邏輯
+    receivable = Math.max(actualAmount, minConsume);
+}
+    // ===== 更新 UI =====
     document.getElementById("beforeTax").innerText = formatNumber(beforeTax);
     document.getElementById("taxAmount").innerText = formatNumber(tax);
     document.getElementById("afterTax").innerText = formatNumber(afterTax);
@@ -424,8 +433,9 @@ function renderCart() {
     posTotalEl.dataset.value = receivable;
     posTotalEl.innerText = formatNumber(receivable);
 
-    updateChange();
+    updateChange(); // 更新找零（現金場景）
 
+    // ===== 低消顯示 =====
     const alertEl = document.getElementById("minConsumeAlert");
     const checkoutBtn = document.getElementById("posCheckout");
     if (actualAmount < minConsume && minConsume > 0) {
@@ -438,6 +448,7 @@ function renderCart() {
         checkoutBtn.classList.remove("minAlert");
     }
 }
+
 
 function updateChange() {
     const paymentMethod = document.getElementById("posPayment").value;
