@@ -5,21 +5,24 @@ button{cursor:pointer;outline:none;transition:0.2s;}
 #posCategories h3{margin-top:0;margin-bottom:10px;font-weight:600;}
 #posCategories button{width:100%;margin:5px 0;padding:12px;font-size:0.9em;border:none;border-radius:6px;background:#2980b9;color:white;}
 #posCategories button.active{background:#f1c40f;color:#2c3e50;font-weight:bold;}
+
+/* 中間商品欄保持緊湊與加寬卡片 */
 #posProducts {
     flex: 1;
-    padding: 15px 0 15px 5%;
+    padding: 10px 0 10px 2%;
     display: flex;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 10px;
     justify-content: flex-start;
     align-content: flex-start;
     overflow-y: auto;
 }
 
+/* 商品卡片加寬至 145px */
 .product-card {
     background: white;
     border-radius: 12px;
-    padding: 10px 5px;
+    padding: 8px 4px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
@@ -27,10 +30,10 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     text-align: center;
     transition: 0.3s;
     cursor: pointer;
-    width: 120px;
+    width: 145px;
     height: auto;
     flex-shrink: 0;
-    min-height: 60px;
+    min-height: 55px;
 }
 
 .product-card:hover {
@@ -38,26 +41,30 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     box-shadow: 0 6px 12px rgba(0,0,0,0.15);
 }
 
+/* 商品名稱字體放大 */
 .product-card h4 {
     margin: 0;
-    font-size: 1.5em;
-    line-height: 1.6em;
-    white-space: normal;
-    word-wrap: break-word;
+    font-size: 1.8em;
+    line-height: 1.4em;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
+/* 商品價格字體放大 */
 .product-card p {
     margin: 3px 0 0 0;
-    font-size: 0.975em;
+    font-size: 1.15em;
     color: #555;
 }
 
+/* ================================================= */
+/* 🛒 右側訂單明細欄位加寬（從 27% 增加至 32%）與文字放大 */
+/* ================================================= */
 #posCartContainer {
-    width: 27%;
+    width: 32%; /* 💡 右側欄位整體加寬 */
     background: #f7f7f7;
-    padding: 10px;
+    padding: 12px;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -67,29 +74,26 @@ button{cursor:pointer;outline:none;transition:0.2s;}
 .cartHeader {
     font-weight: bold;
     background: #eee;
-    font-size: 80%;
+    font-size: 1em; /* 💡 表頭文字加大 */
     display: grid;
-    grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 2.2fr 1fr 1.2fr 1.2fr 1fr;
     gap: 5px;
-    padding: 5px;
+    padding: 8px 5px;
     border-radius: 6px;
     text-align: center;
 }
 
 #posCart div.cartRow {
     display: grid;
-    grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 2.2fr 1fr 1.2fr 1.2fr 1fr;
     gap: 5px;
     background: white;
-    padding: 5px;
-    margin-bottom: 5px;
+    padding: 8px 5px;
+    margin-bottom: 6px;
     border-radius: 6px;
     align-items: center;
     text-align: center;
-    font-size: 0.675em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: 0.95em; /* 💡 訂單明細內容文字大幅放大（原本只有 0.675em） */
 }
 
 #posCart div.cartRow span.name {
