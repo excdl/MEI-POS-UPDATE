@@ -41,45 +41,44 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     box-shadow: 0 6px 12px rgba(0,0,0,0.15);
 }
 
-/* 商品名稱字體放大 */
+/* 💡 商品名稱字體縮小 10%（從 1.8em 改為 1.62em） */
 .product-card h4 {
     margin: 0;
-    font-size: 1.8em;
+    font-size: 1.62em;
     line-height: 1.4em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-/* 商品價格字體放大 */
+/* 💡 商品價格字體縮小 10%（從 1.15em 改為 1.035em） */
 .product-card p {
     margin: 3px 0 0 0;
-    font-size: 1.15em;
+    font-size: 1.035em;
     color: #555;
 }
 
 /* ================================================= */
-/* 🛒 右側訂單明細整體、明細、業代、低消與人數文字全面放大 */
+/* 🛒 右側訂單明細欄位加寬與明細字體對齊總額大小 */
 /* ================================================= */
 #posCartContainer {
-    width: 34%; /* 💡 右側欄位加寬，確保大字體排版不擁擠 */
+    width: 33%; /* 💡 右側欄位加寬，提供足夠空間容納大字體 */
     background: #f7f7f7;
     padding: 12px;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
     border-left: 2px solid #ddd;
-    font-size: 1.15em; /* 💡 讓整個右側欄的預設文字（包含業代、低消、人數等未指定標籤）都同步放大到與總額一致 */
 }
 
 .cartHeader {
     font-weight: bold;
     background: #eee;
-    font-size: 1em; 
+    font-size: 1.2em; /* 💡 表頭配合加大 */
     display: grid;
     grid-template-columns: 2.2fr 1fr 1.2fr 1.2fr 1fr;
     gap: 6px;
-    padding: 8px 6px;
+    padding: 10px 6px;
     border-radius: 6px;
     text-align: center;
 }
@@ -89,12 +88,12 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     grid-template-columns: 2.2fr 1fr 1.2fr 1.2fr 1fr;
     gap: 6px;
     background: white;
-    padding: 10px 6px;
+    padding: 12px 6px;
     margin-bottom: 6px;
     border-radius: 6px;
     align-items: center;
     text-align: center;
-    font-size: 1em; /* 搭配容器，讓明細字體與總額大小完美一致 */
+    font-size: 1.8em; /* 💡 訂單明細文字放大維持不變 */
 }
 
 #posCart div.cartRow span.name {
@@ -104,15 +103,18 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     word-break: break-word;
 }
 
+/* 💡 低消、人數、業代等輸入框加大 */
 #discountContainer{display:flex;gap:5px;margin:8px 0;}
-#discountContainer input{flex:1;padding:6px;border:2px solid #ccc;border-radius:6px;text-align:right;font-size:1em;cursor:pointer;}
-#taxContainer{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;}
-#taxContainer button{flex:1 1 30%;padding:8px;border:none;border-radius:6px;background:#bdc3c7;cursor:pointer;font-size:1em;}
-#taxContainer button.active{background:#f1c40f;color:#333;font-weight:bold;}
-#cashPanel{display:block;margin-top:8px;}
-#cashPanel input{width:100%;padding:8px;margin-top:5px;border:2px solid #ccc;border-radius:6px;text-align:right;font-size:1.1em;cursor:pointer;}
-#posCheckout{margin-top:8px;padding:14px;font-size:1.3em;background:#27ae60;color:white;border:none;border-radius:6px;}
+#discountContainer input{flex:1;padding:12px;border:2px solid #ccc;border-radius:6px;text-align:right;font-size:1.3em;cursor:pointer;}
 
+#taxContainer{display:flex;flex-wrap:wrap;gap:5px;margin:5px 0;}
+#taxContainer button{flex:1 1 30%;padding:6px;border:none;border-radius:6px;background:#bdc3c7;cursor:pointer;}
+#taxContainer button.active{background:#f1c40f;color:#333;font-weight:bold;}
+
+#cashPanel{display:block;margin-top:5px;}
+#cashPanel input{width:100%;padding:12px;margin-top:5px;border:2px solid #ccc;border-radius:6px;text-align:right;font-size:1.3em;cursor:pointer;}
+
+#posCheckout{margin-top:8px;padding:12px;font-size:1.2em;background:#27ae60;color:white;border:none;border-radius:6px;}
 #editModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);justify-content:center;align-items:center;z-index:9999;}
 #editModal .modalContent{background:white;padding:20px;border-radius:12px;width:90%;max-width:350px;text-align:center;}
 
@@ -135,27 +137,26 @@ button{cursor:pointer;outline:none;transition:0.2s;}
 #printArea table{width:100%;border-collapse:collapse;}
 #printArea td{text-align:left;}
 #printArea td.right{text-align:right;}
-
 #taxSummary {
-    margin-top: 10px;
+    margin-top: 8px;
     padding: 12px 14px;
     background: #f9f9f9;
     border-radius: 8px;
     border-left: 5px solid #f1c40f;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    font-size: 1.05em; /* 稅額摘要跟著放大 */
+    font-size: 0.95em;
 }
 
 #taxSummary .taxRow {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 8px 0;
+    margin: 6px 0;
     white-space: nowrap;
 }
 
 #taxSummary .label {
-    width: 100px;
+    width: 90px;
     color: #2c3e50;
 }
 
@@ -163,7 +164,7 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     min-width: 110px;
     text-align: right;
     font-family: 'Courier New', monospace;
-    font-size: 1.1em;
+    font-size: 1.05em;
     font-weight: 600;
     color: #2c3e50;
 }
@@ -171,7 +172,7 @@ button{cursor:pointer;outline:none;transition:0.2s;}
 #taxSummary .total .value {
     color: #c0392b;
     font-weight: bold;
-    font-size: 1.2em;
+    font-size: 1.15em;
 }
 
 #todaySalesDisplay {
@@ -191,7 +192,6 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     font-size: 15px;
     color: #2980b9;
 }
-
 #paymentButtons {
     display: flex;
     gap: 10px;
@@ -199,14 +199,14 @@ button{cursor:pointer;outline:none;transition:0.2s;}
 }
 
 #paymentButtons .payBtn {
-    height: 46px;
+    height: 42px;
     border-radius: 6px;
     background-color: #bdc3c7;
     color: #333;
     border: none;
     flex: 1;
     cursor: pointer;
-    font-size: 1em;
+    font-size: 0.9em;
     font-weight: normal;
     transition: 0.2s;
 }
@@ -221,6 +221,9 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     font-weight: bold;
 }
 
+#discountContainer, .taxRow.total, #paymentButtons {
+    margin: 12px 0;
+}
 #logoutBtn.active {
     background-color: #ccc;
 }
