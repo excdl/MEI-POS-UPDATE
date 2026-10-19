@@ -1,15 +1,18 @@
 body{margin:0;font-family:"Microsoft JhengHei",Arial,sans-serif;background:#f5f5f5;}
 button{cursor:pointer;outline:none;transition:0.2s;}
 #posApp{display:flex;height:100vh;}
-#posCategories{width:18%;background:#3498db;padding:15px;color:white;overflow-y:auto;border-radius:0 12px 12px 0;}
+
+/* 1. 左側欄比例改為 25% */
+#posCategories{width:25%;background:#3498db;padding:15px;color:white;overflow-y:auto;border-radius:0 12px 12px 0;}
 #posCategories h3{margin-top:0;margin-bottom:10px;font-weight:600;}
 #posCategories button{width:100%;margin:5px 0;padding:12px;font-size:0.9em;border:none;border-radius:6px;background:#2980b9;color:white;}
 #posCategories button.active{background:#f1c40f;color:#2c3e50;font-weight:bold;}
 
-/* 💡 恢復中間商品欄為原始精確排版與寬度 (120px) */
+/* 1. 中間商品欄比例改為 35% */
 #posProducts {
-    flex: 1;
-    padding: 15px 0 15px 5%;
+    width: 35%;
+    flex: none;
+    padding: 15px 0 15px 3%;
     display: flex;
     flex-wrap: wrap;
     gap: 15px;
@@ -56,20 +59,24 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     color: #555;
 }
 
+/* ================================================= */
+/* 📱 1. 右側欄比例改為 40% 且 💡 全部文字放大 20%      */
+/* ================================================= */
 #posCartContainer {
-    width: 27%;
+    width: 40%;
     background: #f7f7f7;
     padding: 10px;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
     border-left: 2px solid #ddd;
+    font-size: 1.2em; /* 💡 右側欄整體基準字體放大 20% */
 }
 
 .cartHeader {
     font-weight: bold;
     background: #eee;
-    font-size: 80%;
+    font-size: 0.96em; /* 0.8em * 1.2 */
     display: grid;
     grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr;
     gap: 5px;
@@ -88,7 +95,7 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     border-radius: 6px;
     align-items: center;
     text-align: center;
-    font-size: 0.675em;
+    font-size: 0.81em; /* 0.675em * 1.2 */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -102,27 +109,27 @@ button{cursor:pointer;outline:none;transition:0.2s;}
 }
 
 #discountContainer{display:flex;gap:5px;margin:5px 0;}
-#discountContainer input{flex:1;padding:6px;border:2px solid #ccc;border-radius:6px;text-align:right;font-size:0.9em;cursor:pointer;}
+#discountContainer input{flex:1;padding:6px;border:2px solid #ccc;border-radius:6px;text-align:right;font-size:1.08em;cursor:pointer;} /* 0.9em * 1.2 */
 #taxContainer{display:flex;flex-wrap:wrap;gap:5px;margin:5px 0;}
-#taxContainer button{flex:1 1 30%;padding:6px;border:none;border-radius:6px;background:#bdc3c7;cursor:pointer;}
+#taxContainer button{flex:1 1 30%;padding:6px;border:none;border-radius:6px;background:#bdc3c7;cursor:pointer;font-size:1em;}
 #taxContainer button.active{background:#f1c40f;color:#333;font-weight:bold;}
 #cashPanel{display:block;margin-top:5px;}
-#cashPanel input{width:100%;padding:8px;margin-top:5px;border:2px solid #ccc;border-radius:6px;text-align:right;font-size:1em;cursor:pointer;}
-#posCheckout{margin-top:8px;padding:12px;font-size:1.2em;background:#27ae60;color:white;border:none;border-radius:6px;}
+#cashPanel input{width:100%;padding:8px;margin-top:5px;border:2px solid #ccc;border-radius:6px;text-align:right;font-size:1.2em;cursor:pointer;} /* 1em * 1.2 */
+#posCheckout{margin-top:8px;padding:12px;font-size:1.44em;background:#27ae60;color:white;border:none;border-radius:6px;} /* 1.2em * 1.2 */
 #editModal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);justify-content:center;align-items:center;z-index:9999;}
 #editModal .modalContent{background:white;padding:20px;border-radius:12px;width:90%;max-width:350px;text-align:center;}
 
 #numpad{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:5px;}
-#numpad button{padding:15px;background:#3498db;color:white;font-size:1.2em;border:none;border-radius:6px;}
+#numpad button{padding:15px;background:#3498db;color:white;font-size:1.44em;border:none;border-radius:6px;}
 #promoButtons{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:10px;}
-#promoButtons button{padding:8px;background:#3498db;color:white;font-size:0.9em;border:none;border-radius:6px;}
+#promoButtons button{padding:8px;background:#3498db;color:white;font-size:1.08em;border:none;border-radius:6px;}
 .modalActions{display:flex;gap:5px;margin-top:10px;}
-.modalActions button{flex:1;padding:10px;border:none;border-radius:6px;}
+.modalActions button{flex:1;padding:10px;border:none;border-radius:6px;font-size:1.1em;}
 .confirm{background:#27ae60;color:white;}
 .cancel{background:#e74c3c;color:white;}
 .convert{background:#f39c12;color:white;}
 @media (max-width:600px){
-  #numpad button{padding:20px;font-size:1.5em;}
+  #numpad button{padding:20px;font-size:1.8em;}
   #editModal input{font-size:1.8em;}
 }
 #editModal.promoMode #modalInput {display: none !important; margin: 0 !important; padding: 0 !important; height: 0 !important;}  
@@ -131,6 +138,7 @@ button{cursor:pointer;outline:none;transition:0.2s;}
 #printArea table{width:100%;border-collapse:collapse;}
 #printArea td{text-align:left;}
 #printArea td.right{text-align:right;}
+
 #taxSummary {
     margin-top: 8px;
     padding: 12px 14px;
@@ -138,7 +146,7 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     border-radius: 8px;
     border-left: 5px solid #f1c40f;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    font-size: 0.95em;
+    font-size: 1.14em; /* 0.95em * 1.2 */
 }
 
 #taxSummary .taxRow {
@@ -158,7 +166,7 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     min-width: 110px;
     text-align: right;
     font-family: 'Courier New', monospace;
-    font-size: 1.05em;
+    font-size: 1.26em; /* 1.05em * 1.2 */
     font-weight: 600;
     color: #2c3e50;
 }
@@ -166,7 +174,7 @@ button{cursor:pointer;outline:none;transition:0.2s;}
 #taxSummary .total .value {
     color: #c0392b;
     font-weight: bold;
-    font-size: 1.15em;
+    font-size: 1.38em; /* 1.15em * 1.2 */
 }
 
 #todaySalesDisplay {
@@ -176,16 +184,17 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     background: #ecf0f1;
     border-left: 6px solid #2980b9;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    font-size: 14px;
+    font-size: 1.05em; /* 14px * 1.2 相對比例 */
     line-height: 1.6em;
     color: #2c3e50;
     white-space: pre-line;
 }
 
 #todaySalesDisplay b {
-    font-size: 15px;
+    font-size: 1.12em; /* 15px * 1.2 相對比例 */
     color: #2980b9;
 }
+
 #paymentButtons {
     display: flex;
     gap: 10px;
@@ -200,7 +209,7 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     border: none;
     flex: 1;
     cursor: pointer;
-    font-size: 0.9em;
+    font-size: 1.08em; /* 0.9em * 1.2 */
     font-weight: normal;
     transition: 0.2s;
 }
