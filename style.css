@@ -2,13 +2,11 @@ body{margin:0;font-family:"Microsoft JhengHei",Arial,sans-serif;background:#f5f5
 button{cursor:pointer;outline:none;transition:0.2s;}
 #posApp{display:flex;height:100vh;}
 
-/* 1. 調整左側欄為 25% */
 #posCategories{width:25%;background:#3498db;padding:18px;color:white;overflow-y:auto;border-radius:0 12px 12px 0;}
 #posCategories h3{margin-top:0;margin-bottom:12px;font-weight:600;font-size:1.25em;}
 #posCategories button{width:100%;margin:6px 0;padding:15px;font-size:1.1em;border:none;border-radius:6px;background:#2980b9;color:white;}
 #posCategories button.active{background:#f1c40f;color:#2c3e50;font-weight:bold;}
 
-/* 1. 調整中間欄為 35% */
 #posProducts {
     width: 35%;
     flex: none;
@@ -59,7 +57,6 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     color: #555;
 }
 
-/* 1. 調整右側欄為 40% */
 #posCartContainer {
     width: 40%;
     background: #f7f7f7;
@@ -70,15 +67,17 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     border-left: 2px solid #ddd;
 }
 
-/* 2. 放大商品明細、標題、欄位文字約 25% */
+/* ================================================= */
+/* 🛒 訂單明細（商品、數量、單價、小計、刪除）文字再次放大 25% */
+/* ================================================= */
 .cartHeader {
     font-weight: bold;
     background: #eee;
-    font-size: 1em; /* 原 80% 放大 25% */
+    font-size: 1.25em; /* 原 1em 再放大 25% */
     display: grid;
     grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr;
     gap: 6px;
-    padding: 6px;
+    padding: 8px 6px;
     border-radius: 6px;
     text-align: center;
 }
@@ -88,12 +87,12 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr;
     gap: 6px;
     background: white;
-    padding: 6px;
+    padding: 8px 6px;
     margin-bottom: 6px;
     border-radius: 6px;
     align-items: center;
     text-align: center;
-    font-size: 0.85em; /* 原 0.675em 放大 25% */
+    font-size: 1.05em; /* 原 0.85em 再放大 25% */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -137,7 +136,9 @@ button{cursor:pointer;outline:none;transition:0.2s;}
 #printArea td{text-align:left;}
 #printArea td.right{text-align:right;}
 
-/* 2. 放大低消、人數及各項結帳總計明細文字 */
+/* ================================================= */
+/* 👥 人數、低消及業代等相關文字區塊再放大 25%          */
+/* ================================================= */
 #taxSummary {
     margin-top: 10px;
     padding: 15px 18px;
@@ -145,7 +146,7 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     border-radius: 8px;
     border-left: 6px solid #f1c40f;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    font-size: 1.2em; /* 整體放大 25% */
+    font-size: 1.5em; /* 原 1.2em 再放大 25% */
 }
 
 #taxSummary .taxRow {
@@ -157,15 +158,15 @@ button{cursor:pointer;outline:none;transition:0.2s;}
 }
 
 #taxSummary .label {
-    width: 110px;
+    width: 135px; /* 配合字體放大調整寬度 */
     color: #2c3e50;
 }
 
 #taxSummary .value {
-    min-width: 135px;
+    min-width: 165px;
     text-align: right;
     font-family: 'Courier New', monospace;
-    font-size: 1.25em;
+    font-size: 1.3em;
     font-weight: 600;
     color: #2c3e50;
 }
@@ -173,7 +174,7 @@ button{cursor:pointer;outline:none;transition:0.2s;}
 #taxSummary .total .value {
     color: #c0392b;
     font-weight: bold;
-    font-size: 1.4em;
+    font-size: 1.45em;
 }
 
 #todaySalesDisplay {
@@ -183,16 +184,17 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     background: #ecf0f1;
     border-left: 6px solid #2980b9;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    font-size: 1.1em; /* 放大 25% */
+    font-size: 1.35em; /* 原 1.1em 再放大 25% */
     line-height: 1.6em;
     color: #2c3e50;
     white-space: pre-line;
 }
 
 #todaySalesDisplay b {
-    font-size: 1.2em;
+    font-size: 1.4em;
     color: #2980b9;
 }
+
 #paymentButtons {
     display: flex;
     gap: 12px;
@@ -477,9 +479,6 @@ button{cursor:pointer;outline:none;transition:0.2s;}
   }
 }
 
-/* ================================================= */
-/* 📱 觸控優化：桌號改為獨立卡片式大按鈕（間距分開好按） */
-/* ================================================= */
 #openTabsContainer {
     display: flex;
     flex-direction: column;
@@ -491,7 +490,7 @@ button{cursor:pointer;outline:none;transition:0.2s;}
 }
 #tabList {
     display: flex;
-    gap: 12px; /* 按鈕與按鈕之間的獨立間距 */
+    gap: 12px;
     flex-wrap: wrap;
 }
 .tab-wrapper {
@@ -511,7 +510,7 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     background: transparent;
     color: white;
     border: none;
-    padding: 15px 20px; /* 加大觸控面積與字體 */
+    padding: 15px 20px;
     font-size: 1.15em;     
     cursor: pointer;
     font-weight: bold;
@@ -541,7 +540,7 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     background: #27ae60;
     color: white;
     border: none;
-    padding: 15px 22px; /* 獨立的大開桌按鈕 */
+    padding: 15px 22px;
     border-radius: 10px;
     font-size: 1.15em;
     font-weight: bold;
