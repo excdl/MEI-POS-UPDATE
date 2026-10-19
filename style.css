@@ -2,7 +2,7 @@ body{margin:0;font-family:"Microsoft JhengHei",Arial,sans-serif;background:#f5f5
 button{cursor:pointer;outline:none;transition:0.2s;}
 #posApp{display:flex;height:100vh;}
 
-/* 1. 左側欄比例改為 20% */
+/* 1. 左側欄比例改為 25% */
 #posCategories{width:25%;background:#3498db;padding:15px;color:white;overflow-y:auto;border-radius:0 12px 12px 0;}
 #posCategories h3{margin-top:0;margin-bottom:10px;font-weight:600;}
 #posCategories button{width:100%;margin:5px 0;padding:12px;font-size:0.9em;border:none;border-radius:6px;background:#2980b9;color:white;}
