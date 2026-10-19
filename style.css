@@ -59,10 +59,10 @@ button{cursor:pointer;outline:none;transition:0.2s;}
 }
 
 /* ================================================= */
-/* 🛒 右側訂單明細欄位加寬（從 27% 增加至 32%）與文字放大 */
+/* 🛒 右側訂單明細欄位加寬與明細字體對齊總額大小 */
 /* ================================================= */
 #posCartContainer {
-    width: 32%; /* 💡 右側欄位整體加寬 */
+    width: 33%; /* 💡 右側欄位加寬，提供足夠空間容納大字體 */
     background: #f7f7f7;
     padding: 12px;
     display: flex;
@@ -74,11 +74,11 @@ button{cursor:pointer;outline:none;transition:0.2s;}
 .cartHeader {
     font-weight: bold;
     background: #eee;
-    font-size: 1em; /* 💡 表頭文字加大 */
+    font-size: 1.1em; /* 💡 表頭配合放大 */
     display: grid;
     grid-template-columns: 2.2fr 1fr 1.2fr 1.2fr 1fr;
-    gap: 5px;
-    padding: 8px 5px;
+    gap: 6px;
+    padding: 8px 6px;
     border-radius: 6px;
     text-align: center;
 }
@@ -86,14 +86,14 @@ button{cursor:pointer;outline:none;transition:0.2s;}
 #posCart div.cartRow {
     display: grid;
     grid-template-columns: 2.2fr 1fr 1.2fr 1.2fr 1fr;
-    gap: 5px;
+    gap: 6px;
     background: white;
-    padding: 8px 5px;
+    padding: 10px 6px;
     margin-bottom: 6px;
     border-radius: 6px;
     align-items: center;
     text-align: center;
-    font-size: 0.95em; /* 💡 訂單明細內容文字大幅放大（原本只有 0.675em） */
+    font-size: 1.15em; /* 💡 明細內容字體放大，與總額字體大小一致 */
 }
 
 #posCart div.cartRow span.name {
