@@ -163,20 +163,20 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     align-items: center;
     margin: 6px 0;
     white-space: nowrap;
-    font-size: 1.15em;
+    font-size: 1em;
 }
 
 #taxSummary .label {
     width: 90px;
     color: #2c3e50;
-    font-size: 1.15em;
+    font-size: 1em;
 }
 
 #taxSummary .value {
     min-width: 110px;
     text-align: right;
     font-family: 'Courier New', monospace;
-    font-size: 1.15em;
+    font-size: 1em;
     font-weight: 600;
     color: #2c3e50;
 }
@@ -184,7 +184,7 @@ button{cursor:pointer;outline:none;transition:0.2s;}
 #taxSummary .total .value {
     color: #c0392b;
     font-weight: bold;
-    font-size: 1.15em;
+    font-size: 1em;
 }
 
 #todaySalesDisplay {
