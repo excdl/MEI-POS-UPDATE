@@ -28,7 +28,7 @@ function saveCurrentTabState() {
 }
 
 function switchTab(tabName) {
-    saveCurrentTabState(); // 先儲存當前桌號
+    saveCurrentTabState(); 
     activeTabName = tabName;
     const tabData = openTabs[tabName] || { cart: [], people: 1, minConsume: 400, sales: "", discount: "" };
 
@@ -54,7 +54,7 @@ function createNewTab() {
     switchTab(tabName);
 }
 
-// ===== 📱 獨立大按鈕桌號渲染（按鈕分開、具備專屬刪除 ×） =====
+// ===== 📱 獨立大按鈕桌號渲染 =====
 function renderTabButtons() {
     const listEl = document.getElementById("tabList");
     if (!listEl) return;
@@ -66,21 +66,19 @@ function renderTabButtons() {
         
         const totalQty = openTabs[name].cart.reduce((sum, item) => sum + item.quantity, 0);
 
-        // 桌號按鈕本體
         const btn = document.createElement("button");
         btn.className = `tab-btn`;
         btn.innerHTML = `${name} ${totalQty > 0 ? `<span class="tab-badge">${totalQty}</span>` : ""}`;
         btn.onclick = () => switchTab(name);
         wrapper.appendChild(btn);
 
-        // 獨立的刪除按鈕 (×)
         if (name !== "外帶 / 一般") {
             const closeBtn = document.createElement("button");
             closeBtn.className = `tab-close-btn`;
             closeBtn.innerHTML = "×";
             closeBtn.title = "關閉此桌";
             closeBtn.onclick = (e) => {
-                e.stopPropagation(); // 避免觸發切換桌子
+                e.stopPropagation(); 
                 if (confirm(`是否關閉/刪除桌號「${name}」？`)) {
                     delete openTabs[name];
                     if (activeTabName === name) switchTab("外帶 / 一般");
@@ -94,7 +92,7 @@ function renderTabButtons() {
     });
 }
 
-// ====== 更快的 IP 取得 ======
+// ====== IP 取得 ======
 async function getIP() {
     const cache = sessionStorage.getItem("myIP");
     if (cache) return cache;
@@ -206,6 +204,7 @@ async function fetchProducts() {
         renderProducts(null);
     }
 }
+
 async function fetchSalesList() {
   try {
     const res = await fetch(`${API_URL}?action=salesList&storeCode=${POS_STORE}`);
@@ -374,7 +373,6 @@ function renderCart() {
     posCart.forEach((item, i) => {
         let sub = item.quantity * item.price;
 
-        // 💡 開瓶費無折扣，若不是開瓶費才計算折扣
         if (!item.isCorkage && item.discount) {
             switch (item.discount.type) {
                 case "第二件減10": sub -= Math.floor(item.quantity / 2) * 10; break;
@@ -403,7 +401,6 @@ function renderCart() {
     let tax = currentTax === "應稅" ? Math.round(beforeTax * 0.05) : 0;
     let afterTax = beforeTax + tax;
 
-    // ===== 計算折扣/低消 =====
     let discountValue = Number(document.getElementById("discount").value) || 0;
     let actualAmount = afterTax - discountValue;
 
@@ -411,7 +408,6 @@ function renderCart() {
     let perMin = Number(document.getElementById("minConsumeInput")?.value) || 0;
     let minConsume = people * perMin;
 
-    // 💡 1. 獨立計算「開瓶費」總額（開瓶費不參與折扣、不參與低消折抵）
     let corkageTotal = 0;
     posCart.forEach(item => {
         if (item.isCorkage) {
@@ -419,10 +415,8 @@ function renderCart() {
         }
     });
 
-    // 一般商品金額 = 總金額 - 開瓶費金額
     let normalGoodsAmount = actualAmount - corkageTotal;
     
-    // 💡 2. 用一般商品去跟低消比較，計算是否需要補差額
     let receivableNormal = 0;
     if (perMin <= 300 && perMin > 0) {
         receivableNormal = normalGoodsAmount + minConsume;
@@ -430,10 +424,8 @@ function renderCart() {
         receivableNormal = Math.max(normalGoodsAmount, minConsume);
     }
 
-    // 💡 3. 最終應收金額 = (一般商品計算低消後的金額) + 開瓶費
     let receivable = receivableNormal + corkageTotal;
 
-    // ===== 更新 UI =====
     document.getElementById("beforeTax").innerText = formatNumber(beforeTax);
     document.getElementById("taxAmount").innerText = formatNumber(tax);
     document.getElementById("afterTax").innerText = formatNumber(afterTax);
@@ -442,9 +434,8 @@ function renderCart() {
     posTotalEl.dataset.value = receivable;
     posTotalEl.innerText = formatNumber(receivable);
 
-    updateChange(); // 更新找零
+    updateChange();
 
-    // ===== 低消顯示 =====
     const alertEl = document.getElementById("minConsumeAlert");
     const checkoutBtn = document.getElementById("posCheckout");
     if (normalGoodsAmount < minConsume && minConsume > 0) {
@@ -527,6 +518,9 @@ function removeItem(i) {
     renderTabButtons();
 }
 
+// ==========================================
+// 💡 點選折扣與收現金欄位直接綁定大鍵盤
+// ==========================================
 document.getElementById("discount").onclick = () => {
   openPOSKeypad("discount", document.getElementById("discount").value);
 };
@@ -550,10 +544,7 @@ function openEditModal(index, field) {
     document.getElementById("editCloseBtn").style.display = 'none';
 
     if (field === 'discount' || field === 'cash') {
-        kpTarget = field;
-        document.getElementById("posKeypadTitle").innerText = field === "discount" ? "輸入折扣" : "收現金";
-        document.getElementById("posKeypadInput").value = field === "discount" ? document.getElementById("discount").value : document.getElementById("cashInput").value || "";
-        document.getElementById("posKeypadModal").style.display = "flex";
+        openPOSKeypad(field, field === 'discount' ? document.getElementById("discount").value : document.getElementById("cashInput").value);
         return;
     }
 
@@ -568,7 +559,6 @@ function openEditModal(index, field) {
 }
 
 function openPromoModal(item) {
-    // 💡 若為開瓶費則不開啟促銷選單
     if (item.isCorkage) return;
 
     modalType = 'promo';
@@ -645,10 +635,13 @@ function closeModal() {
     document.getElementById("editCloseBtn").style.display = 'none';
 }
 
+// ==========================================
+// 💡 大鍵盤邏輯實作
+// ==========================================
 function openPOSKeypad(type, value = "0") {
     kpTarget = type;
     document.getElementById("posKeypadTitle").innerText = type === "discount" ? "折扣金額" : "收現金";
-    document.getElementById("posKeypadInput").value = value;
+    document.getElementById("posKeypadInput").value = value === "" ? "0" : value;
     document.getElementById("posKeypadModal").style.display = "flex";
 }
 
@@ -732,7 +725,6 @@ function formatDiscountRate(rate) {
 
 function calcDiscountedSubtotal(item) {
     let sub = item.quantity * item.price;
-    // 💡 開瓶費不參與折扣計算
     if (!item.isCorkage && item.discount) {
         switch (item.discount.type) {
             case "第二件減10": sub -= Math.floor(item.quantity / 2) * 10; break;
