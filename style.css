@@ -46,7 +46,7 @@ button{cursor:pointer;outline:none;transition:0.2s;}
 
 .product-card h4 {
     margin: 0;
-    font-size: 1.5em;
+    font-size: 1.35em;
     line-height: 1.6em;
     white-space: normal;
     word-wrap: break-word;
@@ -163,11 +163,13 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     align-items: center;
     margin: 6px 0;
     white-space: nowrap;
+    font-size: 1.15em;
 }
 
 #taxSummary .label {
     width: 90px;
     color: #2c3e50;
+    font-size: 1.15em;
 }
 
 #taxSummary .value {
