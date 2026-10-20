@@ -94,7 +94,7 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     border-radius: 6px;
     align-items: center;
     text-align: center;
-    font-size: 0.844em; /* 放大 25% (原 0.675em) */
+    font-size: 1.15em; /* 放大 25% (原 0.675em) */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
