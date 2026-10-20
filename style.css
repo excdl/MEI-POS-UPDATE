@@ -1,17 +1,13 @@
+
 body{margin:0;font-family:"Microsoft JhengHei",Arial,sans-serif;background:#f5f5f5;}
 button{cursor:pointer;outline:none;transition:0.2s;}
 #posApp{display:flex;height:100vh;}
-
-/* 1. 左側欄改為 25% */
-#posCategories{width:25%;background:#3498db;padding:15px;color:white;overflow-y:auto;border-radius:0 12px 12px 0;}
+#posCategories{width:18%;background:#3498db;padding:15px;color:white;overflow-y:auto;border-radius:0 12px 12px 0;}
 #posCategories h3{margin-top:0;margin-bottom:10px;font-weight:600;}
 #posCategories button{width:100%;margin:5px 0;padding:12px;font-size:0.9em;border:none;border-radius:6px;background:#2980b9;color:white;}
 #posCategories button.active{background:#f1c40f;color:#2c3e50;font-weight:bold;}
-
-/* 2. 中間欄改為 35% */
 #posProducts {
-    width: 35%;
-    flex: none;
+    flex: 1;
     padding: 15px 0 15px 5%;
     display: flex;
     flex-wrap: wrap;
@@ -28,14 +24,14 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;
+    justify-content: flex-start; /* 文字多時從上方開始排列 */
     text-align: center;
     transition: 0.3s;
     cursor: pointer;
     width: 120px;
-    height: auto;
+    height: auto; /* 高度自動隨文字增減 */
     flex-shrink: 0;
-    min-height: 60px;
+    min-height: 60px; /* 可設定最小高度，避免過小 */
 }
 
 .product-card:hover {
@@ -43,25 +39,27 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     box-shadow: 0 6px 12px rgba(0,0,0,0.15);
 }
 
+/* 商品名稱 */
 .product-card h4 {
     margin: 0;
     font-size: 1.5em;
     line-height: 1.6em;
-    white-space: normal;
+    white-space: normal; /* 允許換行 */
     word-wrap: break-word;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
+/* 商品描述/價格 */
 .product-card p {
     margin: 3px 0 0 0;
-    font-size: 0.975em;
+    font-size: 1.15em;
     color: #555;
 }
 
-/* 3. 右側欄改為 40% */
+/* 購物車區保持原樣 */
 #posCartContainer {
-    width: 40%;
+    width: 27%;
     background: #f7f7f7;
     padding: 10px;
     display: flex;
@@ -73,11 +71,11 @@ button{cursor:pointer;outline:none;transition:0.2s;}
 .cartHeader {
     font-weight: bold;
     background: #eee;
-    font-size: 1.1em; /* 放大明細標題 */
+    font-size: 80%;
     display: grid;
     grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr;
     gap: 5px;
-    padding: 6px;
+    padding: 5px;
     border-radius: 6px;
     text-align: center;
 }
@@ -87,12 +85,12 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr;
     gap: 5px;
     background: white;
-    padding: 8px 5px;
+    padding: 5px;
     margin-bottom: 5px;
     border-radius: 6px;
     align-items: center;
     text-align: center;
-    font-size: 1.15em; /* 放大購物車明細字體，與應收總額一致 */
+    font-size: 0.675em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -135,8 +133,6 @@ button{cursor:pointer;outline:none;transition:0.2s;}
 #printArea table{width:100%;border-collapse:collapse;}
 #printArea td{text-align:left;}
 #printArea td.right{text-align:right;}
-
-/* 4. 放大低消摘要文字 (含金額) */
 #taxSummary {
     margin-top: 8px;
     padding: 12px 14px;
@@ -144,9 +140,10 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     border-radius: 8px;
     border-left: 5px solid #f1c40f;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    font-size: 1.15em; /* 放大低消區塊整體字體 */
+    font-size: 0.95em;
 }
 
+/* 每列排版 */
 #taxSummary .taxRow {
     display: flex;
     justify-content: space-between;
@@ -155,25 +152,27 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     white-space: nowrap;
 }
 
+/* 左邊標籤固定寬度，整體更整齊 */
 #taxSummary .label {
-    width: 100px;
+    width: 90px; /* ★ 左欄固定寬度，避免晃動 */
     color: #2c3e50;
-    font-weight: bold;
 }
 
+/* 右邊金額使用等寬字型，永遠靠右對齊 */
 #taxSummary .value {
-    min-width: 110px;
+    min-width: 110px; /* ★ 右側數字固定寬度 */
     text-align: right;
-    font-family: 'Courier New', monospace;
-    font-size: 1.15em;
+    font-family: 'Courier New', monospace; /* ★ 等寬字體 */
+    font-size: 1.05em;
     font-weight: 600;
     color: #2c3e50;
 }
 
+/* 稅後總額突出顯示 */
 #taxSummary .total .value {
     color: #c0392b;
     font-weight: bold;
-    font-size: 1.25em;
+    font-size: 1.15em;
 }
 
 #todaySalesDisplay {
@@ -183,6 +182,7 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     background: #ecf0f1;
     border-left: 6px solid #2980b9;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+
     font-size: 14px;
     line-height: 1.6em;
     color: #2c3e50;
@@ -196,16 +196,16 @@ button{cursor:pointer;outline:none;transition:0.2s;}
 #paymentButtons {
     display: flex;
     gap: 10px;
-    margin: 12px 0;
+    margin: 12px 0; /* 與下面保持一致 */
 }
 
 #paymentButtons .payBtn {
-    height: 42px;
-    border-radius: 6px;
-    background-color: #bdc3c7;
-    color: #333;
+    height: 42px; /* 原 60px × 0.7 = 42px */
+    border-radius: 6px; /* 與 taxContainer 按鈕一致 */
+    background-color: #bdc3c7; /* 初始灰色 */
+    color: #333; /* 深色文字 */
     border: none;
-    flex: 1;
+    flex: 1;            /* 平分寬度 */
     cursor: pointer;
     font-size: 0.9em;
     font-weight: normal;
@@ -213,38 +213,294 @@ button{cursor:pointer;outline:none;transition:0.2s;}
 }
 
 #paymentButtons .payBtn:hover {
-    background-color: #95a5a6;
+    background-color: #95a5a6; /* hover 稍微深一點灰 */
 }
 
 #paymentButtons .payBtn.active {
-    background-color: #f1c40f;
-    color: #333;
-    font-weight: bold;
+    background-color: #f1c40f; /* 點選後變黃 */
+    color: #333;               /* 文字深色 */
+    font-weight: bold;          /* 加粗 */
 }
 
-#discountContainer, .taxRow.total, #paymentButtons {
-    margin: 12px 0;
+  #discountContainer, .taxRow.total, #paymentButtons {
+    margin: 12px 0; /* 上下 12px */
 }
+#logoutBtn.active {
+    background-color: #ccc;  /* 運作中提示色，可自行調整 */
+}
+/* ======= 新的折扣/現金鍵盤：超商 POS 風格 ======= */
+#posKeypadModal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
+
+.keypadBox {
+  background: #2b2b2b;
+  padding: 18px;
+  width: 340px;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0,0,0,0.35);
+  position: relative; /* 讓右上 X 絕對定位在 modal 內 */
+}
+
+#posKeypadTitle {
+  margin-bottom: 10px;
+  font-size: 22px;
+  font-weight: bold;
+  color: #fff;
+}
+
+#posKeypadInput {
+  width: 100%;
+  font-size: 32px;
+  padding: 12px;
+  margin-bottom: 15px;
+  text-align: right;
+  border: none;
+  border-radius: 8px;
+  box-sizing: border-box;
+  background: #111;
+  color: #0f0;
+  letter-spacing: 2px;
+}
+
+.posKeypadGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.posKeypadGrid button {
+  height: 60px;
+  font-size: 20px;
+  border: none;
+  border-radius: 8px;
+  background: #444;
+  color: #fff;
+  box-shadow: inset 0 -3px 0 rgba(0,0,0,0.35);
+}
+
+.posKeypadGrid button:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.posKeypadGrid button.big {
+  background: #0277bd;  /* 藍色金額鍵 */
+  font-weight: bold;
+}
+
+.posKeypadGrid button.confirm {
+  background: #43a047;  /* 綠色確認鍵 */
+  font-size: 22px;
+  font-weight: bold;
+}
+
+/* ======= 新的折扣/現金鍵盤：超商 POS 風格 ======= */
+#posKeypadModal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999;
+}
+
+.keypadBox {
+  background: #2b2b2b;
+  padding: 18px;
+  width: 340px;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0,0,0,0.35);
+  position: relative; /* X 的定位 */
+}
+
+/* ⭐ 大鍵盤右上角 X */
+#posCloseBtn {
+  display: block !important;  /* 永遠顯示 */
+}
+
+/* ======== 右上角 X 按鈕 ======== */
+.closeModal {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  text-align: center;
+  border-radius: 50%;
+  background: #ccc;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 18px;
+  transition: background 0.2s;
+  z-index: 10;
+}
+
+.closeModal:hover {
+  background: #999;
+  color: white;
+}
+
+#posKeypadTitle {
+  margin-bottom: 10px;
+  font-size: 22px;
+  font-weight: bold;
+  color: #fff;
+}
+
+#posKeypadInput {
+  width: 100%;
+  font-size: 32px;
+  padding: 12px;
+  margin-bottom: 15px;
+  text-align: right;
+  border: none;
+  border-radius: 8px;
+  box-sizing: border-box;
+  background: #111;
+  color: #0f0;
+  letter-spacing: 2px;
+}
+
+.posKeypadGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.posKeypadGrid button {
+  height: 60px;
+  font-size: 20px;
+  border: none;
+  border-radius: 8px;
+  background: #444;
+  color: #fff;
+  box-shadow: inset 0 -3px 0 rgba(0,0,0,0.35);
+}
+
+.posKeypadGrid button:active {
+  transform: translateY(2px);
+  box-shadow: none;
+}
+
+.posKeypadGrid button.big {
+  background: #0277bd;
+  font-weight: bold;
+}
+
+.posKeypadGrid button.confirm {
+  background: #43a047;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+/* ======== 共用小鍵盤 modal ======== */
+#editModal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.45);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+#editModal .modalContent {
+  background: #2b2b2b;
+  padding: 20px;
+  width: 340px;
+  border-radius: 14px;
+  box-shadow: 0 0 25px rgba(0,0,0,0.35);
+  text-align: center;
+  position: relative;
+}
+
+#modalInput {
+  width: 80%;
+  margin: 0 auto 15px auto;
+  display: block;
+  font-size: 30px;
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  border: none;
+  background: #111;
+  color: #0f0;
+  letter-spacing: 2px;
+  box-sizing: border-box;
+}
+
+#numpad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+#numpad button {
+  height: 60px;
+  font-size: 22px;
+  background: #444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+}
+
+.modalActions {
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.modalActions .cancel,
+.modalActions .confirm {
+  flex: 1;
+  height: 50px;
+  font-size: 20px;
+  border: none;
+  border-radius: 8px;
+  margin: 0 5px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.modalActions .cancel { background: #d32f2f; }
+.modalActions .confirm { background: #43a047; }
+
+/* 初始登出按鈕 */
 #logoutBtn {
     color: white;
     background-color: #d35400;
     transition: background-color 0.3s, color 0.3s;
-    font-size: 1.1em; /* 放大業代/登出相關按鈕文字 */
-    font-weight: bold;
 }
 
+/* 登出中效果 */
 #logoutBtn.active {
     animation: btnPulse 1s infinite;
-    color: #ffffff;
+    color: #ffffff; /* 文字白色 */
     position: relative;
 }
 
+/* 漸變閃爍動畫 */
 @keyframes btnPulse {
     0%   { background-color: #e67e22; color: #ffffff; }
     50%  { background-color: #f39c12; color: #ffffff; }
     100% { background-color: #e67e22; color: #ffffff; }
 }
 
+/* 閃爍小點 */
 #logoutBtn.active::after {
     content: '•';
     animation: blink 1s infinite;
@@ -259,50 +515,49 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     0%, 50%, 100% { opacity: 0; }
     25%, 75% { opacity: 1; }
 }
-
 #posCheckout.minAlert {
   background:#f39c12 !important;
 }
-
 .search-container {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: wrap; /* 小螢幕自動換行 */
     gap: 5px;
     margin-bottom: 10px;
     align-items: center;
-}
+  }
 
-.search-container button {
-    width: 120px;
-    height: 40px;
+  .search-container button {
+    width: 120px;               /* 固定寬度 */
+    height: 40px;               /* 固定高度 */
     font-size: 14px;
-    background-color: #8e44ad;
+    background-color: #8e44ad;  /* 修改按鈕背景色，不同於底色 */
     border: none;
     cursor: pointer;
     color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    border-radius: 5px;
-}
+    display: flex;              /* 讓文字與圖示置中 */
+    align-items: center;        /* 垂直置中 */
+    justify-content: center;    /* 水平置中 */
+    gap: 5px;                   /* 文字和圖示間距 */
+    border-radius: 5px;         /* 圓角按鈕 */
+  }
 
-.search-container input {
-    flex: 1;
-    min-width: 120px;
+  .search-container input {
+    flex: 1;                     /* 撐滿剩餘空間 */
+    min-width: 120px;            /* 最小寬度 */
     height: 40px;
     padding: 0 10px;
     font-size: 14px;
     border: 1px solid #ccc;
     border-radius: 5px;
-}
-
-@media (max-width: 480px) {
-  .search-container button, .search-container input {
-    flex: 1;
   }
-}
 
+  /* 小螢幕調整 */
+  @media (max-width: 480px) {
+    .search-container button, .search-container input {
+      flex: 1;                  /* 各佔一行 */
+    }
+  }
+  
 /* ================================================= */
 /* 📱 觸控優化：桌號/人數與開桌相關按鈕放大 */
 /* ================================================= */
