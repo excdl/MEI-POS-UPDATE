@@ -529,14 +529,15 @@ function removeItem(i) {
 }
 
 // ===== 綁定折扣與現金點擊事件開啟大鍵盤 =====
-document.getElementById("discount").onclick = () => {
-  openPOSKeypad("discount", document.getElementById("discount").value);
-};
+document.getElementById("discount").addEventListener("click", function(e) {
+    e.preventDefault();
+    openPOSKeypad("discount", this.value);
+});
 
-document.getElementById("cashInput").onclick = () => {
-  openPOSKeypad("cash", document.getElementById("cashInput").value);
-};
-
+document.getElementById("cashInput").addEventListener("click", function(e) {
+    e.preventDefault();
+    openPOSKeypad("cash", this.value);
+});
 function openEditModal(index, field) {
     editIndex = index;
     editingField = field;
