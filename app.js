@@ -2,9 +2,9 @@ const API_URL = "https://script.google.com/macros/s/AKfycbxIONfqq50nNi5V0XKYaWN1
 function formatNumber(num) { if (num === null || num === undefined || num === "") return "0"; let n = Number(num); if (isNaN(n)) return "0"; return n.toLocaleString('zh-TW'); }
 
 let POS_STORE = "";
-let posCart = [], currentTax = "免稅";
-let editIndex = null;       
-let editingField = null;    
+let posCart = [], currentTax = "應稅";
+let editIndex = null;       // 正在編輯的商品索引
+let editingField = null;    // 正在編輯的欄位
 let modalType = null;
 let kpTarget = null;
 let products = [];
@@ -33,10 +33,10 @@ function switchTab(tabName) {
     const tabData = openTabs[tabName] || { cart: [], people: 1, minConsume: 400, sales: "", discount: "" };
 
     posCart = [...tabData.cart];
-    document.getElementById("peopleCount").value = tabData.people;
-    document.getElementById("minConsumeInput").value = tabData.minConsume;
-    document.getElementById("salesInput").value = tabData.sales;
-    document.getElementById("discount").value = tabData.discount;
+    if(document.getElementById("peopleCount")) document.getElementById("peopleCount").value = tabData.people;
+    if(document.getElementById("minConsumeInput")) document.getElementById("minConsumeInput").value = tabData.minConsume;
+    if(document.getElementById("salesInput")) document.getElementById("salesInput").value = tabData.sales;
+    if(document.getElementById("discount")) document.getElementById("discount").value = tabData.discount;
 
     renderCart();
     renderTabButtons();
@@ -94,10 +94,11 @@ function renderTabButtons() {
     });
 }
 
-// ====== 更快的 IP 取得 ======
+// ====== 更快的 IP 取得（含 sessionStorage 快取）======
 async function getIP() {
     const cache = sessionStorage.getItem("myIP");
     if (cache) return cache;
+
     try {
         const res = await fetch("https://api.ipify.org?format=json");
         const data = await res.json();
@@ -129,16 +130,20 @@ async function login() {
     if (data.status === "success") {
       POS_STORE = data.storeCode;
 
+      // 隱藏登入頁，顯示 POS
       document.getElementById("loginPage").style.display = "none";
       document.getElementById("posApp").style.display = "flex";
+
+      // 顯示門市資訊
       document.getElementById("storeInfo").innerText = `${data.storeName}（${data.storeCode}）`;
 
+      // 更新並每秒刷新登入時間
       updateLoginTime();
       setInterval(updateLoginTime, 1000);
       
+      // 取得商品資料
       fetchProducts();
       fetchSalesList();
-      
       setTimeout(() => {
         const cashBtn = document.querySelector('#paymentButtons .payBtn[data-pay="現金"]');
         if (cashBtn) cashBtn.click();
@@ -162,6 +167,7 @@ document.getElementById("logoutBtn").onclick = logout;
 
 async function logout() {
     const logoutBtn = document.getElementById("logoutBtn");
+
     logoutBtn.disabled = true;
     logoutBtn.innerText = "登出中...";
     logoutBtn.classList.add("active");
@@ -176,6 +182,7 @@ async function logout() {
     } finally {
         document.getElementById("posApp").style.display = "none";
         document.getElementById("loginPage").style.display = "flex";
+
         document.getElementById("storeInput").value = "";
         document.getElementById("passwordInput").value = "";
         document.getElementById("loginMsg").innerText = "";
@@ -183,6 +190,7 @@ async function logout() {
         const loginBtn = document.getElementById("loginBtn");
         loginBtn.innerText = "登入";
         loginBtn.disabled = false;
+
         POS_STORE = "";
 
         logoutBtn.disabled = false;
@@ -194,37 +202,38 @@ async function logout() {
 document.getElementById("loginBtn").addEventListener("click", login);
 document.getElementById("logoutBtn").addEventListener("click", logout);
 
+// ===== 取得商品 =====
 async function fetchProducts() {
     const res = await fetch(API_URL + "?action=products");
     products = await res.json();
     categories = [...new Set(products.map(x => x["類別"]))];
     renderCategories();
-    
-    if (categories.length > 0) {
-        renderProducts(categories[0]);
-    } else {
-        renderProducts(null);
-    }
+    if (categories.length > 0) renderProducts(categories[0]);
 }
 
 async function fetchSalesList() {
   try {
     const res = await fetch(`${API_URL}?action=salesList&storeCode=${POS_STORE}`);
     const data = await res.json();
+
     if (data.status !== "success") return;
 
     const listEl = document.getElementById("salesList");
     listEl.innerHTML = "";
+
     data.list.forEach(name => {
       const opt = document.createElement("option");
       opt.value = name;
       listEl.appendChild(opt);
     });
+
+    document.getElementById("salesInput").value = "";
   } catch (err) {
     console.error("載入業代失敗", err);
   }
-}    
+}
 
+// ===== 渲染分類 =====
 function renderCategories() {
     const box = document.getElementById("posCategories");
     box.querySelectorAll("button.cat-btn").forEach(b => b.remove());
@@ -245,6 +254,7 @@ function renderCategories() {
     if (firstBtn) firstBtn.classList.add("active");
 }
 
+// ===== 搜尋商品 =====
 document.getElementById("searchBox").oninput = function () {
     renderProducts(null, this.value.trim().toLowerCase());
 };
@@ -255,6 +265,7 @@ function parseNumber(str) {
 
 let pendingStoreProduct = null;
 
+// ===== 渲染商品 =====
 function renderProducts(category = null, search = "") {
     const box = document.getElementById("posProducts");
     box.innerHTML = "";
@@ -280,6 +291,7 @@ function renderProducts(category = null, search = "") {
                     addPOSItem(p, false);
                 }
             };
+
             box.appendChild(card);
         });
 }
@@ -297,6 +309,7 @@ function confirmStoreWine(isStore) {
     document.getElementById("storeWineModal").style.display = "none";
 }
 
+// ===== 加入購物車（支援存酒與開瓶費標記）=====
 function addPOSItem(p, forceStore = false) { 
     let qtyAdd = 1;
     let pricePerUnit = Number(p["售價"]);
@@ -327,7 +340,7 @@ function addPOSItem(p, forceStore = false) {
             price: pricePerUnit,
             unit: unit,
             discount: null,
-            isCorkage: p["商品名稱"] === "開瓶費",
+            isCorkage: p["商品名稱"] === "開瓶費", // ⭐ 標記是否為開瓶費
             isStored: forceStore,
             storeMonths: Number(p["存酒期限(月)"]) || 0,
             storeDate: forceStore ? now.toLocaleDateString("zh-TW") : null,
@@ -360,6 +373,7 @@ function initPOSButtons() {
                 cashInput.value = "";
                 changeOut.innerText = "0";
             }
+
             renderCart();
         });
     });
@@ -367,6 +381,7 @@ function initPOSButtons() {
 
 document.addEventListener("DOMContentLoaded", initPOSButtons);
 
+// ===== 渲染購物車（內含開瓶費獨立計算邏輯）=====
 function renderCart() {
     const box = document.getElementById("posCart");
     box.innerHTML = "";
@@ -391,7 +406,10 @@ function renderCart() {
         const row = document.createElement("div");
         row.className = "cartRow";
         row.innerHTML = `
-            <span class="name" onclick="openPromoModal(posCart[${i}])">${item.name} ${item.isStored ? "<b style='color:#27ae60;'>🧊存酒</b>" : ""}</span>
+            <span class="name" onclick="openPromoModal(posCart[${i}])">
+              ${item.name}
+              ${item.isStored ? "<b style='color:#27ae60;'>🧊存酒</b>" : ""}
+            </span>
             <span class="qty" onclick="openEditModal(${i},'quantity')">${item.quantity.toFixed(0)} ${item.unit}</span>
             <span class="price" onclick="openEditModal(${i},'price')">${item.price}</span>
             <span class="subtotal">${formatNumber(Math.round(sub))}</span>
@@ -423,7 +441,7 @@ function renderCart() {
     // 一般商品金額 = 總金額 - 開瓶費金額
     let normalGoodsAmount = actualAmount - corkageTotal;
     
-    // 💡 2. 用一般商品去跟低消比較，計算是否需要補差額
+    // 💡 2. 用一般商品去跟低消比較，計算應收金額
     let receivableNormal = 0;
     if (perMin <= 300 && perMin > 0) {
         receivableNormal = normalGoodsAmount + minConsume;
@@ -443,7 +461,7 @@ function renderCart() {
     posTotalEl.dataset.value = receivable;
     posTotalEl.innerText = formatNumber(receivable);
 
-    updateChange(); // 更新找零
+    updateChange();
 
     // ===== 低消顯示 =====
     const alertEl = document.getElementById("minConsumeAlert");
@@ -494,6 +512,7 @@ async function updateTodaySales() {
 }
 
 setInterval(updateTodaySales, 30000);
+updateTodaySales();
 
 document.getElementById("shiftEndBtn").onclick = async function() {
   if (posCart.length > 0 && !confirm("購物車尚有無結帳商品，是否仍交班？")) return;
@@ -528,16 +547,15 @@ function removeItem(i) {
     renderTabButtons();
 }
 
-// ===== 綁定折扣與現金點擊事件開啟大鍵盤 =====
-document.getElementById("discount").addEventListener("click", function(e) {
-    e.preventDefault();
-    openPOSKeypad("discount", this.value);
-});
+// ===== 綁定折扣與現金點擊開啟大鍵盤 =====
+document.getElementById("discount").onclick = () => {
+  openPOSKeypad("discount", document.getElementById("discount").value);
+};
 
-document.getElementById("cashInput").addEventListener("click", function(e) {
-    e.preventDefault();
-    openPOSKeypad("cash", this.value);
-});
+document.getElementById("cashInput").onclick = () => {
+  openPOSKeypad("cash", document.getElementById("cashInput").value);
+};
+
 function openEditModal(index, field) {
     editIndex = index;
     editingField = field;
@@ -552,13 +570,21 @@ function openEditModal(index, field) {
     promoDiv.style.display = 'none';
     document.getElementById("editCloseBtn").style.display = 'none';
 
+    if (field === 'discount' || field === 'cash') {
+        kpTarget = field;
+        document.getElementById("posKeypadTitle").innerText = field === "discount" ? "折扣金額" : "收現金";
+        document.getElementById("posKeypadInput").value = field === "discount" ? document.getElementById("discount").value : document.getElementById("cashInput").value || "";
+        document.getElementById("posKeypadModal").style.display = "flex";
+        return;
+    }
+
     numpad.style.display = 'grid';
     modalInput.style.display = 'block';
     modalInput.readOnly = false;
     modalActions.style.display = 'flex';
 
     modalInput.value = posCart[index]?.[field] ?? "";
-    document.getElementById("modalProductName").innerText = field === 'quantity' ? "修改數量" : "修改單價";
+    document.getElementById("modalProductName").innerText = "輸入";
     document.getElementById("modalProductName").style.color = "#fff";
     modal.style.display = "flex";
 }
@@ -609,45 +635,15 @@ function openPromoModal(item) {
     modal.style.display = "flex";
 }
 
-// ===== 💡 統一串接大/小鍵盤的輸入邏輯 (支援折扣、收現與商品數量單價) =====
 function np(v) {
-    const keypadModal = document.getElementById("posKeypadModal");
-    let targetInput;
-
-    if (keypadModal && keypadModal.style.display === "flex") {
-        targetInput = document.getElementById("posKeypadInput");
-    } else {
-        targetInput = document.getElementById("modalInput");
-    }
-
-    if (targetInput) {
-        if (targetInput.value === "0" && v !== ".") {
-            targetInput.value = "";
-        }
-        targetInput.value += v;
-    }
+    const input = document.getElementById("modalInput");
+    input.value += v;
 }
 
 function backspace() {
-    const keypadModal = document.getElementById("posKeypadModal");
-    let targetInput;
-
-    if (keypadModal && keypadModal.style.display === "flex") {
-        targetInput = document.getElementById("posKeypadInput");
-    } else {
-        targetInput = document.getElementById("modalInput");
-    }
-
-    if (targetInput) {
-        targetInput.value = targetInput.value.slice(0, -1);
-        if (!targetInput.value && kpTarget === "cash") {
-            targetInput.value = "0";
-        }
-    }
+    const input = document.getElementById("modalInput");
+    input.value = input.value.slice(0, -1);
 }
-
-function kpInput(v) { np(v); }
-function kpBack() { backspace(); }
 
 function confirmEdit() {
     const val = document.getElementById("modalInput").value;
@@ -676,9 +672,21 @@ function closeModal() {
 
 function openPOSKeypad(type, value = "0") {
     kpTarget = type;
-    document.getElementById("posKeypadTitle").innerText = type === "discount" ? "輸入折扣" : "收現金";
+    document.getElementById("posKeypadTitle").innerText = type === "discount" ? "折扣金額" : "收現金";
     document.getElementById("posKeypadInput").value = value;
     document.getElementById("posKeypadModal").style.display = "flex";
+}
+
+function kpInput(v) {
+    const input = document.getElementById("posKeypadInput");
+    if (input.value === "0") input.value = "";
+    input.value += v;
+}
+
+function kpBack() {
+    const input = document.getElementById("posKeypadInput");
+    input.value = input.value.slice(0, -1);
+    if (!input.value) input.value = "0";
 }
 
 function kpConfirm() {
@@ -749,6 +757,7 @@ function formatDiscountRate(rate) {
 
 function calcDiscountedSubtotal(item) {
     let sub = item.quantity * item.price;
+    // 開瓶費不參與折扣計算
     if (!item.isCorkage && item.discount) {
         switch (item.discount.type) {
             case "第二件減10": sub -= Math.floor(item.quantity / 2) * 10; break;
@@ -838,28 +847,45 @@ document.getElementById("posCheckout").onclick = async function () {
     }
 
     if (posCart.length === 0) {
-        alert("購物車是空的。");
+        alert("❌ 購物車不可為空，請至少加入一筆商品！");
         checkoutBtn.innerText = originalText;
         checkoutBtn.disabled = false;
         return;
     }
 
     let actual = parseNumber(document.getElementById("afterTax").innerText) - (Number(document.getElementById("discount").value) || 0);
-    let min = getMinConsumeTotal();
+    let people = Number(document.getElementById("peopleCount")?.value) || 0;
+    let perMin = Number(document.getElementById("minConsumeInput")?.value) || 0;
+    let min = people * perMin;
+    let finalAmount;
 
-    if (actual < min && !allowMinConsumeCheckout) {
-        if (confirm(`您的消費金額為 ${actual} 元，低於最低消費額 ${min} 元，是否確認結帳？`)) {
-            allowMinConsumeCheckout = true;
-            document.getElementById("afterTax").innerText = min;
-            startCheckoutFlow(checkoutBtn, originalText);
+    if (perMin <= 300 && perMin > 0) {
+        finalAmount = actual + min;
+    } else {
+        if (actual < min && !allowMinConsumeCheckout) {
+            if (confirm(`您的消費金額為 ${actual} 元，低於最低消費額 ${min} 元，是否確認結帳？`)) {
+                allowMinConsumeCheckout = true;
+                finalAmount = min;
+            } else {
+                checkoutBtn.innerText = originalText;
+                checkoutBtn.disabled = false;
+                return;
+            }
         } else {
-            checkoutBtn.innerText = originalText;
-            checkoutBtn.disabled = false;
+            finalAmount = Math.max(actual, min);
         }
-        return;
     }
 
     allowMinConsumeCheckout = false;
+    const discountVal = Number(document.getElementById("discount").value) || 0;
+
+    if (finalAmount <= 0 && discountVal <= 0) {
+        alert("❌ 結帳總額為 0，無法結帳！");
+        checkoutBtn.innerText = originalText;
+        checkoutBtn.disabled = false;
+        return;
+    }
+
     startCheckoutFlow(checkoutBtn, originalText);
 };
 
@@ -888,7 +914,7 @@ async function startCheckoutFlow(checkoutBtn, originalText) {
         document.querySelector('#paymentButtons .payBtn[data-pay="現金"]')?.click();
 
     } catch (error) {
-        console.error("結帳錯誤：", error);
+        console.error("結帳過程中發生錯誤：", error);
         alert("結帳失敗，請重試。");
     } finally {
         checkoutBtn.innerText = originalText;
