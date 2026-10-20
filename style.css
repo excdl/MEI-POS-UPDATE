@@ -94,7 +94,7 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     border-radius: 6px;
     align-items: center;
     text-align: center;
-    font-size: 1.15em; /* 放大 25% (原 0.675em) */
+    font-size: 1.15em; /*修改購物車文字*/
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -154,7 +154,7 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     border-radius: 8px;
     border-left: 5px solid #f1c40f;
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    font-size: 0.95em;
+    font-size: 1.15em;
 }
 
 #taxSummary .taxRow {
@@ -174,7 +174,7 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     min-width: 110px;
     text-align: right;
     font-family: 'Courier New', monospace;
-    font-size: 1.05em;
+    font-size: 1.15em;
     font-weight: 600;
     color: #2c3e50;
 }
@@ -217,7 +217,7 @@ button{cursor:pointer;outline:none;transition:0.2s;}
     border: none;
     flex: 1;
     cursor: pointer;
-    font-size: 0.9em;
+    font-size: 1.15em;
     font-weight: normal;
     transition: 0.2s;
 }
