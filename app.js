@@ -28,7 +28,7 @@ function saveCurrentTabState() {
 }
 
 function switchTab(tabName) {
-    saveCurrentTabState(); 
+    saveCurrentTabState(); // 先儲存當前桌號
     activeTabName = tabName;
     const tabData = openTabs[tabName] || { cart: [], people: 1, minConsume: 400, sales: "", discount: "" };
 
@@ -54,7 +54,7 @@ function createNewTab() {
     switchTab(tabName);
 }
 
-// ===== 📱 獨立大按鈕桌號渲染 =====
+// ===== 📱 獨立大按鈕桌號渲染（按鈕分開、具備專屬刪除 ×） =====
 function renderTabButtons() {
     const listEl = document.getElementById("tabList");
     if (!listEl) return;
@@ -66,19 +66,21 @@ function renderTabButtons() {
         
         const totalQty = openTabs[name].cart.reduce((sum, item) => sum + item.quantity, 0);
 
+        // 桌號按鈕本體
         const btn = document.createElement("button");
         btn.className = `tab-btn`;
         btn.innerHTML = `${name} ${totalQty > 0 ? `<span class="tab-badge">${totalQty}</span>` : ""}`;
         btn.onclick = () => switchTab(name);
         wrapper.appendChild(btn);
 
+        // 獨立的刪除按鈕 (×)
         if (name !== "外帶 / 一般") {
             const closeBtn = document.createElement("button");
             closeBtn.className = `tab-close-btn`;
             closeBtn.innerHTML = "×";
             closeBtn.title = "關閉此桌";
             closeBtn.onclick = (e) => {
-                e.stopPropagation(); 
+                e.stopPropagation(); // 避免觸發切換桌子
                 if (confirm(`是否關閉/刪除桌號「${name}」？`)) {
                     delete openTabs[name];
                     if (activeTabName === name) switchTab("外帶 / 一般");
@@ -92,7 +94,7 @@ function renderTabButtons() {
     });
 }
 
-// ====== IP 取得 ======
+// ====== 更快的 IP 取得 ======
 async function getIP() {
     const cache = sessionStorage.getItem("myIP");
     if (cache) return cache;
@@ -373,6 +375,7 @@ function renderCart() {
     posCart.forEach((item, i) => {
         let sub = item.quantity * item.price;
 
+        // 💡 開瓶費無折扣，若不是開瓶費才計算折扣
         if (!item.isCorkage && item.discount) {
             switch (item.discount.type) {
                 case "第二件減10": sub -= Math.floor(item.quantity / 2) * 10; break;
@@ -401,6 +404,7 @@ function renderCart() {
     let tax = currentTax === "應稅" ? Math.round(beforeTax * 0.05) : 0;
     let afterTax = beforeTax + tax;
 
+    // ===== 計算折扣/低消 =====
     let discountValue = Number(document.getElementById("discount").value) || 0;
     let actualAmount = afterTax - discountValue;
 
@@ -408,6 +412,7 @@ function renderCart() {
     let perMin = Number(document.getElementById("minConsumeInput")?.value) || 0;
     let minConsume = people * perMin;
 
+    // 💡 1. 獨立計算「開瓶費」總額（開瓶費不參與折扣、不參與低消折抵）
     let corkageTotal = 0;
     posCart.forEach(item => {
         if (item.isCorkage) {
@@ -415,8 +420,10 @@ function renderCart() {
         }
     });
 
+    // 一般商品金額 = 總金額 - 開瓶費金額
     let normalGoodsAmount = actualAmount - corkageTotal;
     
+    // 💡 2. 用一般商品去跟低消比較，計算是否需要補差額
     let receivableNormal = 0;
     if (perMin <= 300 && perMin > 0) {
         receivableNormal = normalGoodsAmount + minConsume;
@@ -424,8 +431,10 @@ function renderCart() {
         receivableNormal = Math.max(normalGoodsAmount, minConsume);
     }
 
+    // 💡 3. 最終應收金額 = (一般商品計算低消後的金額) + 開瓶費
     let receivable = receivableNormal + corkageTotal;
 
+    // ===== 更新 UI =====
     document.getElementById("beforeTax").innerText = formatNumber(beforeTax);
     document.getElementById("taxAmount").innerText = formatNumber(tax);
     document.getElementById("afterTax").innerText = formatNumber(afterTax);
@@ -434,8 +443,9 @@ function renderCart() {
     posTotalEl.dataset.value = receivable;
     posTotalEl.innerText = formatNumber(receivable);
 
-    updateChange();
+    updateChange(); // 更新找零
 
+    // ===== 低消顯示 =====
     const alertEl = document.getElementById("minConsumeAlert");
     const checkoutBtn = document.getElementById("posCheckout");
     if (normalGoodsAmount < minConsume && minConsume > 0) {
@@ -518,9 +528,7 @@ function removeItem(i) {
     renderTabButtons();
 }
 
-// ==========================================
-// 💡 點選折扣與收現金欄位直接綁定大鍵盤
-// ==========================================
+// ===== 綁定折扣與現金點擊事件開啟大鍵盤 =====
 document.getElementById("discount").onclick = () => {
   openPOSKeypad("discount", document.getElementById("discount").value);
 };
@@ -543,18 +551,14 @@ function openEditModal(index, field) {
     promoDiv.style.display = 'none';
     document.getElementById("editCloseBtn").style.display = 'none';
 
-    if (field === 'discount' || field === 'cash') {
-        openPOSKeypad(field, field === 'discount' ? document.getElementById("discount").value : document.getElementById("cashInput").value);
-        return;
-    }
-
     numpad.style.display = 'grid';
     modalInput.style.display = 'block';
     modalInput.readOnly = false;
     modalActions.style.display = 'flex';
 
     modalInput.value = posCart[index]?.[field] ?? "";
-    document.getElementById("modalProductName").innerText = "輸入";
+    document.getElementById("modalProductName").innerText = field === 'quantity' ? "修改數量" : "修改單價";
+    document.getElementById("modalProductName").style.color = "#fff";
     modal.style.display = "flex";
 }
 
@@ -604,11 +608,45 @@ function openPromoModal(item) {
     modal.style.display = "flex";
 }
 
-function np(v) { document.getElementById("modalInput").value += v; }
-function backspace() {
-    const input = document.getElementById("modalInput");
-    input.value = input.value.slice(0, -1);
+// ===== 💡 統一串接大/小鍵盤的輸入邏輯 (支援折扣、收現與商品數量單價) =====
+function np(v) {
+    const keypadModal = document.getElementById("posKeypadModal");
+    let targetInput;
+
+    if (keypadModal && keypadModal.style.display === "flex") {
+        targetInput = document.getElementById("posKeypadInput");
+    } else {
+        targetInput = document.getElementById("modalInput");
+    }
+
+    if (targetInput) {
+        if (targetInput.value === "0" && v !== ".") {
+            targetInput.value = "";
+        }
+        targetInput.value += v;
+    }
 }
+
+function backspace() {
+    const keypadModal = document.getElementById("posKeypadModal");
+    let targetInput;
+
+    if (keypadModal && keypadModal.style.display === "flex") {
+        targetInput = document.getElementById("posKeypadInput");
+    } else {
+        targetInput = document.getElementById("modalInput");
+    }
+
+    if (targetInput) {
+        targetInput.value = targetInput.value.slice(0, -1);
+        if (!targetInput.value && kpTarget === "cash") {
+            targetInput.value = "0";
+        }
+    }
+}
+
+function kpInput(v) { np(v); }
+function kpBack() { backspace(); }
 
 function confirmEdit() {
     const val = document.getElementById("modalInput").value;
@@ -635,26 +673,11 @@ function closeModal() {
     document.getElementById("editCloseBtn").style.display = 'none';
 }
 
-// ==========================================
-// 💡 大鍵盤邏輯實作
-// ==========================================
 function openPOSKeypad(type, value = "0") {
     kpTarget = type;
-    document.getElementById("posKeypadTitle").innerText = type === "discount" ? "折扣金額" : "收現金";
-    document.getElementById("posKeypadInput").value = value === "" ? "0" : value;
+    document.getElementById("posKeypadTitle").innerText = type === "discount" ? "輸入折扣" : "收現金";
+    document.getElementById("posKeypadInput").value = value;
     document.getElementById("posKeypadModal").style.display = "flex";
-}
-
-function kpInput(v) {
-    const input = document.getElementById("posKeypadInput");
-    if (input.value === "0") input.value = "";
-    input.value += v;
-}
-
-function kpBack() {
-    const input = document.getElementById("posKeypadInput");
-    input.value = input.value.slice(0, -1);
-    if (!input.value) input.value = "0";
 }
 
 function kpConfirm() {
