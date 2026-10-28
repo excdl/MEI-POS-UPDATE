@@ -225,28 +225,32 @@ justify-content:center;align-items:center;">
 </div>
 <!-- 💸 支出管理 Modal -->
 <div class="modal" id="expenseModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:500; align-items:center; justify-content:center; padding:20px;">
-  <div class="modal-box" style="width:100%; max-width:550px; background:#171725; border:1px solid #343449; border-radius:18px; padding:22px; color:#fff;">
+  <div class="modal-box" style="width:100%; max-width:450px; background:#171725; border:1px solid #343449; border-radius:18px; padding:22px; color:#fff; box-sizing:border-box;">
+    
     <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
       <div class="modal-title" style="font-size:1.1rem; font-weight:bold;">💸 店面支出記帳</div>
       <button class="close-btn" onclick="closeExpenseModal()" style="width:35px; height:35px; border-radius:8px; background:#292938; color:white; border:none; cursor:pointer;">×</button>
     </div>
     
-    <!-- 新增支出表單 -->
-    <div style="margin-bottom: 20px;">
-      <select class="modal-input" id="expenseCategory" style="width:100%; height:45px; padding:0 14px; border-radius:9px; border:1px solid #3a3a4d; background:#10101a; color:white; margin-bottom:12px;">
+    <!-- 新增支出表單（統一使用同一個 class 或行內樣式來確保存欄位大小與對齊） -->
+    <div style="display:flex; flex-direction:column; gap:12px; margin-bottom: 20px;">
+      <select id="expenseCategory" style="width:100%; height:45px; padding:0 14px; border-radius:9px; border:1px solid #3a3a4d; background:#10101a; color:white; font-size:0.95rem; box-sizing:border-box; outline:none;">
         <option value="進貨成本">📦 進貨成本</option>
         <option value="房租水電">💡 房租水電</option>
         <option value="設備維修">🔧 設備維修</option>
         <option value="雜支零用">🛒 雜支零用</option>
         <option value="其他支出">📝 其他支出</option>
       </select>
-      <input class="modal-input" id="expenseAmount" type="number" placeholder="支出金額 (NT$)" autocomplete="off" style="width:100%; height:45px; padding:0 14px; border-radius:9px; border:1px solid #3a3a4d; background:#10101a; color:white; margin-bottom:12px;">
-      <input class="modal-input" id="expenseNote" placeholder="支出備註 / 品項說明（例：買咖啡豆、修理磨豆機）" autocomplete="off" style="width:100%; height:45px; padding:0 14px; border-radius:9px; border:1px solid #3a3a4d; background:#10101a; color:white; margin-bottom:12px;">
-      <button class="primary-btn" onclick="submitExpense()" style="width:100%; height:45px; border-radius:9px; background:linear-gradient(135deg, #ff2bd6, #744cff); color:white; font-weight:bold; border:none; cursor:pointer;">💾 記帳送出</button>
+
+      <input id="expenseAmount" type="text" placeholder="支出金額 (NT$)" autocomplete="off" style="width:100%; height:45px; padding:0 14px; border-radius:9px; border:1px solid #3a3a4d; background:#10101a; color:white; font-size:0.95rem; box-sizing:border-box; outline:none;" />
+
+      <input id="expenseNote" type="text" placeholder="支出備註 / 品項說明（例：買咖啡豆）" autocomplete="off" style="width:100%; height:45px; padding:0 14px; border-radius:9px; border:1px solid #3a3a4d; background:#10101a; color:white; font-size:0.95rem; box-sizing:border-box; outline:none;" />
+
+      <button class="primary-btn" onclick="submitExpense()" style="width:100%; height:45px; border-radius:9px; background:linear-gradient(135deg, #ff2bd6, #744cff); color:white; font-weight:bold; border:none; cursor:pointer; font-size:0.95rem; margin-top:4px;">💾 記帳送出</button>
     </div>
 
     <div style="color:#aaa; font-size:0.85rem; margin-bottom: 8px;">近期支出紀錄：</div>
-    <div class="history-list" id="expenseList" style="max-height: 250px; overflow-y: auto; display: grid; gap: 8px;">
+    <div class="history-list" id="expenseList" style="max-height: 220px; overflow-y: auto; display: grid; gap: 8px;">
       <div class="empty" style="color:#777; text-align:center; padding:20px;">載入中...</div>
     </div>
   </div>
