@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbxPwnFsGz5nf9R-YnFFAUEJHBHvlE2nFkWyhDP4PSRveryKN0m57iI8CGNyrYp5gFbpKw/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxhGjRKXRrSxoDKWvUvE712A7x_4ycivFSydCyn-jwF47J99uGJi1X2ACgtNDFMd3EI7A/exec";
 
 function formatNumber(num) { 
     if (num === null || num === undefined || num === "") return "0"; 
