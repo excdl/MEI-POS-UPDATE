@@ -66,11 +66,13 @@ function renderTabButtons() {
     if (!listEl) return;
     listEl.innerHTML = "";
 
-    Object.keys(openTabs).forEach(name => {
+    const keys = Object.keys(openTabs || {});
+    keys.forEach(name => {
         const wrapper = document.createElement("div");
         wrapper.className = `tab-wrapper ${name === activeTabName ? "active" : ""}`;
         
-        const totalQty = openTabs[name].cart.reduce((sum, item) => sum + item.quantity, 0);
+        const cartItems = (openTabs[name] && openTabs[name].cart) || [];
+        const totalQty = cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
 
         const btn = document.createElement("button");
         btn.className = `tab-btn`;
@@ -249,7 +251,7 @@ function renderCategories() {
     if (!box) return;
     box.querySelectorAll("button.cat-btn").forEach(b => b.remove());
 
-    categories.forEach(cat => {
+    (categories || []).forEach(cat => {
         const btn = document.createElement("button");
         btn.classList.add("cat-btn");
         btn.textContent = cat;
@@ -281,7 +283,7 @@ function renderProducts(category = null, search = "") {
     if (!box) return;
     box.innerHTML = "";
 
-    products
+    (products || [])
         .filter(p => {
             if (category && p["類別"] !== category) return false;
             if (search && !p["商品名稱"].toLowerCase().includes(search.toLowerCase())) return false;
@@ -397,7 +399,7 @@ function renderCart() {
     box.innerHTML = "";
     let totalBeforeTax = 0;
 
-    posCart.forEach((item, i) => {
+    (posCart || []).forEach((item, i) => {
         let sub = item.quantity * item.price;
 
         if (!item.isCorkage && item.discount) {
@@ -435,7 +437,7 @@ function renderCart() {
     let tax = currentTax === "應稅" ? Math.round(beforeTax * 0.05) : 0;
     let afterTax = beforeTax + tax;
 
-    let discountValue = Number(document.getElementById("discount").value) || 0;
+    let discountValue = Number(document.getElementById("discount")?.value) || 0;
     let actualAmount = afterTax - discountValue;
 
     let people = Number(document.getElementById("peopleCount")?.value) || 0;
@@ -443,7 +445,7 @@ function renderCart() {
     let minConsume = people * perMin;
 
     let corkageTotal = 0;
-    posCart.forEach(item => {
+    (posCart || []).forEach(item => {
         if (item.isCorkage) {
             corkageTotal += item.quantity * item.price;
         }
@@ -837,7 +839,7 @@ async function sendCheckoutToSheet() {
         cashReceive: Number(document.getElementById("cashInput").value) || 0,
         change: Number(document.getElementById("changeOut").innerText) || 0,
 
-        items: posCart.map(it => {
+        items: (posCart || []).map(it => {
             const discountedSubtotal = calcDiscountedSubtotal(it);
             let promoText = "";
             if (!it.isCorkage && it.discount) {
@@ -845,7 +847,7 @@ async function sendCheckoutToSheet() {
             }
 
             return {
-                category: products.find(p => p["商品名稱"] === it.name)?.["類別"] || "",
+                category: (products || []).find(p => p["商品名稱"] === it.name)?.["類別"] || "",
                 name: it.name,
                 quantity: it.quantity,
                 price: it.price,
@@ -861,10 +863,10 @@ async function sendCheckoutToSheet() {
         return d.toLocaleDateString("zh-TW");
     }
 
-    const storedItems = posCart
+    const storedItems = (posCart || [])
         .filter(it => it.isStored)
         .map(it => {
-            const product = products.find(p => p["商品名稱"] === it.name);
+            const product = (products || []).find(p => p["商品名稱"] === it.name);
             const nowDate = new Date();
             return {
                 customerName: document.getElementById("customerName")?.value || "",
@@ -987,7 +989,7 @@ async function startCheckoutFlow(checkoutBtn, originalText) {
 }
 
 // =========================
-// ===== 💸 支出管理相關功能（含絕對安全防呆） =====
+// ===== 💸 支出管理相關功能（已加入全面防呆） =====
 // =========================
 function openExpenseModal() {
   const expenseModal = document.getElementById("expenseModal");
@@ -1010,9 +1012,9 @@ function closeExpenseModal() {
 }
 
 async function submitExpense() {
-  const category = document.getElementById("expenseCategory").value;
-  const amount = document.getElementById("expenseAmount").value.trim();
-  const note = document.getElementById("expenseNote").value.trim();
+  const category = document.getElementById("expenseCategory")?.value || "其他";
+  const amount = document.getElementById("expenseAmount")?.value.trim() || "";
+  const note = document.getElementById("expenseNote")?.value.trim() || "";
 
   if (!amount || Number(amount) <= 0) {
     alert("⚠️ 請輸入有效的支出金額！");
@@ -1020,7 +1022,7 @@ async function submitExpense() {
   }
 
   try {
-    const storeName = document.getElementById("storeInfo").innerText.split("（")[0] || "";
+    const storeName = document.getElementById("storeInfo")?.innerText.split("（")[0] || "";
     const operator = document.getElementById("salesInput")?.value || "";
 
     const res = await fetch(API_URL, {
@@ -1038,16 +1040,16 @@ async function submitExpense() {
     
     const result = await res.json();
 
-    if (result.status === "success") {
+    if (result && result.status === "success") {
       alert("✅ 支出記帳成功！");
       document.getElementById("expenseAmount").value = "";
       document.getElementById("expenseNote").value = "";
       loadExpenses(); 
     } else {
-      alert(result.message || "記帳失敗");
+      alert((result && result.message) || "記帳失敗");
     }
   } catch (e) {
-    console.error(e);
+    console.error("送出支出失敗：", e);
     alert("⚠️ 網路異常，記帳失敗");
   }
 }
@@ -1061,7 +1063,7 @@ async function loadExpenses() {
     const res = await fetch(`${API_URL}?action=getExpenses&storeCode=${POS_STORE}`);
     const result = await res.json();
 
-    // 💡 絕對防呆：無論後端回傳格式為何，強制作為陣列處理，避免 forEach / map 報錯
+    // 💡 絕對安全的防呆，確保 result.data 或 result 轉成陣列
     let expenseData = [];
     if (result && Array.isArray(result.data)) {
       expenseData = result.data;
