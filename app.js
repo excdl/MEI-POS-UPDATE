@@ -597,12 +597,15 @@ function removeItem(i) {
     renderTabButtons();
 }
 
-document.getElementById("discount").onclick = () => {
-  openPOSKeypad("discount", document.getElementById("discount").value);
+// 💡 綁定 3 個欄位點擊時彈出虛擬數字鍵盤
+document.getElementById("discount").onclick = () => { 
+    openPOSKeypad("discount", document.getElementById("discount").value); 
 };
-
-document.getElementById("cashInput").onclick = () => {
-  openPOSKeypad("cash", document.getElementById("cashInput").value);
+document.getElementById("cashInput").onclick = () => { 
+    openPOSKeypad("cash", document.getElementById("cashInput").value); 
+};
+document.getElementById("expenseAmount").onclick = () => { 
+    openPOSKeypad("expenseAmount", document.getElementById("expenseAmount").value); 
 };
 
 function openEditModal(index, field) {
@@ -639,7 +642,7 @@ function openEditModal(index, field) {
 }
 
 function openPromoModal(item) {
-    if (item.isCorkage) return; // 💡 開瓶費不參與促銷/折扣選單
+    if (item.isCorkage) return; // 💡 開瓶費不參與折扣/折扣選單
 
     modalType = 'promo';
     editIndex = null;
@@ -725,7 +728,13 @@ function closeModal() {
 
 function openPOSKeypad(type, value = "0") {
     kpTarget = type;
-    document.getElementById("posKeypadTitle").innerText = type === "discount" ? "折扣金額" : "收現金";
+    if (type === "discount") {
+        document.getElementById("posKeypadTitle").innerText = "折扣金額";
+    } else if (type === "cash") {
+        document.getElementById("posKeypadTitle").innerText = "收現金";
+    } else if (type === "expenseAmount") {
+        document.getElementById("posKeypadTitle").innerText = "支出金額";
+    }
     document.getElementById("posKeypadInput").value = value;
     document.getElementById("posKeypadModal").style.display = "flex";
 }
@@ -754,6 +763,10 @@ function kpConfirm() {
     if (kpTarget === "cash") {
         document.getElementById("cashInput").value = v;
         updateChange();
+    }
+
+    if (kpTarget === "expenseAmount") {
+        document.getElementById("expenseAmount").value = v;
     }
 
     document.getElementById("posKeypadModal").style.display = "none";
@@ -1160,12 +1173,15 @@ async function loadExpenses() {
     const res = await fetch(`${API_URL}?action=getExpenses&storeCode=${POS_STORE}`);
     const result = await res.json();
 
-    if (result.status !== "success" || !result.data || result.data.length === 0) {
+    // 💡 確保取得的 data 絕對是陣列，防止 forEach / map 報錯
+    const expenseData = Array.isArray(result.data) ? result.data : [];
+
+    if (result.status !== "success" || expenseData.length === 0) {
       list.innerHTML = `<div class="empty" style="color:#777; text-align:center; padding:20px;">目前沒有支出紀錄</div>`;
       return;
     }
 
-    list.innerHTML = result.data.map(item => `
+    list.innerHTML = expenseData.map(item => `
       <div class="customer-card" style="padding:12px; background:#222235; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
         <div>
           <div style="font-weight:bold; font-size:0.95rem; color:#ff4d6d;">
