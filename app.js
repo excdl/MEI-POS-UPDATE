@@ -1084,3 +1084,102 @@ if (checkSongBtn) {
         window.open('https://excdl.github.io/songs/', '_blank');
     });
 }
+
+// =========================
+// ===== 💸 支出管理相關功能 =====
+// =========================
+function openExpenseModal() {
+  const expenseModal = document.getElementById("expenseModal");
+  if (expenseModal) {
+      expenseModal.style.display = "flex";
+  } else {
+      console.warn("找不到 #expenseModal 元素，請確認 HTML 是否已加入支出 Modal");
+      return;
+  }
+  document.getElementById("expenseAmount").value = "";
+  document.getElementById("expenseNote").value = "";
+  loadExpenses();
+}
+
+function closeExpenseModal() {
+  const expenseModal = document.getElementById("expenseModal");
+  if (expenseModal) {
+      expenseModal.style.display = "none";
+  }
+}
+
+async function submitExpense() {
+  const category = document.getElementById("expenseCategory").value;
+  const amount = document.getElementById("expenseAmount").value.trim();
+  const note = document.getElementById("expenseNote").value.trim();
+
+  if (!amount || Number(amount) <= 0) {
+    alert("⚠️ 請輸入有效的支出金額！");
+    return;
+  }
+
+  try {
+    const storeName = document.getElementById("storeInfo").innerText.split("（")[0] || "";
+    const operator = document.getElementById("salesInput")?.value || "";
+
+    const res = await fetch(API_URL, {
+      method: "POST",
+      body: JSON.stringify({
+        action: "addExpense",
+        category: category,
+        amount: Number(amount),
+        note: note,
+        storeCode: POS_STORE,
+        storeName: storeName,
+        operator: operator
+      })
+    });
+    
+    const result = await res.json();
+
+    if (result.status === "success") {
+      alert("✅ 支出記帳成功！");
+      document.getElementById("expenseAmount").value = "";
+      document.getElementById("expenseNote").value = "";
+      loadExpenses(); // 重新整理列表
+    } else {
+      alert(result.message || "記帳失敗");
+    }
+  } catch (e) {
+    console.error(e);
+    alert("⚠️ 網路異常，記帳失敗");
+  }
+}
+
+async function loadExpenses() {
+  const list = document.getElementById("expenseList");
+  if (!list) return;
+  
+  list.innerHTML = `<div class="empty" style="color:#777; text-align:center; padding:20px;">載入中...</div>`;
+  try {
+    const res = await fetch(`${API_URL}?action=getExpenses&storeCode=${POS_STORE}`);
+    const result = await res.json();
+
+    if (result.status !== "success" || !result.data || result.data.length === 0) {
+      list.innerHTML = `<div class="empty" style="color:#777; text-align:center; padding:20px;">目前沒有支出紀錄</div>`;
+      return;
+    }
+
+    list.innerHTML = result.data.map(item => `
+      <div class="customer-card" style="padding:12px; background:#222235; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <div style="font-weight:bold; font-size:0.95rem; color:#ff4d6d;">
+            -$${formatNumber(item.amount)} 
+            <span style="font-size:0.8rem; color:#aaa; font-weight:normal; margin-left:6px;">[${item.category}]</span>
+          </div>
+          <div class="customer-card-info" style="color:#888; font-size:0.8rem; margin-top:4px;">
+            ${item.note ? item.note + " • " : ""}經手：${item.operator || "未填"} • <span style="color:#777;">${item.date}</span>
+          </div>
+        </div>
+      </div>
+    `).join("");
+  } catch (e) {
+    console.error(e);
+    list.innerHTML = `<div class="empty" style="color:#777; text-align:center; padding:20px;">載入支出紀錄失敗</div>`;
+  }
+}
