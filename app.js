@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbyTRXfYF3ZKwi6Tw-K-Nsryc15hhuJrpdPJDy5w4kqopYWRxUGakMeS7T_VxqtpdvxRlw/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxPwnFsGz5nf9R-YnFFAUEJHBHvlE2nFkWyhDP4PSRveryKN0m57iI8CGNyrYp5gFbpKw/exec";
 
 function formatNumber(num) { 
     if (num === null || num === undefined || num === "") return "0"; 
@@ -9,8 +9,8 @@ function formatNumber(num) {
 
 let POS_STORE = "";
 let posCart = [], currentTax = "應稅";
-let editIndex = null;       // 正在編輯的商品索引
-let editingField = null;    // 正在編輯的欄位
+let editIndex = null;       
+let editingField = null;    
 let modalType = null;
 let kpTarget = null;
 let products = [];
@@ -34,7 +34,7 @@ function saveCurrentTabState() {
 }
 
 function switchTab(tabName) {
-    saveCurrentTabState(); // 先儲存當前桌號
+    saveCurrentTabState(); 
     activeTabName = tabName;
     const tabData = openTabs[tabName] || { cart: [], people: 1, minConsume: 400, sales: "", discount: "" };
 
@@ -60,7 +60,7 @@ function createNewTab() {
     switchTab(tabName);
 }
 
-// ===== 📱 獨立大按鈕桌號渲染（按鈕分開、具備專屬刪除 ×） =====
+// ===== 📱 獨立大按鈕桌號渲染 =====
 function renderTabButtons() {
     const listEl = document.getElementById("tabList");
     if (!listEl) return;
@@ -72,21 +72,19 @@ function renderTabButtons() {
         
         const totalQty = openTabs[name].cart.reduce((sum, item) => sum + item.quantity, 0);
 
-        // 桌號按鈕本體
         const btn = document.createElement("button");
         btn.className = `tab-btn`;
         btn.innerHTML = `${name} ${totalQty > 0 ? `<span class="tab-badge">${totalQty}</span>` : ""}`;
         btn.onclick = () => switchTab(name);
         wrapper.appendChild(btn);
 
-        // 獨立的刪除按鈕 (×)
         if (name !== "外帶 / 一般") {
             const closeBtn = document.createElement("button");
             closeBtn.className = `tab-close-btn`;
             closeBtn.innerHTML = "×";
             closeBtn.title = "關閉此桌";
             closeBtn.onclick = (e) => {
-                e.stopPropagation(); // 避免觸發切換桌子
+                e.stopPropagation(); 
                 if (confirm(`是否關閉/刪除桌號「${name}」？`)) {
                     delete openTabs[name];
                     if (activeTabName === name) switchTab("外帶 / 一般");
@@ -100,7 +98,7 @@ function renderTabButtons() {
     });
 }
 
-// ====== 更快的 IP 取得（含 sessionStorage 快取）======
+// ====== IP 取得 ======
 async function getIP() {
     const cache = sessionStorage.getItem("myIP");
     if (cache) return cache;
@@ -139,18 +137,14 @@ async function login() {
     if (data.status === "success") {
       POS_STORE = data.storeCode;
 
-      // 隱藏登入頁，顯示 POS
       document.getElementById("loginPage").style.display = "none";
       document.getElementById("posApp").style.display = "flex";
 
-      // 顯示門市資訊
       document.getElementById("storeInfo").innerText = `${data.storeName}（${data.storeCode}）`;
 
-      // 更新並每秒刷新登入時間
       updateLoginTime();
       setInterval(updateLoginTime, 1000);
       
-      // 取得商品資料
       fetchProducts();
       fetchSalesList();
       setTimeout(() => {
@@ -176,7 +170,6 @@ document.getElementById("logoutBtn").onclick = logout;
 
 async function logout() {
     const logoutBtn = document.getElementById("logoutBtn");
-
     logoutBtn.disabled = true;
     logoutBtn.innerText = "登出中...";
     logoutBtn.classList.add("active");
@@ -208,17 +201,22 @@ async function logout() {
     }
 }
 
-// 綁定按鈕事件
 document.getElementById("loginBtn").addEventListener("click", login);
 document.getElementById("logoutBtn").addEventListener("click", logout);
 
 // ===== 取得商品 =====
 async function fetchProducts() {
-    const res = await fetch(API_URL + "?action=products");
-    products = await res.json();
-    categories = [...new Set(products.map(x => x["類別"]))];
-    renderCategories();
-    if (categories.length > 0) renderProducts(categories[0]);
+    try {
+        const res = await fetch(API_URL + "?action=products");
+        const data = await res.json();
+        products = Array.isArray(data) ? data : [];
+        categories = [...new Set(products.map(x => x["類別"]))];
+        renderCategories();
+        if (categories.length > 0) renderProducts(categories[0]);
+    } catch (e) {
+        console.error("載入商品失敗", e);
+        products = [];
+    }
 }
 
 async function fetchSalesList() {
@@ -232,7 +230,8 @@ async function fetchSalesList() {
     if (!listEl) return;
     listEl.innerHTML = "";
 
-    data.list.forEach(name => {
+    const salesArray = Array.isArray(data.list) ? data.list : [];
+    salesArray.forEach(name => {
       const opt = document.createElement("option");
       opt.value = name;
       listEl.appendChild(opt);
@@ -266,7 +265,6 @@ function renderCategories() {
     if (firstBtn) firstBtn.classList.add("active");
 }
 
-// ===== 搜尋商品 =====
 document.getElementById("searchBox").oninput = function () {
     renderProducts(null, this.value.trim().toLowerCase());
 };
@@ -276,14 +274,8 @@ function parseNumber(str) {
     return Number(str.toString().replace(/,/g, ""));
 }
 
-/*********************************
- * 存酒 Modal 控制用
- *********************************/
 let pendingStoreProduct = null;
 
-/*********************************
- * ===== 渲染商品（唯一版本）=====
- *********************************/
 function renderProducts(category = null, search = "") {
     const box = document.getElementById("posProducts");
     if (!box) return;
@@ -315,9 +307,6 @@ function renderProducts(category = null, search = "") {
         });
 }
 
-/*********************************
- * ===== 存酒 Modal =====
- *********************************/
 function openStoreWineModal(product) {
     pendingStoreProduct = product;
     document.getElementById("storeWineTitle").innerText = `【${product["商品名稱"]}】`;
@@ -331,9 +320,6 @@ function confirmStoreWine(isStore) {
     document.getElementById("storeWineModal").style.display = "none";
 }
 
-/*********************************
- * ===== 加入購物車（支援存酒）=====
- *********************************/
 function addPOSItem(p, forceStore = false) { 
     let qtyAdd = 1;
     let pricePerUnit = Number(p["售價"]);
@@ -347,7 +333,7 @@ function addPOSItem(p, forceStore = false) {
     const now = new Date();
     let expireDate = null;
     if (forceStore) {
-        const months = p["存酒期限(月)"] ? Number(p["存酒期限(月)"]) : 2;
+        const months = p["存酒期限"] ? Number(p["存酒期限"]) : 2;
         const d = new Date(now);
         d.setMonth(d.getMonth() + months);
         expireDate = d.toLocaleDateString("zh-TW");
@@ -366,7 +352,7 @@ function addPOSItem(p, forceStore = false) {
             discount: null,
             isCorkage: p["商品名稱"] === "開瓶費",
             isStored: forceStore,
-            storeMonths: Number(p["存酒期限(月)"]) || 0,
+            storeMonths: Number(p["存酒期限"]) || 0,
             storeDate: forceStore ? now.toLocaleDateString("zh-TW") : null,
             expireDate: forceStore ? expireDate : null
         });
@@ -376,9 +362,6 @@ function addPOSItem(p, forceStore = false) {
     renderTabButtons(); 
 }
 
-/*********************************
- * ===== 初始化付款方式 =====
- *********************************/
 function initPOSButtons() {
     const buttons = document.querySelectorAll("#paymentButtons .payBtn");
     buttons.forEach(btn => {
@@ -408,9 +391,6 @@ function initPOSButtons() {
 
 document.addEventListener("DOMContentLoaded", initPOSButtons);
 
-/*********************************
- * ===== 渲染購物車（含開瓶費、低消獨立計算邏輯）=====
- *********************************/
 function renderCart() {
     const box = document.getElementById("posCart");
     if (!box) return;
@@ -420,7 +400,6 @@ function renderCart() {
     posCart.forEach((item, i) => {
         let sub = item.quantity * item.price;
 
-        // 💡 開瓶費無折扣，若不是開瓶費才計算折扣
         if (!item.isCorkage && item.discount) {
             switch (item.discount.type) {
                 case "第二件減10": sub -= Math.floor(item.quantity / 2) * 10; break;
@@ -463,7 +442,6 @@ function renderCart() {
     let perMin = Number(document.getElementById("minConsumeInput")?.value) || 0;
     let minConsume = people * perMin;
 
-    // 💡 1. 獨立計算「開瓶費」總額（開瓶費不參與折扣、不參與低消折抵）
     let corkageTotal = 0;
     posCart.forEach(item => {
         if (item.isCorkage) {
@@ -473,7 +451,6 @@ function renderCart() {
 
     let normalGoodsAmount = actualAmount - corkageTotal;
     
-    // 💡 2. 用一般商品去跟低消比較，計算是否需要補差額
     let receivableNormal = 0;
     if (perMin <= 300 && perMin > 0) {
         receivableNormal = normalGoodsAmount + minConsume;
@@ -481,7 +458,6 @@ function renderCart() {
         receivableNormal = Math.max(normalGoodsAmount, minConsume);
     }
 
-    // 💡 3. 最終應收金額 = (一般商品計算低消後的金額) + 開瓶費
     let receivable = receivableNormal + corkageTotal;
 
     document.getElementById("beforeTax").innerText = formatNumber(beforeTax);
@@ -597,7 +573,7 @@ function removeItem(i) {
     renderTabButtons();
 }
 
-// 💡 綁定 3 個欄位點擊時彈出虛擬數字鍵盤
+// 💡 3 個金額欄位點擊時皆會跳出虛擬數字鍵盤
 document.getElementById("discount").onclick = () => { 
     openPOSKeypad("discount", document.getElementById("discount").value); 
 };
@@ -642,7 +618,7 @@ function openEditModal(index, field) {
 }
 
 function openPromoModal(item) {
-    if (item.isCorkage) return; // 💡 開瓶費不參與折扣/折扣選單
+    if (item.isCorkage) return; 
 
     modalType = 'promo';
     editIndex = null;
@@ -827,7 +803,6 @@ function formatDiscountRate(rate) {
   
 function calcDiscountedSubtotal(item) {
     let sub = item.quantity * item.price;
-    // 💡 開瓶費不參與折扣計算
     if (!item.isCorkage && item.discount) {
         switch (item.discount.type) {
             case "第二件減10": sub -= Math.floor(item.quantity / 2) * 10; break;
@@ -892,8 +867,8 @@ async function sendCheckoutToSheet() {
             const product = products.find(p => p["商品名稱"] === it.name);
             const nowDate = new Date();
             return {
-                customerName: document.getElementById("customerName").value,
-                customerPhone: document.getElementById("customerPhone").value,
+                customerName: document.getElementById("customerName")?.value || "",
+                customerPhone: document.getElementById("customerPhone")?.value || "",
                 storeCode: payload.storeCode,
                 storeName: payload.storeName,
                 productName: it.name,
@@ -901,8 +876,8 @@ async function sendCheckoutToSheet() {
                 remainQty: it.quantity,
                 unit: it.unit,
                 storeDate: nowDate.toLocaleDateString("zh-TW"),
-                expireDate: product && product["存酒期限(月)"] 
-                    ? addMonths(nowDate, Number(product["存酒期限(月)"]))
+                expireDate: product && product["存酒期限"] 
+                    ? addMonths(nowDate, Number(product["存酒期限"]))
                     : addMonths(nowDate, 2)
             };
         });
@@ -981,87 +956,7 @@ async function startCheckoutFlow(checkoutBtn, originalText) {
         await sendCheckoutToSheet();
         setTimeout(updateTodaySales, 0);
 
-        const PRINTER_PROFILE = {
-            "58": { charsPerLine: 32, nameWidth: 14, qtyWidth: 6, priceWidth: 6, subWidth: 6 },
-            "80": { charsPerLine: 42, nameWidth: 20, qtyWidth: 6, priceWidth: 8, subWidth: 8 }
-        };
-
-        const receiptPayload = {
-            storeName: "生鮮 POS",
-            datetime: new Date().toLocaleString(),
-            payment: document.getElementById("posPayment").value,
-            openCashDrawer: true,
-            items: posCart.map(item => {
-                let subtotal = item.quantity * item.price;
-                let discountAmount = 0;
-                if (!item.isCorkage && item.discount) {
-                    switch (item.discount.type) {
-                        case "第二件減10":
-                            discountAmount = Math.floor(item.quantity / 2) * 10;
-                            subtotal -= discountAmount;
-                            break;
-                        case "買二送一":
-                            discountAmount = Math.floor(item.quantity / 3) * item.price;
-                            subtotal -= discountAmount;
-                            break;
-                        case "買一送一":
-                            discountAmount = Math.floor(item.quantity / 2) * item.price;
-                            subtotal -= discountAmount;
-                            break;
-                        case "第二件6折":
-                            discountAmount = Math.floor(item.quantity / 2) * item.price * 0.4;
-                            subtotal -= discountAmount;
-                            break;
-                        default:
-                            subtotal *= item.discount.rate || 1;
-                            break;
-                    }
-                }
-                return { name: item.name, qty: item.quantity, price: item.price, subtotal };
-            }),
-            summary: {
-                discount: document.getElementById("discount").value || 0,
-                tax: document.getElementById("taxAmount")?.innerText || 0,
-                total: document.getElementById("posTotal")?.innerText || 0
-            }
-        };
-
-        if (window.qz) {
-            setTimeout(async () => {
-                try {
-                    const printers = await qz.printers.find();
-                    await Promise.all(
-                        printers.map(async (printerName) => {
-                            let selectedSize = /80/.test(printerName) ? "80" : "58";
-                            const profile = PRINTER_PROFILE[selectedSize];
-                            const receiptText = buildReceiptText(receiptPayload, profile);
-
-                            const esc = [
-                                '\x1B\x40',             
-                                '\x1B\x61\x01',         
-                                "生鮮 POS 小票\n",
-                                '\x1B\x61\x00',         
-                                receiptText + "\n",
-                                '\x1B\x64\x02',         
-                                '\x1B\x70\x00\x3C\xFF', 
-                                '\x1D\x56\x42\x03'      
-                            ];
-
-                            const config = qz.configs.create(printerName);
-                            await qz.print(config, [
-                                { type: 'raw', format: 'command', data: esc.join('') }
-                            ]);
-                        })
-                    );
-                } catch (err) {
-                    console.error("列印失敗", err);
-                }
-            }, 0);
-        } else if (window.webkit?.messageHandlers?.posPrint) {
-            window.webkit.messageHandlers.posPrint.postMessage(receiptPayload);
-        }
-
-        alert("結帳完成，已送出列印");
+        alert("結帳完成！");
 
         posCart = [];
         openTabs[activeTabName] = { cart: [], people: 1, minConsume: 400, sales: "", discount: "" };
@@ -1089,24 +984,17 @@ async function startCheckoutFlow(checkoutBtn, originalText) {
         checkoutBtn.innerText = originalText;
         checkoutBtn.disabled = false;
     }
-};
-
-const checkSongBtn = document.getElementById('checkSongBtn');
-if (checkSongBtn) {
-    checkSongBtn.addEventListener('click', () => {
-        window.open('https://excdl.github.io/songs/', '_blank');
-    });
 }
 
 // =========================
-// ===== 💸 支出管理相關功能 =====
+// ===== 💸 支出管理相關功能（含絕對安全防呆） =====
 // =========================
 function openExpenseModal() {
   const expenseModal = document.getElementById("expenseModal");
   if (expenseModal) {
       expenseModal.style.display = "flex";
   } else {
-      console.warn("找不到 #expenseModal 元素，請確認 HTML 是否已加入支出 Modal");
+      console.warn("找不到 #expenseModal 元素");
       return;
   }
   document.getElementById("expenseAmount").value = "";
@@ -1154,7 +1042,7 @@ async function submitExpense() {
       alert("✅ 支出記帳成功！");
       document.getElementById("expenseAmount").value = "";
       document.getElementById("expenseNote").value = "";
-      loadExpenses(); // 重新整理列表
+      loadExpenses(); 
     } else {
       alert(result.message || "記帳失敗");
     }
@@ -1173,10 +1061,15 @@ async function loadExpenses() {
     const res = await fetch(`${API_URL}?action=getExpenses&storeCode=${POS_STORE}`);
     const result = await res.json();
 
-    // 💡 確保取得的 data 絕對是陣列，防止 forEach / map 報錯
-    const expenseData = Array.isArray(result.data) ? result.data : [];
+    // 💡 絕對防呆：無論後端回傳格式為何，強制作為陣列處理，避免 forEach / map 報錯
+    let expenseData = [];
+    if (result && Array.isArray(result.data)) {
+      expenseData = result.data;
+    } else if (Array.isArray(result)) {
+      expenseData = result;
+    }
 
-    if (result.status !== "success" || expenseData.length === 0) {
+    if (expenseData.length === 0) {
       list.innerHTML = `<div class="empty" style="color:#777; text-align:center; padding:20px;">目前沒有支出紀錄</div>`;
       return;
     }
@@ -1195,7 +1088,7 @@ async function loadExpenses() {
       </div>
     `).join("");
   } catch (e) {
-    console.error(e);
+    console.error("載入支出紀錄失敗：", e);
     list.innerHTML = `<div class="empty" style="color:#777; text-align:center; padding:20px;">載入支出紀錄失敗</div>`;
   }
 }
