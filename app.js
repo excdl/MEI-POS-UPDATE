@@ -1082,7 +1082,7 @@ async function loadExpenses() {
       <div class="customer-card" style="padding:12px; background:#222235; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
         <div>
           <div style="font-weight:bold; font-size:0.95rem; color:#ff4d6d;">
-            -$${formatNumber(item.amount)} 
+            $${formatNumber(item.amount)} 
             <span style="font-size:0.8rem; color:#aaa; font-weight:normal; margin-left:6px;">[${item.category}]</span>
           </div>
           <div class="customer-card-info" style="color:#888; font-size:0.8rem; margin-top:4px;">
