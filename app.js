@@ -1011,7 +1011,7 @@ function closeExpenseModal() {
   }
 }
 
-async function submitExpense() {
+aasync function submitExpense() {
   const category = document.getElementById("expenseCategory")?.value || "其他";
   const amount = document.getElementById("expenseAmount")?.value.trim() || "";
   const note = document.getElementById("expenseNote")?.value.trim() || "";
@@ -1025,10 +1025,10 @@ async function submitExpense() {
     const storeName = document.getElementById("storeInfo")?.innerText.split("（")[0] || "";
     const operator = document.getElementById("salesInput")?.value || "";
 
-    const res = await fetch(API_URL, {
+    // 💡 修正處：在 URL 後方加上 ?action=addExpense
+    const res = await fetch(`${API_URL}?action=addExpense`, {
       method: "POST",
       body: JSON.stringify({
-        action: "addExpense",
         category: category,
         amount: Number(amount),
         note: note,
