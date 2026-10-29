@@ -1011,7 +1011,7 @@ function closeExpenseModal() {
   }
 }
 
-aasync function submitExpense() {
+async function submitExpense() {
   const category = document.getElementById("expenseCategory")?.value || "其他";
   const amount = document.getElementById("expenseAmount")?.value.trim() || "";
   const note = document.getElementById("expenseNote")?.value.trim() || "";
