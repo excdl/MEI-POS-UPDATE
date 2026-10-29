@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbxhGjRKXRrSxoDKWvUvE712A7x_4ycivFSydCyn-jwF47J99uGJi1X2ACgtNDFMd3EI7A/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxVgvPZshoJ3Wb-Pk0jxbnfJz6B-yIKFGsGBWVyb_Ck1Eu-YHNB0yB-kNXTzry2zjzU1A/exec";
 
 function formatNumber(num) { 
     if (num === null || num === undefined || num === "") return "0"; 
@@ -522,6 +522,7 @@ async function updateTodaySales() {
         `<b>今日營業概況</b>
 —————————————
 總額：${data.total.toFixed(0)} 元
+支出：${(data.totalExpense || 0).toFixed(0)} 元
 現金：${data.cash.toFixed(0)} 元
 刷卡：${data.credit.toFixed(0)} 元
 Line Pay：${data.linePay.toFixed(0)} 元`;
