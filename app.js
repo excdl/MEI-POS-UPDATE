@@ -1046,6 +1046,7 @@ async function submitExpense() {
       document.getElementById("expenseAmount").value = "";
       document.getElementById("expenseNote").value = "";
       loadExpenses(); 
+      updateTodaySales(); // 💡 記帳成功後立即重新整理今日營業概況
     } else {
       alert((result && result.message) || "記帳失敗");
     }
