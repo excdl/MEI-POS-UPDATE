@@ -1025,7 +1025,7 @@ async function submitExpense() {
     const storeName = document.getElementById("storeInfo")?.innerText.split("（")[0] || "";
     const operator = document.getElementById("salesInput")?.value || "";
 
-    // 💡 修正處：在 URL 後方加上 ?action=addExpense
+    // 💡 確保 URL 後方帶有 ?action=addExpense 讓後端 doPost 正確攔截
     const res = await fetch(`${API_URL}?action=addExpense`, {
       method: "POST",
       body: JSON.stringify({
