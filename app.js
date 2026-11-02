@@ -1096,3 +1096,9 @@ async function loadExpenses() {
     list.innerHTML = `<div class="empty" style="color:#777; text-align:center; padding:20px;">載入支出紀錄失敗</div>`;
   }
 }
+const checkSongBtn = document.getElementById('checkSongBtn');
+if (checkSongBtn) {
+    checkSongBtn.addEventListener('click', () => {
+        window.open('https://excdl.github.io/songs/', '_blank');
+    });
+}
