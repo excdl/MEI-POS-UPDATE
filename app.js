@@ -1102,9 +1102,4 @@ if (checkSongBtn) {
         window.open('https://excdl.github.io/songs/', '_blank');
     });
 }
-const checkInventoryBtn = document.getElementById('checkInventoryBtn');
-if (checkInventoryBtn) {
-    checkInventoryBtn.addEventListener('click', () => {
-        window.open('https://script.google.com/macros/s/AKfycbwzPoldx5z4_jx1awoEIOocPiZcgyqmSrqZiJ3rb3FlyKmMPfJzNv5zpXoD_nNsWOnnVg/exec', '_blank');
-    });
-}
+
