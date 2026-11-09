@@ -15,6 +15,7 @@ let modalType = null;
 let kpTarget = null;
 let products = [];
 let categories = [];
+let isReturnMode = false; // 🔄 新增：是否處於退貨模式旗標
 
 // ===== 桌號暫存系統 (Open Tabs) =====
 let openTabs = {
@@ -76,7 +77,7 @@ function renderTabButtons() {
 
         const btn = document.createElement("button");
         btn.className = `tab-btn`;
-        btn.innerHTML = `${name} ${totalQty > 0 ? `<span class="tab-badge">${totalQty}</span>` : ""}`;
+        btn.innerHTML = `${name} ${totalQty !== 0 ? `<span class="tab-badge">${totalQty}</span>` : ""}`;
         btn.onclick = () => switchTab(name);
         wrapper.appendChild(btn);
 
@@ -404,10 +405,10 @@ function renderCart() {
 
         if (!item.isCorkage && item.discount) {
             switch (item.discount.type) {
-                case "第二件減10": sub -= Math.floor(item.quantity / 2) * 10; break;
-                case "買二送一": sub -= Math.floor(item.quantity / 3) * item.price; break;
-                case "買一送一": sub -= Math.floor(item.quantity / 2) * item.price; break;
-                case "第二件6折": sub -= Math.floor(item.quantity / 2) * item.price * 0.4; break;
+                case "第二件減10": sub -= Math.floor(Math.abs(item.quantity) / 2) * 10 * (item.quantity < 0 ? -1 : 1); break;
+                case "買二送一": sub -= Math.floor(Math.abs(item.quantity) / 3) * item.price * (item.quantity < 0 ? -1 : 1); break;
+                case "買一送一": sub -= Math.floor(Math.abs(item.quantity) / 2) * item.price * (item.quantity < 0 ? -1 : 1); break;
+                case "第二件6折": sub -= Math.floor(Math.abs(item.quantity) / 2) * item.price * 0.4 * (item.quantity < 0 ? -1 : 1); break;
                 default: sub *= item.discount.rate || 1; break;
             }
         }
@@ -421,11 +422,11 @@ function renderCart() {
               ${item.name}
               ${item.isStored ? "<b style='color:#27ae60;'>🧊存酒</b>" : ""}
             </span>
-            <span class="qty" onclick="openEditModal(${i},'quantity')">
-              ${item.quantity.toFixed(0)} ${item.unit}
+            <span class="qty" onclick="openEditModal(${i},'quantity')" style="${item.quantity < 0 ? 'color: #e74c3c; font-weight: bold;' : ''}">
+              ${item.quantity.toFixed(item.unit === '斤' ? 2 : 0)} ${item.unit} ${item.quantity < 0 ? '(退)' : ''}
             </span>
             <span class="price" onclick="openEditModal(${i},'price')">${item.price}</span>
-            <span class="subtotal">${formatNumber(Math.round(sub))}</span>
+            <span class="subtotal" style="${sub < 0 ? 'color: #e74c3c;' : ''}">${formatNumber(Math.round(sub))}</span>
             <span class="remove">
               <button onclick="removeItem(${i})">刪</button>
             </span>
@@ -474,7 +475,7 @@ function renderCart() {
 
     const alertEl = document.getElementById("minConsumeAlert");
     const checkoutBtn = document.getElementById("posCheckout");
-    if (normalGoodsAmount < minConsume && minConsume > 0) {
+    if (normalGoodsAmount < minConsume && minConsume > 0 && receivable > 0) {
         if (alertEl) alertEl.style.display = "block";
         posTotalEl.style.color = "#c0392b";
         checkoutBtn.classList.add("minAlert");
@@ -490,7 +491,16 @@ function updateChange() {
     const cash = Number(document.getElementById("cashInput").value) || 0;
     const totalEl = document.getElementById("posTotal");
     const receivable = Number(totalEl.dataset.value || totalEl.innerText.replace(/,/g, "")) || 0;
-    const change = paymentMethod === "現金" ? Math.max(cash - receivable, 0) : 0;
+    
+    // 如果結帳總額為負數（純退貨找零情況），讓找零等於退款金額
+    let change = 0;
+    if (paymentMethod === "現金") {
+        if (receivable < 0) {
+            change = Math.abs(receivable);
+        } else {
+            change = Math.max(cash - receivable, 0);
+        }
+    }
     document.getElementById("changeOut").innerText = formatNumber(change);
 }
 
@@ -587,10 +597,12 @@ document.getElementById("expenseAmount").onclick = () => {
     openPOSKeypad("expenseAmount", document.getElementById("expenseAmount").value); 
 };
 
+// 🔄 數量/單價編輯視窗 (已內建退貨模式切換)
 function openEditModal(index, field) {
     editIndex = index;
     editingField = field;
     modalType = "edit";
+    isReturnMode = false; // 每次開啟預設為一般正數
 
     const modal = document.getElementById("editModal");
     const promoDiv = document.getElementById("promoButtons");
@@ -614,10 +626,50 @@ function openEditModal(index, field) {
     modalInput.readOnly = false;
     modalActions.style.display = 'flex';
 
-    modalInput.value = posCart[index]?.[field] ?? "";
-    document.getElementById("modalProductName").innerText = "輸入";
-    document.getElementById("modalProductName").style.color = "#fff";
+    // 檢查現有數值是否為負數（退貨狀態）
+    let currentVal = posCart[index]?.[field] ?? 1;
+    if (currentVal < 0) {
+        isReturnMode = true;
+        currentVal = Math.abs(currentVal);
+    }
+    
+    modalInput.value = currentVal;
+    
+    // 動態在 modal 中插入或更新「退貨切換按鈕」
+    let returnToggleContainer = document.getElementById("returnToggleContainer");
+    if (!returnToggleContainer) {
+        returnToggleContainer = document.createElement("div");
+        returnToggleContainer.id = "returnToggleContainer";
+        returnToggleContainer.style.cssText = "margin-bottom: 10px; text-align: center;";
+        returnToggleContainer.innerHTML = `
+            <button id="modalReturnBtn" type="button" onclick="toggleReturnMode()" style="width: 100%; padding: 10px; font-size: 1rem; font-weight: bold; border-radius: 8px; border: none; background: #33334d; color: #fff; cursor: pointer; transition: 0.2s;">
+               🔄 切換退貨模式 (目前: 正常)
+            </button>
+        `;
+        modalInput.parentNode.insertBefore(returnToggleContainer, modalInput);
+    }
+    updateReturnBtnUI();
+
+    document.getElementById("modalProductName").innerText = `修改 ${posCart[index]?.name || ''} 數量`;
     modal.style.display = "flex";
+}
+
+// 🔄 切換退貨模式狀態
+function toggleReturnMode() {
+    isReturnMode = !isReturnMode;
+    updateReturnBtnUI();
+}
+
+function updateReturnBtnUI() {
+    const btn = document.getElementById("modalReturnBtn");
+    if (!btn) return;
+    if (isReturnMode) {
+        btn.style.background = "#c0392b"; // 紅色警示
+        btn.innerText = "🔄 退貨模式【已啟動 (負數)】";
+    } else {
+        btn.style.background = "#33334d"; // 預設深色
+        btn.innerText = "🔄 切換退貨模式 (目前: 正常)";
+    }
 }
 
 function openPromoModal(item) {
@@ -631,6 +683,11 @@ function openPromoModal(item) {
 
     document.getElementById("numpad").style.display = 'none';
     document.getElementById("modalInput").style.display = 'none';
+    
+    // 隱藏退貨切換按鈕
+    const returnToggleContainer = document.getElementById("returnToggleContainer");
+    if (returnToggleContainer) returnToggleContainer.style.display = 'none';
+
     promoDiv.style.display = 'grid';
     promoDiv.innerHTML = '';
     document.querySelector("#editModal .modalActions").style.display = 'none';
@@ -679,12 +736,19 @@ function backspace() {
 
 function confirmEdit() {
     const val = document.getElementById("modalInput").value;
+    let numVal = Number(val) || 0;
+
+    // 根據退貨模式強制轉為負數
+    if (isReturnMode && numVal > 0) {
+        numVal = -numVal;
+    }
 
     if (editIndex !== null && editingField === 'quantity' && posCart[editIndex].unit === '斤') {
         const [j = 0, l = 0, q = 0] = val.split('.').map(Number);
-        posCart[editIndex].quantity = j + l / 16 + q / 160;
+        let calcQty = j + l / 16 + q / 160;
+        posCart[editIndex].quantity = isReturnMode ? -calcQty : calcQty;
     } else if (editIndex !== null) {
-        posCart[editIndex][editingField] = Number(val);
+        posCart[editIndex][editingField] = numVal;
     }
 
     closeModal();
@@ -703,6 +767,9 @@ function closeModal() {
     document.getElementById("numpad").style.display = 'grid';
     document.getElementById("promoButtons").style.display = 'none';
     document.getElementById("editCloseBtn").style.display = 'none';
+
+    const returnToggleContainer = document.getElementById("returnToggleContainer");
+    if (returnToggleContainer) returnToggleContainer.style.display = 'block';
 }
 
 function openPOSKeypad(type, value = "0") {
@@ -768,21 +835,6 @@ document.getElementById("peopleCount").addEventListener("input", () => {
 });
 document.getElementById("salesInput")?.addEventListener("input", saveCurrentTabState);
 
-function showMinConsumeConfirm(actual, min) {
-  document.getElementById("minConsumeConfirmText").innerHTML =
-    `實際消費 ${formatNumber(actual)} 元<br>低消 ${formatNumber(min)} 元<br>需補差 <b style="color:#c0392b">${formatNumber(min-actual)}</b> 元`;
-  document.getElementById("minConsumeConfirm").style.display="flex";
-}
-function cancelMinConsumeCheckout(){
-  allowMinConsumeCheckout = false;
-  document.getElementById("minConsumeConfirm").style.display="none";
-}
-function confirmMinConsumeCheckout(){
-  allowMinConsumeCheckout = true;
-  document.getElementById("minConsumeConfirm").style.display="none";
-  document.getElementById("posCheckout").click();
-}
-
 function setTax(t) {
     currentTax = t;
     document.getElementById("taxIncluded").classList.toggle('active', t === "應稅");
@@ -808,10 +860,10 @@ function calcDiscountedSubtotal(item) {
     let sub = item.quantity * item.price;
     if (!item.isCorkage && item.discount) {
         switch (item.discount.type) {
-            case "第二件減10": sub -= Math.floor(item.quantity / 2) * 10; break;
-            case "買二送一": sub -= Math.floor(item.quantity / 3) * item.price; break;
-            case "買一送一": sub -= Math.floor(item.quantity / 2) * item.price; break;
-            case "第二件6折": sub -= Math.floor(item.quantity / 2) * item.price * 0.4; break;
+            case "第二件減10": sub -= Math.floor(Math.abs(item.quantity) / 2) * 10 * (item.quantity < 0 ? -1 : 1); break;
+            case "買二送一": sub -= Math.floor(Math.abs(item.quantity) / 3) * item.price * (item.quantity < 0 ? -1 : 1); break;
+            case "買一送一": sub -= Math.floor(Math.abs(item.quantity) / 2) * item.price * (item.quantity < 0 ? -1 : 1); break;
+            case "第二件6折": sub -= Math.floor(Math.abs(item.quantity) / 2) * item.price * 0.4 * (item.quantity < 0 ? -1 : 1); break;
             case "折扣": sub *= item.discount.rate; break;
         }
     }
@@ -899,46 +951,11 @@ document.getElementById("posCheckout").onclick = async function () {
 
     const originalText = checkoutBtn.innerText;
     checkoutBtn.disabled = true;
-    checkoutBtn.innerText = "結帳中...";
+    checkoutBtn.innerText = "結帳/退款處理中...";
 
     const paymentMethod = document.getElementById("posPayment").value;
     if (!paymentMethod) {
         alert("請先選擇付款方式！");
-        checkoutBtn.innerText = originalText;
-        checkoutBtn.disabled = false;
-        return;
-    }
-
-    let actual = parseNumber(document.getElementById("afterTax").innerText) - (Number(document.getElementById("discount").value) || 0);
-    let people = Number(document.getElementById("peopleCount")?.value) || 0;
-    let perMin = Number(document.getElementById("minConsumeInput")?.value) || 0;
-    let min = people * perMin;
-
-    let finalAmount;
-
-    if (perMin <= 300 && perMin > 0) {
-        finalAmount = actual + min;
-    } else {
-        if (actual < min && !allowMinConsumeCheckout) {
-            const message = `您的消費金額為 ${actual} 元，低於最低消費額 ${min} 元，是否確認結帳？`;
-            if (confirm(message)) {
-                allowMinConsumeCheckout = true;
-                finalAmount = min;
-            } else {
-                checkoutBtn.innerText = originalText;
-                checkoutBtn.disabled = false;
-                return;
-            }
-        } else {
-            finalAmount = Math.max(actual, min);
-        }
-    }
-        
-    allowMinConsumeCheckout = false; 
-    const discountVal = Number(document.getElementById("discount").value) || 0;
-
-    if (finalAmount <= 0 && discountVal <= 0) {
-        alert("❌ 結帳總額為 0，無法結帳！");
         checkoutBtn.innerText = originalText;
         checkoutBtn.disabled = false;
         return;
@@ -959,7 +976,7 @@ async function startCheckoutFlow(checkoutBtn, originalText) {
         await sendCheckoutToSheet();
         setTimeout(updateTodaySales, 0);
 
-        alert("結帳完成！");
+        alert("結帳 / 退貨退款完成！");
 
         posCart = [];
         openTabs[activeTabName] = { cart: [], people: 1, minConsume: 400, sales: "", discount: "" };
@@ -982,15 +999,15 @@ async function startCheckoutFlow(checkoutBtn, originalText) {
         checkoutBtn.disabled = false;
 
     } catch (error) {
-        console.error("結帳過程中發生錯誤：", error);
-        alert("結帳失敗，請重試。");
+        console.error("交易處理過程中發生錯誤：", error);
+        alert("處理失敗，請重試。");
         checkoutBtn.innerText = originalText;
         checkoutBtn.disabled = false;
     }
 }
 
 // =========================
-// ===== 💸 支出管理相關功能（已加入全面防呆） =====
+// ===== 💸 支出管理相關功能 =====
 // =========================
 function openExpenseModal() {
   const expenseModal = document.getElementById("expenseModal");
@@ -1026,7 +1043,6 @@ async function submitExpense() {
     const storeName = document.getElementById("storeInfo")?.innerText.split("（")[0] || "";
     const operator = document.getElementById("salesInput")?.value || "";
 
-    // 💡 確保 URL 後方帶有 ?action=addExpense 讓後端 doPost 正確攔截
     const res = await fetch(`${API_URL}?action=addExpense`, {
       method: "POST",
       body: JSON.stringify({
@@ -1046,7 +1062,7 @@ async function submitExpense() {
       document.getElementById("expenseAmount").value = "";
       document.getElementById("expenseNote").value = "";
       loadExpenses(); 
-      updateTodaySales(); // 💡 記帳成功後立即重新整理今日營業概況
+      updateTodaySales(); 
     } else {
       alert((result && result.message) || "記帳失敗");
     }
@@ -1065,7 +1081,6 @@ async function loadExpenses() {
     const res = await fetch(`${API_URL}?action=getExpenses&storeCode=${POS_STORE}`);
     const result = await res.json();
 
-    // 💡 絕對安全的防呆，確保 result.data 或 result 轉成陣列
     let expenseData = [];
     if (result && Array.isArray(result.data)) {
       expenseData = result.data;
@@ -1096,10 +1111,14 @@ async function loadExpenses() {
     list.innerHTML = `<div class="empty" style="color:#777; text-align:center; padding:20px;">載入支出紀錄失敗</div>`;
   }
 }
+
 const checkSongBtn = document.getElementById('checkSongBtn');
 if (checkSongBtn) {
     checkSongBtn.addEventListener('click', () => {
         window.open('https://excdl.github.io/songs/', '_blank');
     });
 }
+  
+
+
 
