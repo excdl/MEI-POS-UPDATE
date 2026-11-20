@@ -1009,6 +1009,58 @@ async function startCheckoutFlow(checkoutBtn, originalText) {
 // =========================
 // ===== 💸 支出管理相關功能 =====
 // =========================
+const EXPENSE_NOTE_MAP = {
+  "進貨成本": ["蔬菜一批", "檸檬", "調味料"],
+  "房租水電": ["房租", "水費", "電費", "瓦斯費"],
+  "設備維修": ["製冰機", "換濾心"],
+  "雜支零用": ["廚房用品", "其他支出"]
+};
+
+function updateExpenseNoteOptions() {
+  const categoryEl = document.getElementById("expenseCategory");
+  const selectEl = document.getElementById("expenseNoteSelect");
+  const noteInput = document.getElementById("expenseNote");
+  if (!categoryEl || !selectEl || !noteInput) return;
+
+  const items = EXPENSE_NOTE_MAP[categoryEl.value] || [];
+  selectEl.innerHTML = "";
+
+  const defaultOpt = document.createElement("option");
+  defaultOpt.value = "";
+  defaultOpt.textContent = "-- 請選擇品項說明（或於下方自行輸入）--";
+  selectEl.appendChild(defaultOpt);
+
+  items.forEach((item, index) => {
+    const opt = document.createElement("option");
+    opt.value = item;
+    opt.textContent = `${index + 1}. ${item}`;
+    selectEl.appendChild(opt);
+  });
+
+  const customOpt = document.createElement("option");
+  customOpt.value = "__custom__";
+  customOpt.textContent = "✏️ 自行輸入其他說明";
+  selectEl.appendChild(customOpt);
+
+  noteInput.value = "";
+  noteInput.placeholder = items.length
+    ? `支出備註 / 品項說明（例：${items.join("、")}）`
+    : "支出備註 / 品項說明";
+}
+
+function applyExpenseNotePreset() {
+  const selectEl = document.getElementById("expenseNoteSelect");
+  const noteInput = document.getElementById("expenseNote");
+  if (!selectEl || !noteInput) return;
+
+  if (selectEl.value === "__custom__") {
+    noteInput.value = "";
+    noteInput.focus();
+  } else if (selectEl.value !== "") {
+    noteInput.value = selectEl.value;
+  }
+}
+
 function openExpenseModal() {
   const expenseModal = document.getElementById("expenseModal");
   if (expenseModal) {
@@ -1017,8 +1069,9 @@ function openExpenseModal() {
       console.warn("找不到 #expenseModal 元素");
       return;
   }
+  document.getElementById("expenseCategory").value = "進貨成本";
   document.getElementById("expenseAmount").value = "";
-  document.getElementById("expenseNote").value = "";
+  updateExpenseNoteOptions();
   loadExpenses();
 }
 
@@ -1030,7 +1083,7 @@ function closeExpenseModal() {
 }
 
 async function submitExpense() {
-  const category = document.getElementById("expenseCategory")?.value || "其他";
+  const category = document.getElementById("expenseCategory")?.value || "進貨成本";
   const amount = document.getElementById("expenseAmount")?.value.trim() || "";
   const note = document.getElementById("expenseNote")?.value.trim() || "";
 
@@ -1060,7 +1113,7 @@ async function submitExpense() {
     if (result && result.status === "success") {
       alert("✅ 支出記帳成功！");
       document.getElementById("expenseAmount").value = "";
-      document.getElementById("expenseNote").value = "";
+      updateExpenseNoteOptions();
       loadExpenses(); 
       updateTodaySales(); 
     } else {
