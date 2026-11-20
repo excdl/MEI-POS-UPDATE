@@ -201,13 +201,14 @@ button:active:not(:disabled) {
 
 .product-card p {
   margin: 6px auto 0 auto;
-  padding: 2px 8px;
+  padding: 2px 6px;
   border-radius: 6px;
   background: #e0f2fe;
   border: 1px solid #7dd3fc;
-  font-size: 1.12em;
+  font-size: 1em;          /* 稍微縮小一點確保長價格也不會超出卡片 */
   font-weight: 800;
-  color: #0369a1;
+  color: #000000;          /* 👈 改成純黑色 */
+  white-space: nowrap;     /* 👈 強制不換行 */
   font-variant-numeric: tabular-nums;
 }
 
