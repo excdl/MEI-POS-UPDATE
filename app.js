@@ -1,21 +1,22 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbxVgvPZshoJ3Wb-Pk0jxbnfJz6B-yIKFGsGBWVyb_Ck1Eu-YHNB0yB-kNXTzry2zjzU1A/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwg8YQ6h6k83bh5kYl5reySmjSMU-NWVsTrNzwqIWoi3gOAE3e9khw6l2Ir9hKS37Nkog/exec";
 
-function formatNumber(num) { 
-    if (num === null || num === undefined || num === "") return "0"; 
-    let n = Number(num); 
-    if (isNaN(n)) return "0"; 
-    return n.toLocaleString('zh-TW'); 
+function formatNumber(num) {
+    if (num === null || num === undefined || num === "") return "0";
+    let n = Number(num);
+    if (isNaN(n)) return "0";
+    return n.toLocaleString('zh-TW');
 }
 
 let POS_STORE = "";
 let posCart = [], currentTax = "應稅";
-let editIndex = null;       
-let editingField = null;    
+let editIndex = null;
+let editingField = null;
 let modalType = null;
 let kpTarget = null;
 let products = [];
 let categories = [];
-let isReturnMode = false; // 🔄 新增：是否處於退貨模式旗標
+let isReturnMode = false; // 🔄 是否處於退貨模式旗標
+let loginTimeInterval = null;
 
 // ===== 桌號暫存系統 (Open Tabs) =====
 let openTabs = {
@@ -35,7 +36,7 @@ function saveCurrentTabState() {
 }
 
 function switchTab(tabName) {
-    saveCurrentTabState(); 
+    saveCurrentTabState();
     activeTabName = tabName;
     const tabData = openTabs[tabName] || { cart: [], people: 1, minConsume: 400, sales: "", discount: "" };
 
@@ -71,7 +72,7 @@ function renderTabButtons() {
     keys.forEach(name => {
         const wrapper = document.createElement("div");
         wrapper.className = `tab-wrapper ${name === activeTabName ? "active" : ""}`;
-        
+
         const cartItems = (openTabs[name] && openTabs[name].cart) || [];
         const totalQty = cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
 
@@ -87,7 +88,7 @@ function renderTabButtons() {
             closeBtn.innerHTML = "×";
             closeBtn.title = "關閉此桌";
             closeBtn.onclick = (e) => {
-                e.stopPropagation(); 
+                e.stopPropagation();
                 if (confirm(`是否關閉/刪除桌號「${name}」？`)) {
                     delete openTabs[name];
                     if (activeTabName === name) switchTab("外帶 / 一般");
@@ -101,13 +102,16 @@ function renderTabButtons() {
     });
 }
 
-// ====== IP 取得 ======
+// ====== IP 取得（含 0.8 秒超時保護，不卡登入） ======
 async function getIP() {
     const cache = sessionStorage.getItem("myIP");
     if (cache) return cache;
 
     try {
-        const res = await fetch("https://api.ipify.org?format=json");
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 800);
+        const res = await fetch("https://api.ipify.org?format=json", { signal: controller.signal });
+        clearTimeout(timer);
         const data = await res.json();
         sessionStorage.setItem("myIP", data.ip);
         return data.ip;
@@ -117,59 +121,92 @@ async function getIP() {
 }
 
 function updateLoginTime() {
-  const now = new Date();
-  const timeStr = now.toLocaleString("zh-TW", { hour12: false });
-  if (document.getElementById("loginTime")) {
-      document.getElementById("loginTime").innerText = `登入時間：${timeStr}`;
-  }
+    const now = new Date();
+    const timeStr = now.toLocaleString("zh-TW", { hour12: false });
+    if (document.getElementById("loginTime")) {
+        document.getElementById("loginTime").innerText = `登入時間：${timeStr}`;
+    }
+}
+
+function applyProductsData(list) {
+    products = Array.isArray(list) ? list : [];
+    categories = [...new Set(products.map(x => x["類別"]))];
+    renderCategories();
+    if (categories.length > 0) renderProducts(categories[0]);
+}
+
+function renderSalesList(salesArray) {
+    const listEl = document.getElementById("salesList");
+    if (!listEl) return;
+    listEl.innerHTML = "";
+
+    (Array.isArray(salesArray) ? salesArray : []).forEach(name => {
+        const opt = document.createElement("option");
+        opt.value = name;
+        listEl.appendChild(opt);
+    });
+
+    if (document.getElementById("salesInput")) {
+        document.getElementById("salesInput").value = "";
+    }
 }
 
 async function login() {
-  const loginBtn = document.getElementById("loginBtn");
-  loginBtn.innerText = "登入中...";
-  loginBtn.disabled = true;
+    const loginBtn = document.getElementById("loginBtn");
+    loginBtn.innerText = "登入中...";
+    loginBtn.disabled = true;
 
-  const store = document.getElementById("storeInput").value;
-  const pwd = document.getElementById("passwordInput").value;
-  const userIP = await getIP();
+    const store = document.getElementById("storeInput").value;
+    const pwd = document.getElementById("passwordInput").value;
+    const userIP = await getIP();
 
-  try {
-    const res = await fetch(`${API_URL}?action=login&store=${store}&pwd=${pwd}&ip=${userIP}`);
-    const data = await res.json();
+    try {
+        const res = await fetch(`${API_URL}?action=login&store=${encodeURIComponent(store)}&pwd=${encodeURIComponent(pwd)}&ip=${encodeURIComponent(userIP)}`);
+        const data = await res.json();
 
-    if (data.status === "success") {
-      POS_STORE = data.storeCode;
+        if (data.status === "success") {
+            POS_STORE = data.storeCode;
 
-      document.getElementById("loginPage").style.display = "none";
-      document.getElementById("posApp").style.display = "flex";
+            document.getElementById("loginPage").style.display = "none";
+            document.getElementById("posApp").style.display = "flex";
+            document.getElementById("storeInfo").innerText = `${data.storeName}（${data.storeCode}）`;
 
-      document.getElementById("storeInfo").innerText = `${data.storeName}（${data.storeCode}）`;
+            updateLoginTime();
+            if (!loginTimeInterval) {
+                loginTimeInterval = setInterval(updateLoginTime, 1000);
+            }
 
-      updateLoginTime();
-      setInterval(updateLoginTime, 1000);
-      
-      fetchProducts();
-      fetchSalesList();
-      setTimeout(() => {
-        const cashBtn = document.querySelector('#paymentButtons .payBtn[data-pay="現金"]');
-        if (cashBtn) cashBtn.click();
-      }, 0);
+            // 🚀 優先直接使用 login 打包回傳的資料，零額外等待
+            if (Array.isArray(data.products)) {
+                applyProductsData(data.products);
+                try { localStorage.setItem("pos_products_cache", JSON.stringify(data.products)); } catch (e) {}
+            } else {
+                fetchProducts();
+            }
 
-      renderTabButtons();
-    } else {
-      document.getElementById("loginMsg").innerText = data.message;
-      loginBtn.innerText = "登入";
-      loginBtn.disabled = false;
+            if (Array.isArray(data.salesList)) {
+                renderSalesList(data.salesList);
+            } else {
+                fetchSalesList();
+            }
+
+            const cashBtn = document.querySelector('#paymentButtons .payBtn[data-pay="現金"]');
+            if (cashBtn) cashBtn.click();
+
+            renderTabButtons();
+            updateTodaySales();
+        } else {
+            document.getElementById("loginMsg").innerText = data.message;
+            loginBtn.innerText = "登入";
+            loginBtn.disabled = false;
+        }
+    } catch (err) {
+        console.error(err);
+        document.getElementById("loginMsg").innerText = "登入失敗，請稍後再試";
+        loginBtn.innerText = "登入";
+        loginBtn.disabled = false;
     }
-  } catch (err) {
-    console.error(err);
-    document.getElementById("loginMsg").innerText = "登入失敗，請稍後再試";
-    loginBtn.innerText = "登入";
-    loginBtn.disabled = false;
-  }
 }
-
-document.getElementById("logoutBtn").onclick = logout;
 
 async function logout() {
     const logoutBtn = document.getElementById("logoutBtn");
@@ -181,10 +218,15 @@ async function logout() {
     const logoutTime = now.toLocaleString("zh-TW", { hour12: false });
 
     try {
-        await fetch(`${API_URL}?action=logout&store=${POS_STORE}&time=${encodeURIComponent(logoutTime)}`);
+        await fetch(`${API_URL}?action=logout&store=${encodeURIComponent(POS_STORE)}&time=${encodeURIComponent(logoutTime)}`);
     } catch (err) {
         console.error(err);
     } finally {
+        if (loginTimeInterval) {
+            clearInterval(loginTimeInterval);
+            loginTimeInterval = null;
+        }
+
         document.getElementById("posApp").style.display = "none";
         document.getElementById("loginPage").style.display = "flex";
 
@@ -207,15 +249,13 @@ async function logout() {
 document.getElementById("loginBtn").addEventListener("click", login);
 document.getElementById("logoutBtn").addEventListener("click", logout);
 
-// ===== 取得商品 =====
+// ===== 取得商品（備援） =====
 async function fetchProducts() {
     try {
         const res = await fetch(API_URL + "?action=products");
         const data = await res.json();
-        products = Array.isArray(data) ? data : [];
-        categories = [...new Set(products.map(x => x["類別"]))];
-        renderCategories();
-        if (categories.length > 0) renderProducts(categories[0]);
+        applyProductsData(data);
+        try { localStorage.setItem("pos_products_cache", JSON.stringify(products)); } catch (e) {}
     } catch (e) {
         console.error("載入商品失敗", e);
         products = [];
@@ -223,28 +263,15 @@ async function fetchProducts() {
 }
 
 async function fetchSalesList() {
-  try {
-    const res = await fetch(`${API_URL}?action=salesList&storeCode=${POS_STORE}`);
-    const data = await res.json();
-
-    if (data.status !== "success") return;
-
-    const listEl = document.getElementById("salesList");
-    if (!listEl) return;
-    listEl.innerHTML = "";
-
-    const salesArray = Array.isArray(data.list) ? data.list : [];
-    salesArray.forEach(name => {
-      const opt = document.createElement("option");
-      opt.value = name;
-      listEl.appendChild(opt);
-    });
-
-    document.getElementById("salesInput").value = "";
-  } catch (err) {
-    console.error("載入業代失敗", err);
-  }
-}    
+    try {
+        const res = await fetch(`${API_URL}?action=salesList&storeCode=${encodeURIComponent(POS_STORE)}`);
+        const data = await res.json();
+        if (data.status !== "success") return;
+        renderSalesList(data.list);
+    } catch (err) {
+        console.error("載入業代失敗", err);
+    }
+}
 
 // ===== 渲染分類 =====
 function renderCategories() {
@@ -323,14 +350,14 @@ function confirmStoreWine(isStore) {
     document.getElementById("storeWineModal").style.display = "none";
 }
 
-function addPOSItem(p, forceStore = false) { 
+function addPOSItem(p, forceStore = false) {
     let qtyAdd = 1;
     let pricePerUnit = Number(p["售價"]);
     let unit = p["單位"];
-    if (unit === "半斤") { 
-        qtyAdd = 0.5; 
-        pricePerUnit *= 2; 
-        unit = "斤"; 
+    if (unit === "半斤") {
+        qtyAdd = 0.5;
+        pricePerUnit *= 2;
+        unit = "斤";
     }
 
     const now = new Date();
@@ -362,7 +389,7 @@ function addPOSItem(p, forceStore = false) {
     }
 
     renderCart();
-    renderTabButtons(); 
+    renderTabButtons();
 }
 
 function initPOSButtons() {
@@ -387,7 +414,7 @@ function initPOSButtons() {
                 changeOut.innerText = "0";
             }
 
-            renderCart(); 
+            renderCart();
         });
     });
 }
@@ -453,7 +480,7 @@ function renderCart() {
     });
 
     let normalGoodsAmount = actualAmount - corkageTotal;
-    
+
     let receivableNormal = 0;
     if (perMin <= 300 && perMin > 0) {
         receivableNormal = normalGoodsAmount + minConsume;
@@ -471,7 +498,7 @@ function renderCart() {
     posTotalEl.dataset.value = receivable;
     posTotalEl.innerText = formatNumber(receivable);
 
-    updateChange(); 
+    updateChange();
 
     const alertEl = document.getElementById("minConsumeAlert");
     const checkoutBtn = document.getElementById("posCheckout");
@@ -491,8 +518,7 @@ function updateChange() {
     const cash = Number(document.getElementById("cashInput").value) || 0;
     const totalEl = document.getElementById("posTotal");
     const receivable = Number(totalEl.dataset.value || totalEl.innerText.replace(/,/g, "")) || 0;
-    
-    // 如果結帳總額為負數（純退貨找零情況），讓找零等於退款金額
+
     let change = 0;
     if (paymentMethod === "現金") {
         if (receivable < 0) {
@@ -518,83 +544,84 @@ document.getElementById("discount").addEventListener("input", () => {
 document.getElementById("cashInput").addEventListener("input", updateChange);
 
 async function updateTodaySales() {
-  const now = new Date();
-  const formatDate = now.getFullYear() + "/" +
-                     String(now.getMonth() + 1).padStart(2, "0") + "/" +
-                     String(now.getDate()).padStart(2, "0");
+    if (!POS_STORE) return; // 🚀 未登入時不發送空請求
 
-  try {
-    const res = await fetch(`${API_URL}?action=todaySales&storeCode=${POS_STORE}&date=${formatDate}`);
-    const data = await res.json();
+    const now = new Date();
+    const formatDate = now.getFullYear() + "/" +
+                       String(now.getMonth() + 1).padStart(2, "0") + "/" +
+                       String(now.getDate()).padStart(2, "0");
 
-    if(data.status === "success") {
-        document.getElementById("todaySalesDisplay").innerHTML =
-        `<b>今日營業概況</b>
+    try {
+        const res = await fetch(`${API_URL}?action=todaySales&storeCode=${encodeURIComponent(POS_STORE)}&date=${encodeURIComponent(formatDate)}`);
+        const data = await res.json();
+
+        if (data.status === "success") {
+            document.getElementById("todaySalesDisplay").innerHTML =
+            `<b>今日營業概況</b>
 —————————————
 總額：${data.total.toFixed(0)} 元
 支出：${(data.totalExpense || 0).toFixed(0)} 元
 現金：${data.cash.toFixed(0)} 元
 刷卡：${data.credit.toFixed(0)} 元
 Line Pay：${data.linePay.toFixed(0)} 元`;
+        }
+    } catch (err) {
+        console.error("更新今日營業額時發生錯誤：", err);
     }
-  } catch (err) {
-    console.error("更新今日營業額時發生錯誤：", err);
-  }
 }
 
 setInterval(updateTodaySales, 30000);
-updateTodaySales();
 
 document.getElementById("shiftEndBtn").onclick = async function() {
-  if (posCart.length > 0 && !confirm("購物車尚有未結帳商品，是否仍交班？")) return;
+    if (posCart.length > 0 && !confirm("購物車尚有未結帳商品，是否仍交班？")) return;
 
-  const now = new Date();
-  const formatDate = now.getFullYear() + "/" + String(now.getMonth() + 1).padStart(2, "0") + "/" + String(now.getDate()).padStart(2, "0");
-  const formatTime = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0") + ":" + String(now.getSeconds()).padStart(2, "0");
+    const now = new Date();
+    const formatDate = now.getFullYear() + "/" + String(now.getMonth() + 1).padStart(2, "0") + "/" + String(now.getDate()).padStart(2, "0");
+    const formatTime = String(now.getHours()).padStart(2, "0") + ":" + String(now.getMinutes()).padStart(2, "0") + ":" + String(now.getSeconds()).padStart(2, "0");
 
-  const payload = {
-    storeCode: POS_STORE,
-    storeName: document.getElementById("storeInfo").innerText.split("（")[0],
-    shiftDate: formatDate,
-    shiftEndTime: formatTime
-  };
+    const payload = {
+        storeCode: POS_STORE,
+        storeName: document.getElementById("storeInfo").innerText.split("（")[0],
+        shiftDate: formatDate,
+        shiftEndTime: formatTime
+    };
 
-  const res = await fetch(`${API_URL}?action=shiftEnd`, {
-    method: "POST",
-    body: JSON.stringify(payload)
-  });
+    const res = await fetch(`${API_URL}?action=shiftEnd`, {
+        method: "POST",
+        body: JSON.stringify(payload)
+    });
 
-  const data = await res.json();
+    const data = await res.json();
 
-  alert(`交班成功！
+    alert(`交班成功！
 本班總營業額：${data.total} 元
 現金：${data.cash} 元
 刷卡：${data.credit} 元
 Line Pay：${data.linePay} 元`);
 
-  posCart = [];
-  openTabs = { "外帶 / 一般": { cart: [], people: 1, minConsume: 400, sales: "", discount: "" } };
-  switchTab("外帶 / 一般");
-  updateTodaySales(); 
+    posCart = [];
+    openTabs = { "外帶 / 一般": { cart: [], people: 1, minConsume: 400, sales: "", discount: "" } };
+    switchTab("外帶 / 一般");
+    updateTodaySales();
 };
 
 document.getElementById("dailySalesBtn").onclick = updateTodaySales;
 
-function removeItem(i) { 
-    posCart.splice(i, 1); 
-    renderCart(); 
+function removeItem(i) {
+    posCart.splice(i, 1);
+    renderCart();
     renderTabButtons();
 }
 
 // 💡 3 個金額欄位點擊時皆會跳出虛擬數字鍵盤
-document.getElementById("discount").onclick = () => { 
-    openPOSKeypad("discount", document.getElementById("discount").value); 
+document.getElementById("discount").onclick = () => {
+    openPOSKeypad("discount", document.getElementById("discount").value);
 };
-document.getElementById("cashInput").onclick = () => { 
-    openPOSKeypad("cash", document.getElementById("cashInput").value); 
+document.getElementById("cashInput").onclick = () => {
+    openPOSKeypad("cash", document.getElementById("cashInput").value);
 };
-document.getElementById("expenseAmount").onclick = () => { 
-    openPOSKeypad("expenseAmount", document.getElementById("expenseAmount").value); 
+document.getElementById("expenseAmount").onclick = () => {
+    openPOSKeypad("expenseAmount", document.getElementById("expenseAmount").value);
 };
 
 // 🔄 數量/單價編輯視窗 (已內建退貨模式切換)
@@ -602,7 +629,7 @@ function openEditModal(index, field) {
     editIndex = index;
     editingField = field;
     modalType = "edit";
-    isReturnMode = false; // 每次開啟預設為一般正數
+    isReturnMode = false;
 
     const modal = document.getElementById("editModal");
     const promoDiv = document.getElementById("promoButtons");
@@ -626,16 +653,14 @@ function openEditModal(index, field) {
     modalInput.readOnly = false;
     modalActions.style.display = 'flex';
 
-    // 檢查現有數值是否為負數（退貨狀態）
     let currentVal = posCart[index]?.[field] ?? 1;
     if (currentVal < 0) {
         isReturnMode = true;
         currentVal = Math.abs(currentVal);
     }
-    
+
     modalInput.value = currentVal;
-    
-    // 動態在 modal 中插入或更新「退貨切換按鈕」
+
     let returnToggleContainer = document.getElementById("returnToggleContainer");
     if (!returnToggleContainer) {
         returnToggleContainer = document.createElement("div");
@@ -654,7 +679,6 @@ function openEditModal(index, field) {
     modal.style.display = "flex";
 }
 
-// 🔄 切換退貨模式狀態
 function toggleReturnMode() {
     isReturnMode = !isReturnMode;
     updateReturnBtnUI();
@@ -664,16 +688,16 @@ function updateReturnBtnUI() {
     const btn = document.getElementById("modalReturnBtn");
     if (!btn) return;
     if (isReturnMode) {
-        btn.style.background = "#c0392b"; // 紅色警示
+        btn.style.background = "#c0392b";
         btn.innerText = "🔄 退貨模式【已啟動 (負數)】";
     } else {
-        btn.style.background = "#33334d"; // 預設深色
+        btn.style.background = "#33334d";
         btn.innerText = "🔄 切換退貨模式 (目前: 正常)";
     }
 }
 
 function openPromoModal(item) {
-    if (item.isCorkage) return; 
+    if (item.isCorkage) return;
 
     modalType = 'promo';
     editIndex = null;
@@ -683,8 +707,7 @@ function openPromoModal(item) {
 
     document.getElementById("numpad").style.display = 'none';
     document.getElementById("modalInput").style.display = 'none';
-    
-    // 隱藏退貨切換按鈕
+
     const returnToggleContainer = document.getElementById("returnToggleContainer");
     if (returnToggleContainer) returnToggleContainer.style.display = 'none';
 
@@ -738,7 +761,6 @@ function confirmEdit() {
     const val = document.getElementById("modalInput").value;
     let numVal = Number(val) || 0;
 
-    // 根據退貨模式強制轉為負數
     if (isReturnMode && numVal > 0) {
         numVal = -numVal;
     }
@@ -820,18 +842,18 @@ function kpConfirm() {
 
 let allowMinConsumeCheckout = false;
 function getMinConsumeTotal() {
-  const people = Number(document.getElementById("peopleCount")?.value) || 0;
-  const perMin = Number(document.getElementById("minConsumeInput")?.value) || 0;
-  return people * perMin;
+    const people = Number(document.getElementById("peopleCount")?.value) || 0;
+    const perMin = Number(document.getElementById("minConsumeInput")?.value) || 0;
+    return people * perMin;
 }
 
 document.getElementById("minConsumeInput").addEventListener("input", () => {
-  saveCurrentTabState();
-  renderCart();
+    saveCurrentTabState();
+    renderCart();
 });
 document.getElementById("peopleCount").addEventListener("input", () => {
-  saveCurrentTabState();
-  renderCart();
+    saveCurrentTabState();
+    renderCart();
 });
 document.getElementById("salesInput")?.addEventListener("input", saveCurrentTabState);
 
@@ -845,17 +867,19 @@ function setTax(t) {
 window.addEventListener("DOMContentLoaded", () => {
     setTax("免稅");
     renderTabButtons();
+    getIP(); // 🚀 打開頁面就在背景預抓 IP
+    updateExpenseNoteOptions();
 });
 
 function formatDiscountRate(rate) {
-    let d = rate * 100;          
-    let s = d.toString();        
+    let d = rate * 100;
+    let s = d.toString();
     if (d % 10 === 0) {
         s = (d / 10).toString();
     }
     return s + "折";
 }
-  
+
 function calcDiscountedSubtotal(item) {
     let sub = item.quantity * item.price;
     if (!item.isCorkage && item.discount) {
@@ -931,7 +955,7 @@ async function sendCheckoutToSheet() {
                 remainQty: it.quantity,
                 unit: it.unit,
                 storeDate: nowDate.toLocaleDateString("zh-TW"),
-                expireDate: product && product["存酒期限"] 
+                expireDate: product && product["存酒期限"]
                     ? addMonths(nowDate, Number(product["存酒期限"]))
                     : addMonths(nowDate, 2)
             };
@@ -939,10 +963,14 @@ async function sendCheckoutToSheet() {
 
     payload.storedItems = storedItems;
 
-    await fetch(API_URL, {
+    const res = await fetch(API_URL, {
         method: "POST",
         body: JSON.stringify(payload)
     });
+    const result = await res.json();
+    if (!result || result.status !== "success") {
+        throw new Error((result && result.message) || "結帳寫入失敗");
+    }
 }
 
 document.getElementById("posCheckout").onclick = async function () {
@@ -974,7 +1002,6 @@ document.getElementById("posCheckout").onclick = async function () {
 async function startCheckoutFlow(checkoutBtn, originalText) {
     try {
         await sendCheckoutToSheet();
-        setTimeout(updateTodaySales, 0);
 
         alert("結帳 / 退貨退款完成！");
 
@@ -989,9 +1016,9 @@ async function startCheckoutFlow(checkoutBtn, originalText) {
         if (document.getElementById("customerPhone")) document.getElementById("customerPhone").value = "";
         if (document.getElementById("salesInput")) document.getElementById("salesInput").value = "";
 
-        fetchSalesList();
         renderCart();
         renderTabButtons();
+        updateTodaySales(); // 背景非同步更新今日營業額
 
         document.querySelector('#paymentButtons .payBtn[data-pay="現金"]')?.click();
 
@@ -1010,143 +1037,143 @@ async function startCheckoutFlow(checkoutBtn, originalText) {
 // ===== 💸 支出管理相關功能 =====
 // =========================
 const EXPENSE_NOTE_MAP = {
-  "進貨成本": ["蔬菜一批", "檸檬", "調味料"],
-  "房租水電": ["房租", "水費", "電費", "瓦斯費"],
-  "設備維修": ["製冰機", "換濾心"],
-  "雜支零用": ["廚房用品", "其他支出"]
+    "進貨成本": ["蔬菜一批", "檸檬", "調味料"],
+    "房租水電": ["房租", "水費", "電費", "瓦斯費"],
+    "設備維修": ["製冰機", "換濾心"],
+    "雜支零用": ["廚房用品", "其他支出"]
 };
 
 function updateExpenseNoteOptions() {
-  const categoryEl = document.getElementById("expenseCategory");
-  const selectEl = document.getElementById("expenseNoteSelect");
-  const noteInput = document.getElementById("expenseNote");
-  if (!categoryEl || !selectEl || !noteInput) return;
+    const categoryEl = document.getElementById("expenseCategory");
+    const selectEl = document.getElementById("expenseNoteSelect");
+    const noteInput = document.getElementById("expenseNote");
+    if (!categoryEl || !selectEl || !noteInput) return;
 
-  const items = EXPENSE_NOTE_MAP[categoryEl.value] || [];
-  selectEl.innerHTML = "";
+    const items = EXPENSE_NOTE_MAP[categoryEl.value] || [];
+    selectEl.innerHTML = "";
 
-  const defaultOpt = document.createElement("option");
-  defaultOpt.value = "";
-  defaultOpt.textContent = "-- 請選擇品項說明（或於下方自行輸入）--";
-  selectEl.appendChild(defaultOpt);
+    const defaultOpt = document.createElement("option");
+    defaultOpt.value = "";
+    defaultOpt.textContent = "-- 請選擇品項說明（或於下方自行輸入）--";
+    selectEl.appendChild(defaultOpt);
 
-  items.forEach((item, index) => {
-    const opt = document.createElement("option");
-    opt.value = item;
-    opt.textContent = item;
-    selectEl.appendChild(opt);
-  });
+    items.forEach(item => {
+        const opt = document.createElement("option");
+        opt.value = item;
+        opt.textContent = item;
+        selectEl.appendChild(opt);
+    });
 
-  const customOpt = document.createElement("option");
-  customOpt.value = "__custom__";
-  customOpt.textContent = "✏️ 自行輸入其他說明";
-  selectEl.appendChild(customOpt);
+    const customOpt = document.createElement("option");
+    customOpt.value = "__custom__";
+    customOpt.textContent = "✏️ 自行輸入其他說明";
+    selectEl.appendChild(customOpt);
 
-  noteInput.value = "";
-  noteInput.placeholder = items.length
-    ? `支出備註 / 品項說明（例：${items.join("、")}）`
-    : "支出備註 / 品項說明";
+    noteInput.value = "";
+    noteInput.placeholder = items.length
+        ? `支出備註 / 品項說明（例：${items.join("、")}）`
+        : "支出備註 / 品項說明";
 }
 
 function applyExpenseNotePreset() {
-  const selectEl = document.getElementById("expenseNoteSelect");
-  const noteInput = document.getElementById("expenseNote");
-  if (!selectEl || !noteInput) return;
+    const selectEl = document.getElementById("expenseNoteSelect");
+    const noteInput = document.getElementById("expenseNote");
+    if (!selectEl || !noteInput) return;
 
-  if (selectEl.value === "__custom__") {
-    noteInput.value = "";
-    noteInput.focus();
-  } else if (selectEl.value !== "") {
-    noteInput.value = selectEl.value;
-  }
+    if (selectEl.value === "__custom__") {
+        noteInput.value = "";
+        noteInput.focus();
+    } else if (selectEl.value !== "") {
+        noteInput.value = selectEl.value;
+    }
 }
 
 function openExpenseModal() {
-  const expenseModal = document.getElementById("expenseModal");
-  if (expenseModal) {
-      expenseModal.style.display = "flex";
-  } else {
-      console.warn("找不到 #expenseModal 元素");
-      return;
-  }
-  document.getElementById("expenseCategory").value = "進貨成本";
-  document.getElementById("expenseAmount").value = "";
-  updateExpenseNoteOptions();
-  loadExpenses();
+    const expenseModal = document.getElementById("expenseModal");
+    if (expenseModal) {
+        expenseModal.style.display = "flex";
+    } else {
+        console.warn("找不到 #expenseModal 元素");
+        return;
+    }
+    document.getElementById("expenseCategory").value = "進貨成本";
+    document.getElementById("expenseAmount").value = "";
+    updateExpenseNoteOptions();
+    loadExpenses();
 }
 
 function closeExpenseModal() {
-  const expenseModal = document.getElementById("expenseModal");
-  if (expenseModal) {
-      expenseModal.style.display = "none";
-  }
+    const expenseModal = document.getElementById("expenseModal");
+    if (expenseModal) {
+        expenseModal.style.display = "none";
+    }
 }
 
 async function submitExpense() {
-  const category = document.getElementById("expenseCategory")?.value || "進貨成本";
-  const amount = document.getElementById("expenseAmount")?.value.trim() || "";
-  const note = document.getElementById("expenseNote")?.value.trim() || "";
+    const category = document.getElementById("expenseCategory")?.value || "進貨成本";
+    const amount = document.getElementById("expenseAmount")?.value.trim() || "";
+    const note = document.getElementById("expenseNote")?.value.trim() || "";
 
-  if (!amount || Number(amount) <= 0) {
-    alert("⚠️ 請輸入有效的支出金額！");
-    return;
-  }
-
-  try {
-    const storeName = document.getElementById("storeInfo")?.innerText.split("（")[0] || "";
-    const operator = document.getElementById("salesInput")?.value || "";
-
-    const res = await fetch(`${API_URL}?action=addExpense`, {
-      method: "POST",
-      body: JSON.stringify({
-        category: category,
-        amount: Number(amount),
-        note: note,
-        storeCode: POS_STORE,
-        storeName: storeName,
-        operator: operator
-      })
-    });
-    
-    const result = await res.json();
-
-    if (result && result.status === "success") {
-      alert("✅ 支出記帳成功！");
-      document.getElementById("expenseAmount").value = "";
-      updateExpenseNoteOptions();
-      loadExpenses(); 
-      updateTodaySales(); 
-    } else {
-      alert((result && result.message) || "記帳失敗");
+    if (!amount || Number(amount) <= 0) {
+        alert("⚠️ 請輸入有效的支出金額！");
+        return;
     }
-  } catch (e) {
-    console.error("送出支出失敗：", e);
-    alert("⚠️ 網路異常，記帳失敗");
-  }
+
+    try {
+        const storeName = document.getElementById("storeInfo")?.innerText.split("（")[0] || "";
+        const operator = document.getElementById("salesInput")?.value || "";
+
+        const res = await fetch(`${API_URL}?action=addExpense`, {
+            method: "POST",
+            body: JSON.stringify({
+                category: category,
+                amount: Number(amount),
+                note: note,
+                storeCode: POS_STORE,
+                storeName: storeName,
+                operator: operator
+            })
+        });
+
+        const result = await res.json();
+
+        if (result && result.status === "success") {
+            alert("✅ 支出記帳成功！");
+            document.getElementById("expenseAmount").value = "";
+            updateExpenseNoteOptions();
+            loadExpenses();
+            updateTodaySales();
+        } else {
+            alert((result && result.message) || "記帳失敗");
+        }
+    } catch (e) {
+        console.error("送出支出失敗：", e);
+        alert("⚠️ 網路異常，記帳失敗");
+    }
 }
 
 async function loadExpenses() {
-  const list = document.getElementById("expenseList");
-  if (!list) return;
-  
-  list.innerHTML = `<div class="empty" style="color:#777; text-align:center; padding:20px;">載入中...</div>`;
-  try {
-    const res = await fetch(`${API_URL}?action=getExpenses&storeCode=${POS_STORE}`);
-    const result = await res.json();
+    const list = document.getElementById("expenseList");
+    if (!list) return;
 
-    let expenseData = [];
-    if (result && Array.isArray(result.data)) {
-      expenseData = result.data;
-    } else if (Array.isArray(result)) {
-      expenseData = result;
-    }
+    list.innerHTML = `<div class="empty" style="color:#777; text-align:center; padding:20px;">載入中...</div>`;
+    try {
+        const res = await fetch(`${API_URL}?action=getExpenses&storeCode=${encodeURIComponent(POS_STORE)}`);
+        const result = await res.json();
 
-    if (expenseData.length === 0) {
-      list.innerHTML = `<div class="empty" style="color:#777; text-align:center; padding:20px;">目前沒有支出紀錄</div>`;
-      return;
-    }
+        let expenseData = [];
+        if (result && Array.isArray(result.data)) {
+            expenseData = result.data;
+        } else if (Array.isArray(result)) {
+            expenseData = result;
+        }
 
-    list.innerHTML = expenseData.map(item => `
+        if (expenseData.length === 0) {
+            list.innerHTML = `<div class="empty" style="color:#777; text-align:center; padding:20px;">目前沒有支出紀錄</div>`;
+            return;
+        }
+
+        list.innerHTML = expenseData.map(item => `
       <div class="customer-card" style="padding:12px; background:#222235; border-radius:10px; display:flex; justify-content:space-between; align-items:center;">
         <div>
           <div style="font-weight:bold; font-size:0.95rem; color:#ff4d6d;">
@@ -1159,10 +1186,10 @@ async function loadExpenses() {
         </div>
       </div>
     `).join("");
-  } catch (e) {
-    console.error("載入支出紀錄失敗：", e);
-    list.innerHTML = `<div class="empty" style="color:#777; text-align:center; padding:20px;">載入支出紀錄失敗</div>`;
-  }
+    } catch (e) {
+        console.error("載入支出紀錄失敗：", e);
+        list.innerHTML = `<div class="empty" style="color:#777; text-align:center; padding:20px;">載入支出紀錄失敗</div>`;
+    }
 }
 
 const checkSongBtn = document.getElementById('checkSongBtn');
@@ -1171,7 +1198,6 @@ if (checkSongBtn) {
         window.open('https://excdl.github.io/songs/', '_blank');
     });
 }
-  
 
 
 
