@@ -82,8 +82,6 @@
   <label style="white-space:nowrap;">
 
 </div>
-
-
   
   <div id="taxContainer">
   <button id="taxIncluded" class="active" onclick="setTax('應稅')">應稅</button>
@@ -211,19 +209,24 @@ justify-content:center;align-items:center;">
   </div>
 </div>
 <!-- ===== 存酒選擇 Modal ===== -->
-<div id="storeWineModal"
-     style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;
-     background:rgba(0,0,0,0.45);z-index:100000;
-     justify-content:center;align-items:center;">
-  <div style="background:white;padding:20px;border-radius:12px;width:90%;max-width:320px;text-align:center;">
-    <h3 id="storeWineTitle"></h3>
-    <p>是否要將此商品設為存酒？</p>
-    <div style="display:flex;gap:10px;">
-      <button onclick="confirmStoreWine(false)" style="flex:1;">直接販售</button>
-      <button onclick="confirmStoreWine(true)" style="flex:1;background:#27ae60;color:white;">存酒</button>
+<div id="storeWineModal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.65); backdrop-filter:blur(4px); justify-content:center; align-items:center; z-index:9999; padding:20px;">
+  <div style="position:relative; width:100%; max-width:340px; background:#1e293b; color:#f8fafc; border:1px solid #334155; border-radius:16px; padding:26px 20px 20px; text-align:center; box-shadow:0 20px 40px rgba(0,0,0,0.45); box-sizing:border-box;">
+    
+    <button id="storeWineCloseBtn" type="button" onclick="closeStoreWineModal()" title="關閉"
+      style="position:absolute; top:12px; right:12px; width:34px; height:34px; border-radius:50%; border:none; background:#334155; color:#e2e8f0; font-size:20px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1;">×</button>
+
+    <div style="font-size:0.95rem; color:#94a3b8; margin-bottom:4px;">請選擇此商品銷售方式</div>
+    <h3 id="storeWineTitle" style="margin:0 0 18px 0; font-size:1.3rem; color:#fbbf24;"></h3>
+
+    <div style="display:flex; gap:10px;">
+      <button type="button" onclick="confirmStoreWine(true)"
+        style="flex:1; height:52px; border:none; border-radius:10px; background:#16a34a; color:#fff; font-size:1.1rem; font-weight:bold; cursor:pointer;">🧊 存酒</button>
+      <button type="button" onclick="confirmStoreWine(false)"
+        style="flex:1; height:52px; border:none; border-radius:10px; background:#2563eb; color:#fff; font-size:1.1rem; font-weight:bold; cursor:pointer;">🥂 直接販售</button>
     </div>
   </div>
 </div>
+      
 <!-- 💸 支出管理 Modal -->
 <div class="modal" id="expenseModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:500; align-items:center; justify-content:center; padding:20px;">
   <div class="modal-box" style="width:100%; max-width:450px; background:#171725; border:1px solid #343449; border-radius:18px; padding:22px; color:#fff; box-sizing:border-box;">
