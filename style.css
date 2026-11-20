@@ -1,5 +1,5 @@
 /* =========================================================
-   🏆 旗艦商用觸控收銀機介面（嚴格維持原版 25% / 35% / 40% 比例）
+   👓 專業清晰・高對比商用收銀機版面（適合中高齡者 / 嚴格原比例）
 ========================================================= */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -9,8 +9,8 @@
 body {
   margin: 0;
   font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", Arial, sans-serif;
-  background: #090d16;
-  color: #e2e8f0;
+  background: #e2e8f0;
+  color: #0f172a;
   user-select: none;
 }
 
@@ -23,124 +23,119 @@ button {
   cursor: pointer;
   outline: none;
   font-family: inherit;
-  transition: transform 0.1s ease, background 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.08s ease, background-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 button:active:not(:disabled) {
-  transform: scale(0.96);
+  transform: translateY(2px);
 }
 
-/* 細緻深色捲軸 */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.28); border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(148, 163, 184, 0.5); }
+/* 清楚易見的捲軸 */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #e2e8f0; }
+::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: #64748b; }
 
 #posApp {
   display: flex;
   height: 100vh;
   width: 100%;
-  background: #090d16;
+  background: #e2e8f0;
 }
 
-/* ===== 1. 左邊欄：類別區 (嚴格 25%) ===== */
+/* ===== 1. 左邊欄：類別區 (嚴格 25%｜深海軍藍＋高對比白字黃底) ===== */
 #posCategories {
   width: 25%;
-  background: linear-gradient(180deg, #111827 0%, #0d1321 100%);
+  background: #1e3a5f;
   padding: 15px;
-  color: #f8fafc;
+  color: #ffffff;
   overflow-y: auto;
   border-radius: 0 12px 12px 0;
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.35);
-  z-index: 2;
+  border-right: 3px solid #0f2540;
 }
 
 #posCategories h3 {
   margin-top: 0;
-  margin-bottom: 10px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: #94a3b8;
+  margin-bottom: 12px;
+  font-size: 1.15em;
+  font-weight: 800;
+  color: #e2e8f0;
+  letter-spacing: 0.5px;
 }
 
 #posCategories button {
   width: 100%;
-  margin: 5px 0;
-  padding: 12px;
-  font-size: 0.95em;
-  font-weight: 600;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-left: 4px solid transparent;
+  margin: 6px 0;
+  padding: 14px 12px;
+  font-size: 1.08em;
+  font-weight: 700;
+  border: 2px solid #162d4a;
   border-radius: 8px;
-  background: #1a2335;
-  color: #cbd5e1;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  background: #2b4c7e;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 #posCategories button:hover {
-  background: #232f46;
-  color: #ffffff;
+  background: #355d99;
 }
 
 #posCategories button.active {
-  background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
-  color: #ffffff;
-  font-weight: bold;
-  border-color: rgba(129, 140, 248, 0.5);
-  border-left: 4px solid #38bdf8;
-  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+  background: #facc15;
+  color: #000000;
+  font-weight: 900;
+  border: 2px solid #b45309;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
 }
 
 /* 搜尋與功能按鈕區 */
 .search-container {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
-  margin-bottom: 10px;
+  gap: 6px;
+  margin-bottom: 12px;
   align-items: center;
 }
 
 .search-container button {
   width: 120px;
-  height: 40px;
+  height: 44px;
   margin: 0 !important;
   padding: 0 8px !important;
-  font-size: 14px;
-  font-weight: 700;
-  background: linear-gradient(135deg, #7c3aed, #6d28d9) !important;
-  border: 1px solid rgba(167, 139, 250, 0.3) !important;
+  font-size: 15px;
+  font-weight: 800;
+  background: #6d28d9 !important;
+  border: 2px solid #4c1d95 !important;
   cursor: pointer;
   color: #ffffff !important;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 5px;
-  border-radius: 7px !important;
-  box-shadow: 0 3px 10px rgba(109, 40, 217, 0.35);
+  border-radius: 8px !important;
 }
 
 .search-container button:hover {
-  filter: brightness(1.12);
+  background: #5b21b6 !important;
 }
 
 .search-container input {
   flex: 1;
   min-width: 120px;
-  height: 40px;
-  padding: 0 10px;
-  font-size: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 7px;
-  background: #090d16;
-  color: #f8fafc;
+  height: 44px;
+  padding: 0 12px;
+  font-size: 16px;
+  font-weight: 700;
+  border: 2px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #000000;
   outline: none;
 }
 
 .search-container input::placeholder { color: #64748b; }
 .search-container input:focus {
-  border-color: #38bdf8;
-  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.18);
+  border-color: #facc15;
 }
 
 @media (max-width: 480px) {
@@ -149,11 +144,11 @@ button:active:not(:disabled) {
   }
 }
 
-/* ===== 2. 中間欄：商品展示區 (嚴格 35% 與 120px 卡片) ===== */
+/* ===== 2. 中間欄：商品展示區 (嚴格 35%｜純白粗字清楚商品卡) ===== */
 #posProducts {
   width: 35%;
   flex: none;
-  background: radial-gradient(circle at top left, #131c31 0%, #090d16 75%);
+  background: #edf2f7;
   padding: 15px 0 15px 3%;
   display: flex;
   flex-wrap: wrap;
@@ -164,53 +159,40 @@ button:active:not(:disabled) {
 }
 
 .product-card {
-  background: linear-gradient(180deg, #1e293b 0%, #161f30 100%);
+  background: #ffffff;
   border-radius: 12px;
-  padding: 10px 6px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-bottom: 4px solid #334155;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+  padding: 12px 6px;
+  border: 2px solid #cbd5e1;
+  border-bottom: 4px solid #64748b;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   text-align: center;
-  transition: transform 0.15s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
   width: 120px;
   height: auto;
   flex-shrink: 0;
-  min-height: 60px;
-  position: relative;
-  overflow: hidden;
-}
-
-.product-card::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.45), transparent);
-  opacity: 0.7;
+  min-height: 76px;
 }
 
 .product-card:hover {
-  transform: translateY(-4px);
-  background: linear-gradient(180deg, #253349 0%, #1c273b 100%);
-  border-color: rgba(56, 189, 248, 0.45);
-  border-bottom-color: #38bdf8;
-  box-shadow: 0 10px 20px rgba(14, 165, 233, 0.22);
+  border-color: #2563eb;
+  border-bottom-color: #1d4ed8;
+  background: #f8fafc;
 }
 
 .product-card:active {
-  transform: scale(0.95);
+  background: #dbeafe;
   border-bottom-width: 2px;
 }
 
 .product-card h4 {
   margin: 0;
-  font-size: 1.3em;
-  line-height: 1.5em;
-  color: #f8fafc;
+  font-size: 1.32em;
+  font-weight: 800;
+  line-height: 1.45em;
+  color: #000000;
   white-space: normal;
   word-wrap: break-word;
   overflow: hidden;
@@ -220,26 +202,25 @@ button:active:not(:disabled) {
 .product-card p {
   margin: 6px auto 0 auto;
   padding: 2px 8px;
-  border-radius: 999px;
-  background: rgba(16, 185, 129, 0.14);
-  border: 1px solid rgba(16, 185, 129, 0.32);
-  font-size: 1.05em;
-  font-weight: 700;
-  color: #34d399;
+  border-radius: 6px;
+  background: #e0f2fe;
+  border: 1px solid #7dd3fc;
+  font-size: 1.12em;
+  font-weight: 800;
+  color: #0369a1;
   font-variant-numeric: tabular-nums;
 }
 
-/* ===== 3. 右邊欄：購物車與結帳區 (嚴格 40%) ===== */
+/* ===== 3. 右邊欄：購物車與結帳區 (嚴格 40%｜清晰白底大字) ===== */
 #posCartContainer {
   width: 40%;
-  background: #111827;
-  color: #e2e8f0;
-  padding: 10px 12px;
+  background: #f8fafc;
+  color: #0f172a;
+  padding: 12px;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: -6px 0 24px rgba(0, 0, 0, 0.4);
+  border-left: 3px solid #cbd5e1;
 }
 
 /* 桌號暫存區 */
@@ -248,10 +229,10 @@ button:active:not(:disabled) {
   flex-direction: column;
   gap: 8px;
   margin-bottom: 12px;
-  background: #0b101b;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #1e3a5f;
   padding: 12px;
   border-radius: 10px;
+  border: 2px solid #0f2540;
 }
 
 #tabList {
@@ -263,101 +244,103 @@ button:active:not(:disabled) {
 .tab-wrapper {
   display: inline-flex;
   align-items: center;
-  background: #1e293b;
+  background: #475569;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
-  border: 2px solid transparent;
+  border: 2px solid #334155;
 }
 
 .tab-wrapper.active {
-  background: linear-gradient(135deg, #f59e0b, #ea580c);
-  border-color: #fbbf24;
-  box-shadow: 0 3px 12px rgba(245, 158, 11, 0.35);
+  background: #ea580c;
+  border-color: #fef08a;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .tab-btn {
   background: transparent;
-  color: #f8fafc;
+  color: #ffffff;
   border: none;
   padding: 12px 18px;
   font-size: 1.15em;
-  font-weight: bold;
+  font-weight: 800;
 }
 
 .tab-close-btn {
   background: rgba(0, 0, 0, 0.25);
-  color: #cbd5e1;
+  color: #ffffff;
   border: none;
-  padding: 12px 12px;
-  font-size: 1.1em;
-  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 12px 14px;
+  font-size: 1.15em;
+  font-weight: 800;
+  border-left: 1px solid rgba(255, 255, 255, 0.35);
 }
 
 .tab-close-btn:hover {
-  background: #ef4444;
-  color: #ffffff;
+  background: #dc2626;
 }
 
 .tab-badge {
-  background: #ef4444;
+  background: #dc2626;
   color: #ffffff;
+  border: 1px solid #ffffff;
   border-radius: 50%;
-  padding: 3px 8px;
+  padding: 2px 8px;
   font-size: 0.95em;
+  font-weight: 800;
   margin-left: 6px;
 }
 
 #addTabBtn {
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: #15803d;
   color: #ffffff;
-  border: none;
+  border: 2px solid #14532d;
   padding: 12px 18px;
   border-radius: 8px;
-  font-size: 1.1em;
-  font-weight: bold;
-  box-shadow: 0 3px 8px rgba(16, 185, 129, 0.3);
+  font-size: 1.12em;
+  font-weight: 800;
 }
 
 #addTabBtn:hover {
-  filter: brightness(1.1);
+  background: #166534;
 }
 
-/* 購物車表頭與產品列表（維持 2.5fr 1fr 1fr 1fr 1fr 與高對比白底） */
+/* 購物車表頭與產品列表（維持 2.5fr 1fr 1fr 1fr 1fr） */
 .cartHeader {
-  font-weight: bold;
-  background: #e2e8f0;
-  color: #1e293b;
-  font-size: 100%;
+  font-weight: 800;
+  background: #cbd5e1;
+  color: #000000;
+  font-size: 1.05em;
   display: grid;
   grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr;
   gap: 5px;
   padding: 8px 6px;
   border-radius: 8px 8px 0 0;
   text-align: center;
-  border-bottom: 1px solid #cbd5e1;
+  border: 2px solid #94a3b8;
+  border-bottom: none;
 }
 
 #posCart {
   background: #ffffff;
-  padding: 6px;
+  border: 2px solid #94a3b8;
   border-radius: 0 0 8px 8px;
-  margin-bottom: 4px;
+  padding: 6px;
 }
 
 #posCart div.cartRow {
   display: grid;
   grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr;
-  gap: 5px;
+  gap: 6px;
   background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  padding: 8px 5px;
-  margin-bottom: 5px;
-  border-radius: 6px;
+  border: 1px solid #cbd5e1;
+  padding: 9px 6px;
+  margin-bottom: 6px;
+  border-radius: 8px;
   align-items: center;
   text-align: center;
-  font-size: 1.15em;
-  color: #0f172a;
+  font-size: 1.18em;
+  font-weight: 700;
+  color: #000000;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   overflow: hidden;
@@ -366,105 +349,110 @@ button:active:not(:disabled) {
 
 #posCart div.cartRow span.name {
   text-align: left;
-  font-weight: 700;
-  color: #0f172a;
+  font-weight: 800;
+  color: #000000;
   cursor: pointer;
   white-space: normal;
   word-break: break-word;
+  line-height: 1.3;
 }
 
+/* 數量 / 單價明顯可按按鈕框 */
 #posCart div.cartRow span.qty,
 #posCart div.cartRow span.price {
-  background: #ffffff;
-  border: 1px dashed #94a3b8;
-  border-radius: 5px;
-  padding: 3px 2px;
+  background: #eff6ff;
+  border: 2px solid #93c5fd;
+  border-radius: 6px;
+  padding: 4px 2px;
   cursor: pointer;
-  font-weight: 700;
+  font-weight: 800;
+  color: #1e3a8a;
 }
 
 #posCart div.cartRow span.qty:hover,
 #posCart div.cartRow span.price:hover {
+  background: #dbeafe;
   border-color: #2563eb;
-  background: #eff6ff;
+}
+
+#posCart div.cartRow span.subtotal {
+  font-weight: 800;
+  color: #000000;
 }
 
 #posCart div.cartRow span.remove button {
   font-size: 1em;
-  font-weight: 700;
-  padding: 4px 8px;
+  font-weight: 800;
+  padding: 6px 10px;
   border: none;
   border-radius: 6px;
-  background: #fee2e2;
-  color: #dc2626;
+  background: #dc2626;
+  color: #ffffff;
 }
 
 #posCart div.cartRow span.remove button:hover {
-  background: #dc2626;
-  color: #ffffff;
+  background: #b91c1c;
 }
 
 /* 折扣與人員欄位 */
 #discountContainer {
   display: flex;
-  gap: 5px;
+  gap: 6px;
   margin: 12px 0;
 }
 
 #discountContainer input {
   flex: 1;
-  padding: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 8px 10px;
+  border: 2px solid #94a3b8;
   border-radius: 8px;
   text-align: right;
-  font-size: 0.95em;
-  font-weight: 600;
-  background: #1e293b;
-  color: #f8fafc;
+  font-size: 1.05em;
+  font-weight: 800;
+  background: #ffffff;
+  color: #000000;
   cursor: pointer;
 }
 
-#discountContainer input::placeholder { color: #64748b; }
 #discountContainer input:focus {
-  border-color: #38bdf8;
-  outline: none;
+  border-color: #2563eb;
 }
 
 /* 稅別切換 */
 #taxContainer {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
-  margin: 5px 0;
+  gap: 6px;
+  margin: 6px 0;
 }
 
 #taxContainer button {
   flex: 1 1 30%;
-  padding: 8px 6px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 6px;
+  border: 2px solid #94a3b8;
   border-radius: 8px;
-  background: #1e293b;
-  color: #94a3b8;
-  font-size: 1.1em;
-  font-weight: 600;
+  background: #e2e8f0;
+  color: #1e293b;
+  font-size: 1.12em;
+  font-weight: 800;
 }
 
 #taxContainer button.active {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  border-color: #fbbf24;
-  color: #0f172a;
-  font-weight: bold;
+  background: #facc15;
+  border-color: #b45309;
+  color: #000000;
+  font-weight: 900;
 }
 
-/* 金額摘要區 */
+/* 金額摘要區（超醒目大字應收） */
 #taxSummary {
   margin-top: 8px;
   padding: 12px 14px;
-  background: #f8fafc;
+  background: #ffffff;
   border-radius: 10px;
-  border-left: 5px solid #f59e0b;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  font-size: 1.15em;
+  border: 2px solid #cbd5e1;
+  border-left: 6px solid #d97706;
+  font-size: 1.18em;
 }
 
 #taxSummary .taxRow {
@@ -479,38 +467,39 @@ button:active:not(:disabled) {
 #taxSummary .taxRow.total {
   margin: 12px 0 4px 0;
   padding-top: 8px;
-  border-top: 1px dashed #cbd5e1;
+  border-top: 2px dashed #94a3b8;
 }
 
 #taxSummary .label {
-  width: 90px;
-  color: #475569;
-  font-weight: 700;
+  width: 95px;
+  color: #334155;
+  font-weight: 800;
   font-size: 1em;
 }
 
 #taxSummary .value {
-  min-width: 110px;
+  min-width: 115px;
   text-align: right;
   font-family: "Consolas", "Courier New", monospace;
   font-variant-numeric: tabular-nums;
-  font-size: 1em;
-  font-weight: 700;
-  color: #1e293b;
+  font-size: 1.05em;
+  font-weight: 800;
+  color: #0f172a;
 }
 
 #taxSummary .total .label {
-  color: #0f172a;
-  font-weight: 800;
+  font-size: 1.2em;
+  color: #000000;
+  font-weight: 900;
 }
 
 #taxSummary .total .value {
-  color: #dc2626;
+  color: #b91c1c;
   font-weight: 900;
-  font-size: 1.35em;
+  font-size: 1.5em;
 }
 
-/* 付款方式 */
+/* 付款方式大按鈕 */
 #paymentButtons {
   display: flex;
   gap: 10px;
@@ -518,113 +507,117 @@ button:active:not(:disabled) {
 }
 
 #paymentButtons .payBtn {
-  height: 44px;
+  height: 48px;
   border-radius: 8px;
-  background: #1e293b;
-  color: #cbd5e1;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: #e2e8f0;
+  color: #0f172a;
+  border: 2px solid #94a3b8;
   flex: 1;
-  font-size: 1.15em;
-  font-weight: 600;
+  font-size: 1.18em;
+  font-weight: 800;
 }
 
 #paymentButtons .payBtn:hover {
-  background: #273549;
-  color: #ffffff;
+  background: #cbd5e1;
 }
 
 #paymentButtons .payBtn.active {
-  background: linear-gradient(135deg, #0ea5e9, #2563eb);
-  border-color: #38bdf8;
+  background: #1d4ed8;
+  border-color: #1e3a8a;
   color: #ffffff;
-  font-weight: bold;
-  box-shadow: 0 4px 14px rgba(14, 165, 233, 0.35);
+  font-weight: 900;
+  box-shadow: 0 3px 8px rgba(29, 78, 216, 0.3);
 }
 
 /* 收現與找零 */
 #cashPanel {
   display: block;
-  margin-top: 5px;
+  margin-top: 6px;
   padding: 10px 12px;
-  background: #1a2335;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #fffbeb;
+  border: 2px solid #f59e0b;
   border-radius: 8px;
-  color: #e2e8f0;
+  color: #000000;
+  font-size: 1.1em;
+  font-weight: 800;
 }
 
 #cashPanel input {
   width: 100%;
-  padding: 8px 10px;
-  margin-top: 5px;
-  border: 1px solid rgba(56, 189, 248, 0.35);
+  padding: 10px 12px;
+  margin-top: 6px;
+  border: 2px solid #2563eb;
   border-radius: 8px;
   text-align: right;
-  font-size: 1.1em;
-  font-weight: 800;
+  font-size: 1.3em;
+  font-weight: 900;
   font-variant-numeric: tabular-nums;
-  background: #090d16;
-  color: #4ade80;
+  background: #ffffff;
+  color: #000000;
   cursor: pointer;
 }
 
-/* 結帳按鈕 */
+/* 結帳主按鈕 */
 #posCheckout {
-  margin-top: 8px;
-  padding: 13px;
-  font-size: 1.25em;
-  font-weight: 800;
-  letter-spacing: 1px;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  margin-top: 10px;
+  padding: 14px;
+  font-size: 1.35em;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  background: #15803d;
   color: #ffffff;
-  border: 1px solid rgba(52, 211, 153, 0.4);
+  border: 2px solid #14532d;
+  border-bottom: 4px solid #14532d;
   border-radius: 10px;
-  box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
+  box-shadow: 0 4px 10px rgba(21, 128, 61, 0.28);
 }
 
 #posCheckout:hover:not(:disabled) {
-  filter: brightness(1.1);
+  background: #166534;
 }
 
 #posCheckout:disabled {
-  background: #475569 !important;
-  border-color: transparent;
+  background: #94a3b8 !important;
+  border-color: #64748b !important;
   box-shadow: none;
   cursor: not-allowed;
 }
 
 #posCheckout.minAlert {
-  background: linear-gradient(135deg, #f59e0b, #d97706) !important;
-  color: #0f172a !important;
-  box-shadow: 0 6px 18px rgba(245, 158, 11, 0.35);
+  background: #f59e0b !important;
+  border-color: #b45309 !important;
+  color: #000000 !important;
 }
 
 /* 今日營業概況 */
 #todaySalesDisplay {
-  margin-top: 10px;
+  margin-top: 12px;
   padding: 12px 15px;
   border-radius: 10px;
-  background: #1a2335;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-left: 5px solid #38bdf8;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  font-size: 16px;
-  line-height: 1.6em;
-  color: #cbd5e1;
+  background: #ffffff;
+  border: 2px solid #cbd5e1;
+  border-left: 6px solid #0369a1;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.65em;
+  color: #0f172a;
   white-space: pre-line;
   font-variant-numeric: tabular-nums;
 }
 
 #todaySalesDisplay b {
-  font-size: 16px;
-  color: #38bdf8;
+  font-size: 18px;
+  font-weight: 900;
+  color: #0369a1;
 }
 
 /* 登出按鈕 */
 #logoutBtn {
   color: #ffffff;
-  background: linear-gradient(135deg, #ef4444, #dc2626);
-  border: none;
+  background-color: #dc2626;
+  border: 2px solid #991b1b;
   border-radius: 8px;
+  font-weight: 800;
 }
 
 #logoutBtn.active {
@@ -634,9 +627,9 @@ button:active:not(:disabled) {
 }
 
 @keyframes btnPulse {
-  0%   { background: #ea580c; }
-  50%  { background: #f59e0b; }
-  100% { background: #ea580c; }
+  0%   { background-color: #ea580c; }
+  50%  { background-color: #f59e0b; }
+  100% { background-color: #ea580c; }
 }
 
 #logoutBtn.active::after {
@@ -654,14 +647,13 @@ button:active:not(:disabled) {
   25%, 75% { opacity: 1; }
 }
 
-/* ===== 4. 數字鍵盤與編輯彈窗 ===== */
+/* ===== 4. 實體計算機風格：數字鍵盤與編輯彈窗 ===== */
 #editModal,
 #posKeypadModal {
   position: fixed;
   top: 0; left: 0;
   width: 100%; height: 100%;
-  background: rgba(5, 8, 15, 0.72);
-  backdrop-filter: blur(5px);
+  background: rgba(15, 23, 42, 0.65);
   display: none;
   justify-content: center;
   align-items: center;
@@ -672,13 +664,13 @@ button:active:not(:disabled) {
 
 #editModal .modalContent,
 .keypadBox {
-  background: #171e2e;
-  color: #f8fafc;
-  padding: 20px;
-  width: 340px;
+  background: #1e293b;
+  color: #ffffff;
+  padding: 22px 20px;
+  width: 350px;
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.55);
+  border: 3px solid #475569;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
   text-align: center;
   position: relative;
 }
@@ -689,51 +681,52 @@ button:active:not(:disabled) {
   position: absolute;
   top: 10px;
   right: 10px;
-  width: 28px;
-  height: 28px;
-  line-height: 28px;
+  width: 36px;
+  height: 36px;
+  line-height: 36px;
   text-align: center;
   border-radius: 50%;
-  background: #273248;
-  color: #cbd5e1;
+  background: #dc2626;
+  color: #ffffff;
+  border: 2px solid #ffffff;
   cursor: pointer;
-  font-weight: bold;
-  font-size: 18px;
+  font-weight: 900;
+  font-size: 22px;
   z-index: 10;
 }
 
 .closeModal:hover {
-  background: #ef4444;
-  color: #ffffff;
+  background: #b91c1c;
 }
 
 #posKeypadTitle,
 #modalProductName {
-  margin-bottom: 10px;
-  font-size: 22px;
-  font-weight: bold;
+  margin-bottom: 12px;
+  font-size: 24px;
+  font-weight: 900;
   color: #ffffff;
 }
 
 #posKeypadInput,
 #modalInput {
   width: 100%;
-  font-size: 32px;
+  font-size: 34px;
+  font-weight: 900;
+  font-family: "Consolas", monospace;
   padding: 12px;
   margin-bottom: 15px;
   text-align: right;
-  border: 1px solid rgba(56, 189, 248, 0.25);
+  border: 3px solid #64748b;
   border-radius: 10px;
-  background: #090d16;
-  color: #4ade80;
+  background: #ecfdf5;
+  color: #064e3b;
   letter-spacing: 2px;
 }
 
 #modalInput {
-  width: 80%;
+  width: 85%;
   margin: 0 auto 15px auto;
   display: block;
-  font-size: 30px;
   text-align: center;
 }
 
@@ -756,50 +749,63 @@ button:active:not(:disabled) {
   gap: 10px;
 }
 
+/* 白底純黑粗字大按鍵（跟真實計算機一樣好讀） */
 .posKeypadGrid button,
 #numpad button {
-  height: 60px;
-  font-size: 20px;
-  font-weight: bold;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  height: 62px;
+  font-size: 25px;
+  font-weight: 900;
+  border: 2px solid #94a3b8;
+  border-bottom: 4px solid #64748b;
   border-radius: 10px;
-  background: #263147;
-  color: #f8fafc;
-  box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.35);
+  background: #ffffff;
+  color: #000000;
 }
-
-#numpad button { font-size: 22px; }
 
 .posKeypadGrid button:active,
 #numpad button:active {
   transform: translateY(2px);
-  box-shadow: none;
+  border-bottom-width: 2px;
+  background: #e2e8f0;
 }
 
 .posKeypadGrid button.big {
-  background: linear-gradient(135deg, #0284c7, #2563eb);
+  background: #1d4ed8;
+  border-color: #1e40af;
+  border-bottom-color: #1e3a8a;
+  color: #ffffff;
+  font-size: 22px;
 }
 
 .posKeypadGrid button.confirm {
-  background: linear-gradient(135deg, #10b981, #059669);
-  font-size: 22px;
+  background: #15803d;
+  border-color: #166534;
+  border-bottom-color: #14532d;
+  color: #ffffff;
+  font-size: 24px;
 }
 
 #promoButtons {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 6px;
+  gap: 8px;
   margin-top: 10px;
 }
 
 #promoButtons button {
-  padding: 10px 8px;
-  background: linear-gradient(135deg, #2563eb, #4f46e5);
-  color: #ffffff;
-  font-size: 0.95em;
-  font-weight: bold;
-  border: none;
+  padding: 12px 8px;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 1.05em;
+  font-weight: 800;
+  border: 2px solid #94a3b8;
+  border-bottom: 4px solid #64748b;
   border-radius: 8px;
+}
+
+#promoButtons button:hover {
+  background: #fef08a;
+  border-color: #b45309;
 }
 
 .modalActions {
@@ -811,17 +817,17 @@ button:active:not(:disabled) {
 
 .modalActions button {
   flex: 1;
-  height: 50px;
-  font-size: 20px;
+  height: 54px;
+  font-size: 22px;
   border: none;
-  border-radius: 8px;
-  font-weight: bold;
+  border-radius: 10px;
+  font-weight: 900;
   color: #ffffff;
 }
 
-.modalActions .cancel { background: #dc2626; }
-.modalActions .confirm { background: #16a34a; }
-.modalActions .convert { background: #d97706; }
+.modalActions .cancel { background: #dc2626; border-bottom: 4px solid #991b1b; }
+.modalActions .confirm { background: #15803d; border-bottom: 4px solid #14532d; }
+.modalActions .convert { background: #d97706; border-bottom: 4px solid #92400e; }
 
 @media (max-width: 600px) {
   #numpad button { padding: 20px; font-size: 1.5em; }
@@ -834,7 +840,7 @@ button:active:not(:disabled) {
   width: 58mm;
   font-size: 12px;
   line-height: 1.2em;
-  color: #000;
+  color: #000000;
 }
 #printArea h4 { text-align: center; margin: 2px 0; }
 #printArea table { width: 100%; border-collapse: collapse; }
