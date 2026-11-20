@@ -1,6 +1,23 @@
 /* =========================================
-   中老齡友善 POS 介面優化版 CSS
+   KTV 專屬尊榮紫金 × 中老齡友善 POS CSS
    ========================================= */
+:root {
+    --bg-app: #f3f1f8;                                          /* 柔霧薰衣草淺灰，減少暗環境眩光 */
+    --bg-sidebar: linear-gradient(180deg, #1b1035 0%, #2d1b54 100%); /* KTV 深絲絨皇室紫 */
+    --bg-card: #ffffff;
+    --text-main: #111827;
+    --text-muted: #4b5563;
+    --ktv-purple: #6d28d9;
+    --ktv-purple-dark: #4c1d95;
+    --accent-gold: linear-gradient(135deg, #fde047 0%, #f59e0b 100%); /* VIP 香檳金 */
+    --accent-green: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+    --accent-red: #dc2626;
+    --border-soft: #ddd6fe;
+    --shadow-sm: 0 2px 6px rgba(27, 16, 53, 0.07);
+    --shadow-md: 0 6px 16px rgba(27, 16, 53, 0.12);
+    --shadow-lg: 0 14px 36px rgba(17, 12, 36, 0.45);
+}
+
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -8,49 +25,49 @@
 body {
     margin: 0;
     font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", Arial, sans-serif;
-    font-size: 18px; /* 提高基準字級 */
-    background: #eef1f5;
-    color: #1a1a1a;
+    font-size: 18px;
+    background: var(--bg-app);
+    color: var(--text-main);
     -webkit-tap-highlight-color: transparent;
 }
 
 button {
     cursor: pointer;
     outline: none;
-    transition: background-color 0.15s, transform 0.1s, box-shadow 0.15s;
-    touch-action: manipulation; /* 防止快速連點觸發瀏覽器縮放 */
-    user-select: none;          /* 防止長按或連點反白文字 */
+    transition: all 0.16s ease;
+    touch-action: manipulation;
+    user-select: none;
     font-family: inherit;
 }
 
-/* 點擊時的明確回饋感 */
 button:active {
     transform: scale(0.97);
 }
 
-/* 清晰的焦點外框（方便確認目前位置） */
 button:focus-visible,
 input:focus-visible {
-    outline: 4px solid #ff9800;
+    outline: 4px solid #f59e0b;
     outline-offset: 2px;
 }
 
-/* 加寬捲軸，方便高齡使用者拖曳與辨識 */
+/* 加寬捲軸 */
 ::-webkit-scrollbar {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
 }
 ::-webkit-scrollbar-track {
-    background: #dfe4ea;
-    border-radius: 8px;
+    background: rgba(109, 40, 217, 0.08);
+    border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb {
-    background: #7f8c8d;
-    border-radius: 8px;
-    border: 2px solid #dfe4ea;
+    background: #9ca3af;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #576574;
+    background: #6b7280;
+    background-clip: content-box;
 }
 
 #posApp {
@@ -58,51 +75,61 @@ input:focus-visible {
     height: 100vh;
     width: 100vw;
     overflow: hidden;
+    background: var(--bg-app);
 }
 
 /* =========================================
-   1. 左邊欄：類別區 (25%)
+   1. 左邊欄：類別區 (25%) - 皇室紫絲絨質感
    ========================================= */
 #posCategories {
     width: 25%;
-    background: #1e3750; /* 加深背景提升與白字對比 */
-    padding: 16px;
-    color: white;
+    background: var(--bg-sidebar);
+    padding: 18px 16px;
+    color: #ffffff;
     overflow-y: auto;
-    border-radius: 0 12px 12px 0;
+    border-radius: 0 18px 18px 0;
+    box-shadow: 4px 0 22px rgba(27, 16, 53, 0.28);
+    z-index: 2;
 }
 
 #posCategories h3 {
-    margin-top: 0;
-    margin-bottom: 14px;
+    margin: 0 0 16px 0;
+    padding-bottom: 12px;
     font-size: 1.3em;
-    font-weight: bold;
-    letter-spacing: 1px;
-    border-bottom: 2px solid rgba(255,255,255,0.25);
-    padding-bottom: 8px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #fde047; /* 標題帶點香檳金色 */
+    border-bottom: 2px solid rgba(253, 224, 71, 0.25);
+    display: flex;
+    align-items: center;
 }
 
 #posCategories button {
     width: 100%;
-    margin: 8px 0;
-    padding: 16px 12px;
-    min-height: 56px; /* 加大觸控高度 */
+    margin: 9px 0;
+    padding: 15px 14px;
+    min-height: 58px;
     font-size: 1.15em;
     font-weight: 600;
-    border: 2px solid transparent;
-    border-radius: 10px;
-    background: #286090;
-    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.11);
+    color: #f8fafc;
     text-align: center;
-    line-height: 1.3;
+    line-height: 1.35;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
+}
+
+#posCategories button:hover {
+    background: rgba(255, 255, 255, 0.22);
 }
 
 #posCategories button.active {
-    background: #ffd32a;
-    color: #000000;
+    background: var(--accent-gold);
+    color: #111827;
     font-weight: 800;
-    border: 3px solid #ffffff; /* 明確白框標示選中 */
-    box-shadow: 0 4px 10px rgba(0,0,0,0.35);
+    border: 3px solid #ffffff;
+    box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
 }
 
 /* =========================================
@@ -111,8 +138,8 @@ input:focus-visible {
 #posProducts {
     width: 35%;
     flex: none;
-    padding: 16px;
-    display: grid; /* 改用 Grid 自動整齊排版，避免右側留白畸零 */
+    padding: 18px;
+    display: grid;
     grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
     gap: 14px;
     align-content: flex-start;
@@ -120,74 +147,85 @@ input:focus-visible {
 }
 
 .product-card {
-    background: #ffffff;
-    border: 2px solid #cbd5e1; /* 加上邊框，明確區隔每張卡片 */
-    border-radius: 12px;
-    padding: 14px 10px;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.08);
+    background: var(--bg-card);
+    border: 1.5px solid var(--border-soft);
+    border-top: 5px solid #7c3aed; /* KTV 霓虹紫頂條 */
+    border-radius: 14px;
+    padding: 14px 10px 12px 10px;
+    box-shadow: var(--shadow-sm);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    align-items: center;
     text-align: center;
     cursor: pointer;
-    min-height: 100px;
-    transition: border-color 0.15s, background-color 0.15s, transform 0.1s;
+    min-height: 114px;
+    transition: all 0.15s ease;
     user-select: none;
     touch-action: manipulation;
 }
 
 .product-card:hover {
-    border-color: #2980b9;
-    background: #f0f8ff;
+    border-color: #7c3aed;
+    background: #faf5ff;
+    box-shadow: var(--shadow-md);
 }
 
 .product-card:active {
     transform: scale(0.96);
-    background: #e1f0fa;
+    background: #f3e8ff;
 }
 
 .product-card h4 {
     margin: 0;
-    font-size: 1.25em;
-    font-weight: bold;
-    color: #111111;
+    font-size: 1.2em;
+    font-weight: 700;
+    color: var(--text-main);
     line-height: 1.4;
     white-space: normal;
     word-wrap: break-word;
 }
 
+/* 深玫瑰紅價格膠囊 */
 .product-card p {
-    margin: 8px 0 0 0;
-    font-size: 1.2em;
-    font-weight: bold;
-    color: #b71c1c; /* 價格使用深紅高對比，一眼看清 */
+    margin: 10px 0 0 0;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: #fdf2f8;
+    border: 1px solid #fbcfe8;
+    font-size: 1.15em;
+    font-weight: 800;
+    color: #9d174d;
+    font-variant-numeric: tabular-nums;
 }
 
 /* =========================================
-   3. 右邊欄：購物車與結帳區 (40%)
+   3. 右邊欄：購物車與包廂結帳區 (40%)
    ========================================= */
 #posCartContainer {
     width: 40%;
-    background: #f8f9fa;
-    padding: 14px;
+    background: #faf9fc;
+    padding: 16px;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    border-left: 3px solid #b0bec5;
+    border-left: 1px solid #ddd6fe;
+    box-shadow: -4px 0 22px rgba(27, 16, 53, 0.08);
 }
 
 .cartHeader {
-    font-weight: bold;
-    background: #cfd8dc;
-    color: #111;
+    font-weight: 700;
+    background: #2e1b5b;
+    color: #ffffff;
     font-size: 1.05em;
     display: grid;
     grid-template-columns: 2.3fr 0.9fr 1fr 1fr 0.9fr;
     gap: 6px;
-    padding: 10px 8px;
-    border-radius: 8px;
+    padding: 11px 10px;
+    border-radius: 10px;
     text-align: center;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
+    box-shadow: var(--shadow-sm);
 }
 
 #posCart div.cartRow {
@@ -195,19 +233,20 @@ input:focus-visible {
     grid-template-columns: 2.3fr 0.9fr 1fr 1fr 0.9fr;
     gap: 6px;
     background: #ffffff;
-    border: 1px solid #cfd8dc;
-    padding: 10px 8px;
+    border: 1px solid #e5e7eb;
+    padding: 11px 10px;
     margin-bottom: 8px;
-    border-radius: 8px;
+    border-radius: 10px;
     align-items: center;
     text-align: center;
-    font-size: 1.15em;
-    color: #111;
+    font-size: 1.12em;
+    color: var(--text-main);
+    font-variant-numeric: tabular-nums;
+    box-shadow: 0 1px 3px rgba(27, 16, 53, 0.04);
 }
 
-/* 交替底色，防止看錯行 */
 #posCart div.cartRow:nth-child(even) {
-    background: #f1f5f9;
+    background: #f5f3ff; /* 淡紫斑馬紋，方便對行 */
 }
 
 #posCart div.cartRow span.name {
@@ -215,43 +254,50 @@ input:focus-visible {
     cursor: pointer;
     white-space: normal;
     word-break: break-word;
-    font-weight: 600;
+    font-weight: 700;
     line-height: 1.35;
+    color: #1f2937;
 }
 
-/* 購物車中的刪除按鈕放大，防止誤按旁邊品項 */
 #posCart div.cartRow span.remove button {
     font-size: 1em;
-    font-weight: bold;
-    padding: 8px 12px;
+    font-weight: 700;
+    padding: 8px 10px;
     min-width: 44px;
     min-height: 44px;
-    background: #e74c3c;
-    color: white;
+    background: #ef4444;
+    color: #ffffff;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.25);
+}
+
+#posCart div.cartRow span.remove button:hover {
+    background: #dc2626;
 }
 
 /* 折扣與現金輸入框 */
 #discountContainer {
     display: flex;
-    gap: 8px;
+    gap: 10px;
     margin: 10px 0;
 }
 
 #discountContainer input,
 #cashPanel input {
     width: 100%;
-    padding: 12px;
-    min-height: 50px;
-    border: 2px solid #7f8c8d;
-    border-radius: 8px;
+    padding: 12px 14px;
+    min-height: 52px;
+    border: 2px solid #c4b5fd;
+    border-radius: 10px;
     text-align: right;
     font-size: 1.2em;
-    font-weight: bold;
-    color: #111;
+    font-weight: 700;
+    color: var(--text-main);
     background: #ffffff;
     cursor: pointer;
+    font-variant-numeric: tabular-nums;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03);
 }
 
 #discountContainer input {
@@ -260,8 +306,8 @@ input:focus-visible {
 
 #discountContainer input:focus,
 #cashPanel input:focus {
-    border-color: #2980b9;
-    background: #fffde7;
+    border-color: #7c3aed;
+    background: #fffbeb;
 }
 
 #cashPanel {
@@ -269,7 +315,7 @@ input:focus-visible {
     margin-top: 8px;
 }
 
-/* 稅別選擇按鈕 */
+/* 稅別 / 服務費按鈕 */
 #taxContainer {
     display: flex;
     flex-wrap: wrap;
@@ -281,19 +327,25 @@ input:focus-visible {
     flex: 1 1 30%;
     min-height: 50px;
     padding: 10px 8px;
-    border: 2px solid #95a5a6;
-    border-radius: 8px;
-    background: #dfe6e9;
-    color: #111;
-    font-size: 1.1em;
+    border: 2px solid #d1d5db;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #1f2937;
+    font-size: 1.08em;
     font-weight: 600;
+    box-shadow: var(--shadow-sm);
+}
+
+#taxContainer button:hover {
+    background: #f5f3ff;
+    border-color: #a78bfa;
 }
 
 #taxContainer button.active {
-    background: #ffd32a;
-    color: #000000;
+    background: var(--accent-gold);
+    color: #111827;
     font-weight: 800;
-    border: 3px solid #2c3e50;
+    border: 3px solid #2e1b5b;
 }
 
 /* 付款方式按鈕 */
@@ -306,67 +358,74 @@ input:focus-visible {
 #paymentButtons .payBtn {
     min-height: 54px;
     padding: 10px;
-    border-radius: 8px;
-    background-color: #dfe6e9;
-    color: #111111;
-    border: 2px solid #95a5a6;
+    border-radius: 10px;
+    background: #ffffff;
+    color: #1f2937;
+    border: 2px solid #d1d5db;
     flex: 1;
     font-size: 1.15em;
     font-weight: 600;
+    box-shadow: var(--shadow-sm);
 }
 
 #paymentButtons .payBtn:hover {
-    background-color: #cbd5e1;
+    background: #f5f3ff;
+    border-color: #a78bfa;
 }
 
 #paymentButtons .payBtn.active {
-    background-color: #ffd32a;
-    color: #000000;
+    background: var(--accent-gold);
+    color: #111827;
     font-weight: 800;
-    border: 3px solid #2c3e50;
+    border: 3px solid #2e1b5b;
 }
 
-/* 結帳主按鈕：大且顯眼 */
+/* 結帳買單主按鈕 */
 #posCheckout {
     margin-top: 12px;
     padding: 16px;
-    min-height: 64px;
+    min-height: 66px;
     font-size: 1.4em;
-    font-weight: bold;
+    font-weight: 800;
     letter-spacing: 2px;
-    background: #1e8449;
-    color: white;
+    background: var(--accent-green);
+    color: #ffffff;
     border: none;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(21, 128, 61, 0.32);
+}
+
+#posCheckout:hover {
+    filter: brightness(1.06);
 }
 
 #posCheckout.minAlert {
-    background: #d35400 !important;
+    background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important;
+    box-shadow: 0 6px 16px rgba(194, 65, 12, 0.32);
 }
 
-/* 稅額與總計摘要 */
+/* 帳單金額明細卡片 */
 #taxSummary {
     margin-top: 10px;
     padding: 14px 16px;
     background: #ffffff;
-    border-radius: 10px;
-    border: 1px solid #cbd5e1;
-    border-left: 6px solid #f1c40f;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-    font-size: 1.2em;
+    border-radius: 12px;
+    border: 1px solid var(--border-soft);
+    border-left: 6px solid #7c3aed;
+    box-shadow: var(--shadow-sm);
+    font-size: 1.18em;
 }
 
 #taxSummary .taxRow {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 8px 0;
+    margin: 7px 0;
     white-space: nowrap;
 }
 
 #taxSummary .label {
-    color: #2c3e50;
+    color: var(--text-muted);
     font-weight: 600;
 }
 
@@ -374,40 +433,49 @@ input:focus-visible {
     min-width: 120px;
     text-align: right;
     font-family: 'Courier New', monospace;
-    font-weight: bold;
-    color: #111111;
+    font-weight: 700;
+    color: var(--text-main);
+    font-variant-numeric: tabular-nums;
 }
 
 #taxSummary .taxRow.total {
-    margin: 12px 0 4px 0;
-    padding-top: 8px;
-    border-top: 2px dashed #bdc3c7;
-    font-size: 1.2em;
+    margin: 12px 0 2px 0;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #fdf2f8;
+    border: 1px solid #fbcfe8;
+    font-size: 1.18em;
+}
+
+#taxSummary .taxRow.total .label {
+    color: #831843;
+    font-weight: 800;
 }
 
 #taxSummary .total .value {
-    color: #b71c1c;
-    font-weight: 800;
+    color: #9d174d;
+    font-weight: 900;
     font-size: 1.25em;
 }
 
-/* 今日業績顯示 */
+/* 今日業績 / 營收統計卡片 */
 #todaySalesDisplay {
     margin-top: 12px;
     padding: 14px 16px;
-    border-radius: 10px;
-    background: #e3f2fd;
-    border-left: 6px solid #1565c0;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+    border: 1px solid #ddd6fe;
+    border-left: 6px solid #6d28d9;
+    box-shadow: var(--shadow-sm);
     font-size: 1.05em;
     line-height: 1.65;
-    color: #111111;
+    color: #1f2937;
     white-space: pre-line;
 }
 
 #todaySalesDisplay b {
     font-size: 1.1em;
-    color: #0d47a1;
+    color: #4c1d95;
 }
 
 /* =========================================
@@ -417,48 +485,52 @@ input:focus-visible {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
     align-items: center;
 }
 
 .search-container button {
     min-width: 120px;
-    height: 50px;
-    padding: 0 14px;
+    height: 52px;
+    padding: 0 16px;
     font-size: 1.05em;
-    font-weight: bold;
-    background-color: #6c3483;
+    font-weight: 700;
+    background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
     border: none;
-    color: white;
+    color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    border-radius: 8px;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(91, 33, 182, 0.28);
 }
 
 .search-container input {
     flex: 1;
     min-width: 140px;
-    height: 50px;
-    padding: 0 12px;
+    height: 52px;
+    padding: 0 14px;
     font-size: 1.1em;
-    border: 2px solid #7f8c8d;
-    border-radius: 8px;
-    color: #111;
+    border: 2px solid #c4b5fd;
+    border-radius: 10px;
+    color: var(--text-main);
+    background: #ffffff;
 }
 
 /* =========================================
-   掛單分頁區 (Tabs)
+   包廂掛單分頁區 (KTV 核心功能，強化辨識)
    ========================================= */
 #openTabsContainer {
     display: flex;
     flex-direction: column;
     gap: 10px;
     margin-bottom: 14px;
-    background: #2c3e50;
+    background: #1e143b;
     padding: 12px;
-    border-radius: 10px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid #3b2a6e;
 }
 
 #tabList {
@@ -470,95 +542,107 @@ input:focus-visible {
 .tab-wrapper {
     display: inline-flex;
     align-items: center;
-    background: #546e7a;
-    border-radius: 8px;
+    background: #3b2a6e;
+    border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.25);
-    border: 3px solid transparent;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    border: 2px solid rgba(255, 255, 255, 0.14);
 }
 
 .tab-wrapper.active {
-    background: #d35400;
-    border-color: #ffd32a;
+    background: var(--accent-gold);
+    border: 2px solid #ffffff;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
 }
 
 .tab-btn {
     background: transparent;
-    color: white;
+    color: #f8fafc;
     border: none;
-    padding: 12px 16px;
+    padding: 10px 16px;
     min-height: 48px;
-    font-size: 1.15em;
-    font-weight: bold;
+    font-size: 1.12em;
+    font-weight: 700;
+}
+
+.tab-wrapper.active .tab-btn {
+    color: #111827;
 }
 
 .tab-close-btn {
-    background: rgba(0,0,0,0.3);
-    color: white;
+    background: rgba(0, 0, 0, 0.25);
+    color: #ffffff;
     border: none;
-    padding: 12px 14px;
+    padding: 10px 12px;
     min-width: 44px;
     min-height: 48px;
-    font-size: 1.15em;
-    font-weight: bold;
-    border-left: 1px solid rgba(255,255,255,0.3);
+    font-size: 1.1em;
+    font-weight: 700;
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tab-wrapper.active .tab-close-btn {
+    background: rgba(0, 0, 0, 0.14);
+    color: #111827;
+    border-left: 1px solid rgba(0, 0, 0, 0.18);
 }
 
 .tab-close-btn:hover {
-    background: #c0392b;
+    background: #dc2626 !important;
+    color: #ffffff !important;
 }
 
 .tab-badge {
-    background: #c0392b;
-    color: white;
-    border-radius: 12px;
-    padding: 3px 9px;
-    font-size: 0.95em;
+    background: #db2777;
+    color: #ffffff;
+    border-radius: 20px;
+    padding: 2px 9px;
+    font-size: 0.9em;
     margin-left: 8px;
-    border: 1px solid white;
+    border: 1.5px solid #ffffff;
 }
 
 #addTabBtn {
-    background: #1e8449;
-    color: white;
+    background: var(--accent-green);
+    color: #ffffff;
     border: none;
-    padding: 14px 18px;
+    padding: 12px 18px;
     min-height: 50px;
-    border-radius: 8px;
-    font-size: 1.15em;
-    font-weight: bold;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.25);
+    border-radius: 10px;
+    font-size: 1.12em;
+    font-weight: 700;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
 }
 
 #addTabBtn:hover {
-    background: #196f3d;
+    filter: brightness(1.08);
 }
 
 /* =========================================
-   登出按鈕（柔和提示，避免急促閃爍刺眼）
+   登出按鈕
    ========================================= */
 #logoutBtn {
-    color: white;
-    background-color: #c0392b;
+    color: #ffffff;
+    background: linear-gradient(135deg, #be123c 0%, #9f1239 100%);
     min-height: 50px;
     font-size: 1.1em;
-    font-weight: bold;
+    font-weight: 700;
     border: none;
-    border-radius: 8px;
-    padding: 10px 16px;
+    border-radius: 10px;
+    padding: 10px 18px;
+    box-shadow: 0 3px 8px rgba(159, 18, 57, 0.25);
 }
 
 #logoutBtn.active {
     animation: btnPulse 2s infinite ease-in-out;
     color: #ffffff;
     position: relative;
-    border: 2px solid #ffd32a;
+    border: 2px solid #fde047;
 }
 
 @keyframes btnPulse {
-    0%   { background-color: #d35400; }
-    50%  { background-color: #e67e22; }
-    100% { background-color: #d35400; }
+    0%, 100% { background: #be123c; }
+    50%      { background: #db2777; }
 }
 
 #logoutBtn.active::after {
@@ -568,16 +652,16 @@ input:focus-visible {
     right: 12px;
     top: 50%;
     transform: translateY(-50%);
-    color: #ffd32a;
+    color: #fde047;
 }
 
 @keyframes blink {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 1; }
+    0%, 100% { opacity: 0.35; }
+    50%      { opacity: 1; }
 }
 
 /* =========================================
-   彈出數字鍵盤與編輯視窗 (已合併重複規則)
+   KTV 毛玻璃彈窗與擬真立體鍵盤
    ========================================= */
 #editModal,
 #posKeypadModal {
@@ -586,7 +670,9 @@ input:focus-visible {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.65); /* 加深遮罩，集中視覺焦點 */
+    background: rgba(17, 12, 36, 0.7);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     display: none;
     justify-content: center;
     align-items: center;
@@ -599,67 +685,69 @@ input:focus-visible {
 
 #editModal .modalContent,
 .keypadBox {
-    background: #222f3e;
-    padding: 24px 20px;
+    background: linear-gradient(180deg, #221742 0%, #130d26 100%);
+    padding: 26px 22px;
     width: 92%;
-    max-width: 400px; /* 加寬鍵盤，按鈕更大更好按 */
-    border-radius: 16px;
-    box-shadow: 0 10px 35px rgba(0,0,0,0.5);
+    max-width: 410px;
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg);
     text-align: center;
     position: relative;
-    border: 2px solid #576574;
+    border: 1.5px solid #5b4694;
 }
 
-/* 放大關閉按鈕，避免點不到 */
 #posCloseBtn {
     display: block !important;
 }
 
 .closeModal {
     position: absolute;
-    top: -12px;
-    right: -12px;
-    width: 44px;
-    height: 44px;
-    line-height: 44px;
+    top: -14px;
+    right: -14px;
+    width: 46px;
+    height: 46px;
+    line-height: 42px;
     text-align: center;
     border-radius: 50%;
-    background: #e74c3c;
+    background: #ef4444;
     color: #ffffff;
     border: 3px solid #ffffff;
     cursor: pointer;
     font-weight: bold;
     font-size: 24px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
     z-index: 10;
 }
 
 .closeModal:hover {
-    background: #c0392b;
+    background: #dc2626;
 }
 
 #posKeypadTitle {
     margin-bottom: 14px;
     font-size: 24px;
-    font-weight: bold;
-    color: #ffffff;
+    font-weight: 700;
+    color: #fde047;
+    letter-spacing: 1px;
 }
 
-/* 數字輸入顯示欄：採用高對比深底暖白字，減少散光光暈 */
+/* 內嵌式 LED 收銀顯示幕 */
 #modalInput,
 #posKeypadInput {
     width: 100%;
-    font-size: 34px;
-    font-weight: bold;
-    padding: 14px;
-    margin: 0 auto 16px auto;
+    font-size: 36px;
+    font-weight: 800;
+    padding: 14px 16px;
+    margin: 0 auto 18px auto;
     display: block;
     text-align: right;
-    border: 2px solid #8395a7;
-    border-radius: 10px;
-    background: #11161b;
-    color: #fff200; /* 高對比亮黃色，比純綠更柔和好讀 */
+    border: 2px solid #5b4694;
+    border-radius: 12px;
+    background: #090612;
+    color: #fde047;
     letter-spacing: 2px;
+    font-variant-numeric: tabular-nums;
+    box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.85);
 }
 
 #modalInput {
@@ -673,7 +761,7 @@ input:focus-visible {
     height: 0 !important;
 }
 
-/* 3欄式數字鍵盤 */
+/* 立體計算機按鍵 */
 #numpad {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -681,18 +769,18 @@ input:focus-visible {
     margin-top: 8px;
 }
 
-#numpad button {
+#numpad button,
+.posKeypadGrid button {
     height: 68px;
     font-size: 26px;
-    font-weight: bold;
-    background: #485460;
+    font-weight: 700;
+    background: #36295c;
     color: #ffffff;
-    border: 1px solid #808e9b;
-    border-radius: 10px;
-    box-shadow: inset 0 -3px 0 rgba(0,0,0,0.35);
+    border: 1px solid #5b4694;
+    border-radius: 12px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 4px 0 #0b0717;
 }
 
-/* 4欄式收銀鍵盤 */
 .posKeypadGrid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -700,34 +788,27 @@ input:focus-visible {
 }
 
 .posKeypadGrid button {
-    height: 68px;
     font-size: 24px;
-    font-weight: bold;
-    border: 1px solid #808e9b;
-    border-radius: 10px;
-    background: #485460;
-    color: #ffffff;
-    box-shadow: inset 0 -3px 0 rgba(0,0,0,0.35);
 }
 
 .posKeypadGrid button:active,
 #numpad button:active {
-    transform: translateY(2px);
-    box-shadow: none;
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 #0b0717;
 }
 
 .posKeypadGrid button.big {
-    background: #0277bd;
-    border-color: #4fc3f7;
+    background: #7c3aed;
+    border-color: #a78bfa;
 }
 
 .posKeypadGrid button.confirm {
-    background: #2e7d32;
-    border-color: #81c784;
+    background: #16a34a;
+    border-color: #4ade80;
     font-size: 24px;
 }
 
-/* 促銷按鈕 */
+/* 優惠 / 折扣按鈕 */
 #promoButtons {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -738,37 +819,39 @@ input:focus-visible {
 #promoButtons button {
     padding: 14px 10px;
     min-height: 54px;
-    background: #1976d2;
-    color: white;
+    background: #6d28d9;
+    color: #ffffff;
     font-size: 1.1em;
-    font-weight: bold;
-    border: none;
+    font-weight: 700;
+    border: 1px solid #8b5cf6;
     border-radius: 10px;
+    box-shadow: 0 3px 0 #2e1065;
 }
 
 /* 彈窗底部動作鈕 */
 .modalActions {
-    margin-top: 18px;
+    margin-top: 20px;
     display: flex;
-    gap: 10px;
+    gap: 12px;
 }
 
 .modalActions button {
     flex: 1;
     min-height: 56px;
     font-size: 22px;
-    font-weight: bold;
+    font-weight: 700;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     color: #ffffff;
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.4);
 }
 
-.modalActions .cancel  { background: #c62828; }
-.modalActions .confirm { background: #2e7d32; }
-.modalActions .convert { background: #e67e22; }
+.modalActions .cancel  { background: #dc2626; }
+.modalActions .confirm { background: #16a34a; }
+.modalActions .convert { background: #d97706; }
 
 /* =========================================
-   小螢幕 / 平板響應式微調
+   響應式微調
    ========================================= */
 @media (max-width: 600px) {
     #numpad button,
