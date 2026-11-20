@@ -232,20 +232,22 @@ justify-content:center;align-items:center;">
       <div class="modal-title" style="font-size:1.1rem; font-weight:bold;">💸 店面支出記帳</div>
       <button class="close-btn" onclick="closeExpenseModal()" style="width:35px; height:35px; border-radius:8px; background:#292938; color:white; border:none; cursor:pointer;">×</button>
     </div>
-    
-    <!-- 新增支出表單（統一使用同一個 class 或行內樣式來確保存欄位大小與對齊） -->
+
+    <!-- 新增支出表單 -->
     <div style="display:flex; flex-direction:column; gap:12px; margin-bottom: 20px;">
-      <select id="expenseCategory" style="width:100%; height:45px; padding:0 14px; border-radius:9px; border:1px solid #3a3a4d; background:#10101a; color:white; font-size:0.95rem; box-sizing:border-box; outline:none;">
+      <select id="expenseCategory" onchange="updateExpenseNoteOptions()" style="width:100%; height:45px; padding:0 14px; border-radius:9px; border:1px solid #3a3a4d; background:#10101a; color:white; font-size:0.95rem; box-sizing:border-box; outline:none;">
         <option value="進貨成本">📦 進貨成本</option>
         <option value="房租水電">💡 房租水電</option>
         <option value="設備維修">🔧 設備維修</option>
         <option value="雜支零用">🛒 雜支零用</option>
-        <option value="其他支出">📝 其他支出</option>
       </select>
 
-      <input id="expenseAmount" type="text" placeholder="支出金額 (NT$)" autocomplete="off" style="width:100%; height:45px; padding:0 14px; border-radius:9px; border:1px solid #3a3a4d; background:#10101a; color:white; font-size:0.95rem; box-sizing:border-box; outline:none;" />
+      <select id="expenseNoteSelect" onchange="applyExpenseNotePreset()" style="width:100%; height:45px; padding:0 14px; border-radius:9px; border:1px solid #3a3a4d; background:#10101a; color:white; font-size:0.95rem; box-sizing:border-box; outline:none;">
+      </select>
 
-      <input id="expenseNote" type="text" placeholder="支出備註 / 品項說明（例：買咖啡豆）" autocomplete="off" style="width:100%; height:45px; padding:0 14px; border-radius:9px; border:1px solid #3a3a4d; background:#10101a; color:white; font-size:0.95rem; box-sizing:border-box; outline:none;" />
+      <input id="expenseNote" type="text" placeholder="支出備註 / 品項說明（例：蔬菜一批、檸檬、調味料）" autocomplete="off" style="width:100%; height:45px; padding:0 14px; border-radius:9px; border:1px solid #3a3a4d; background:#10101a; color:white; font-size:0.95rem; box-sizing:border-box; outline:none;" />
+
+      <input id="expenseAmount" type="text" placeholder="支出金額 (NT$)" autocomplete="off" style="width:100%; height:45px; padding:0 14px; border-radius:9px; border:1px solid #3a3a4d; background:#10101a; color:white; font-size:0.95rem; box-sizing:border-box; outline:none;" />
 
       <button class="primary-btn" onclick="submitExpense()" style="width:100%; height:45px; border-radius:9px; background:linear-gradient(135deg, #ff2bd6, #744cff); color:white; font-weight:bold; border:none; cursor:pointer; font-size:0.95rem; margin-top:4px;">💾 記帳送出</button>
     </div>
