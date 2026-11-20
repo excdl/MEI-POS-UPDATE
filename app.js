@@ -339,8 +339,42 @@ function renderProducts(category = null, search = "") {
 
 function openStoreWineModal(product) {
     pendingStoreProduct = product;
+    const modal = document.getElementById("storeWineModal");
+    if (!modal) return;
+
     document.getElementById("storeWineTitle").innerText = `【${product["商品名稱"]}】`;
-    document.getElementById("storeWineModal").style.display = "flex";
+
+    // 🚀 自動檢查內層彈窗右上角是否有 X 按鈕，若沒有就自動補上（不會重複產生）
+    const box = modal.firstElementChild;
+    if (box) {
+        if (getComputedStyle(box).position === "static") {
+            box.style.position = "relative";
+        }
+        if (!box.querySelector("#storeWineCloseBtn, [onclick*='closeStoreWineModal']")) {
+            const closeBtn = document.createElement("button");
+            closeBtn.id = "storeWineCloseBtn";
+            closeBtn.type = "button";
+            closeBtn.innerText = "×";
+            closeBtn.title = "取消 / 關閉";
+            closeBtn.onclick = closeStoreWineModal;
+            closeBtn.style.cssText =
+                "position:absolute; top:10px; right:10px; width:34px; height:34px; border-radius:50%; border:none; background:#e2e8f0; color:#334155; font-size:20px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1;";
+            box.appendChild(closeBtn);
+        }
+    }
+
+    // 點擊視窗外的深色背景也可關閉
+    modal.onclick = (e) => {
+        if (e.target === modal) closeStoreWineModal();
+    };
+
+    modal.style.display = "flex";
+}
+
+function closeStoreWineModal() {
+    pendingStoreProduct = null;
+    const modal = document.getElementById("storeWineModal");
+    if (modal) modal.style.display = "none";
 }
 
 function confirmStoreWine(isStore) {
