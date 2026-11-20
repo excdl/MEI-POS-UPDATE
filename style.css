@@ -106,9 +106,9 @@ input:focus-visible {
 
 #posCategories button {
     width: 100%;
-    margin: 9px 0;
-    padding: 15px 14px;
-    min-height: 58px;
+    margin: 8px 0;
+    padding: 11px 14px;
+    min-height: 52px; /* 高度縮減 10% (58px -> 52px) */
     font-size: 1.15em;
     font-weight: 600;
     border: 1px solid rgba(255, 255, 255, 0.16);
