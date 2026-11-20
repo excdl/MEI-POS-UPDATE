@@ -1,5 +1,5 @@
 /* =========================================
-   KTV 尊榮紫金 × 適中比例友善版 POS CSS
+   KTV 尊榮紫金 × 精巧免捲軸 POS CSS
    ========================================= */
 :root {
     --bg-app: #f3f1f8;
@@ -8,14 +8,12 @@
     --text-main: #111827;
     --text-muted: #4b5563;
     --ktv-purple: #6d28d9;
-    --ktv-purple-dark: #4c1d95;
     --accent-gold: linear-gradient(135deg, #fde047 0%, #f59e0b 100%);
     --accent-green: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
-    --accent-red: #dc2626;
     --border-soft: #ddd6fe;
-    --shadow-sm: 0 2px 5px rgba(27, 16, 53, 0.07);
-    --shadow-md: 0 5px 14px rgba(27, 16, 53, 0.12);
-    --shadow-lg: 0 12px 30px rgba(17, 12, 36, 0.45);
+    --shadow-sm: 0 2px 4px rgba(27, 16, 53, 0.06);
+    --shadow-md: 0 4px 10px rgba(27, 16, 53, 0.12);
+    --shadow-lg: 0 10px 26px rgba(17, 12, 36, 0.45);
 }
 
 *, *::before, *::after {
@@ -25,7 +23,7 @@
 body {
     margin: 0;
     font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", Arial, sans-serif;
-    font-size: 16px; /* 調回標準 16px，避免疊加過大 */
+    font-size: 14px; /* 縮小基準字體，整體更精巧 */
     background: var(--bg-app);
     color: var(--text-main);
     -webkit-tap-highlight-color: transparent;
@@ -47,27 +45,24 @@ button:active {
 button:focus-visible,
 input:focus-visible {
     outline: 3px solid #f59e0b;
-    outline-offset: 2px;
+    outline-offset: 1px;
 }
 
-/* 捲軸 */
+/* 細緻捲軸（僅在超出時才出現） */
 ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
 }
 ::-webkit-scrollbar-track {
-    background: rgba(109, 40, 217, 0.08);
-    border-radius: 8px;
+    background: rgba(109, 40, 217, 0.06);
+    border-radius: 6px;
 }
 ::-webkit-scrollbar-thumb {
     background: #9ca3af;
-    border-radius: 8px;
-    border: 2px solid transparent;
-    background-clip: content-box;
+    border-radius: 6px;
 }
 ::-webkit-scrollbar-thumb:hover {
     background: #6b7280;
-    background-clip: content-box;
 }
 
 #posApp {
@@ -79,43 +74,41 @@ input:focus-visible {
 }
 
 /* =========================================
-   1. 左邊欄：類別區 (25%)
+   1. 左邊欄：類別區 (25%) - 緊湊免拉捲軸
    ========================================= */
 #posCategories {
     width: 25%;
     background: var(--bg-sidebar);
-    padding: 14px 12px;
+    padding: 10px;
     color: #ffffff;
     overflow-y: auto;
-    border-radius: 0 14px 14px 0;
-    box-shadow: 4px 0 18px rgba(27, 16, 53, 0.25);
+    border-radius: 0 12px 12px 0;
+    box-shadow: 3px 0 14px rgba(27, 16, 53, 0.22);
     z-index: 2;
 }
 
 #posCategories h3 {
-    margin: 0 0 12px 0;
-    padding-bottom: 8px;
-    font-size: 1.15em;
+    margin: 0 0 6px 0;
+    padding-bottom: 5px;
+    font-size: 1.05em;
     font-weight: 700;
     letter-spacing: 1px;
     color: #fde047;
-    border-bottom: 2px solid rgba(253, 224, 71, 0.25);
+    border-bottom: 1.5px solid rgba(253, 224, 71, 0.25);
 }
 
 #posCategories button {
     width: 100%;
-    margin: 6px 0;
-    padding: 11px 10px;
-    min-height: 44px;
-    font-size: 1.05em;
+    margin: 3px 0;
+    padding: 7px 10px;
+    font-size: 0.95em;
     font-weight: 600;
     border: 1px solid rgba(255, 255, 255, 0.16);
-    border-radius: 10px;
+    border-radius: 7px;
     background: rgba(255, 255, 255, 0.11);
     color: #f8fafc;
     text-align: center;
-    line-height: 1.3;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    line-height: 1.25;
 }
 
 #posCategories button:hover {
@@ -127,7 +120,7 @@ input:focus-visible {
     color: #111827;
     font-weight: 800;
     border: 2px solid #ffffff;
-    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
 }
 
 /* =========================================
@@ -136,20 +129,20 @@ input:focus-visible {
 #posProducts {
     width: 35%;
     flex: none;
-    padding: 12px;
+    padding: 10px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(122px, 1fr)); /* 縮回精緻大小，一排可顯示更多 */
-    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 8px;
     align-content: flex-start;
     overflow-y: auto;
 }
 
 .product-card {
     background: var(--bg-card);
-    border: 1.5px solid var(--border-soft);
-    border-top: 4px solid #7c3aed;
-    border-radius: 10px;
-    padding: 10px 8px;
+    border: 1px solid var(--border-soft);
+    border-top: 3px solid #7c3aed;
+    border-radius: 8px;
+    padding: 8px 6px;
     box-shadow: var(--shadow-sm);
     display: flex;
     flex-direction: column;
@@ -157,7 +150,7 @@ input:focus-visible {
     align-items: center;
     text-align: center;
     cursor: pointer;
-    min-height: 78px;
+    min-height: 62px;
     transition: all 0.15s ease;
     user-select: none;
     touch-action: manipulation;
@@ -176,38 +169,38 @@ input:focus-visible {
 
 .product-card h4 {
     margin: 0;
-    font-size: 1.1em;
+    font-size: 1.12em;
     font-weight: 700;
     color: var(--text-main);
-    line-height: 1.35;
+    line-height: 1.25;
     white-space: normal;
     word-wrap: break-word;
 }
 
 .product-card p {
-    margin: 6px 0 0 0;
-    padding: 2px 10px;
-    border-radius: 16px;
+    margin: 5px 0 0 0;
+    padding: 2px 8px;
+    border-radius: 12px;
     background: #fdf2f8;
     border: 1px solid #fbcfe8;
-    font-size: 1.05em;
+    font-size: 1em;
     font-weight: 800;
     color: #9d174d;
     font-variant-numeric: tabular-nums;
 }
 
 /* =========================================
-   3. 右邊欄：購物車與包廂結帳區 (40%)
+   3. 右邊欄：購物車與結帳區 (40%)
    ========================================= */
 #posCartContainer {
     width: 40%;
     background: #faf9fc;
-    padding: 12px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
     border-left: 1px solid #ddd6fe;
-    box-shadow: -4px 0 18px rgba(27, 16, 53, 0.07);
+    box-shadow: -3px 0 14px rgba(27, 16, 53, 0.06);
 }
 
 .cartHeader {
@@ -217,29 +210,27 @@ input:focus-visible {
     font-size: 0.95em;
     display: grid;
     grid-template-columns: 2.3fr 0.9fr 1fr 1fr 0.9fr;
-    gap: 5px;
-    padding: 8px 6px;
-    border-radius: 8px;
+    gap: 4px;
+    padding: 6px;
+    border-radius: 6px;
     text-align: center;
-    margin-bottom: 6px;
-    box-shadow: var(--shadow-sm);
+    margin-bottom: 4px;
 }
 
 #posCart div.cartRow {
     display: grid;
     grid-template-columns: 2.3fr 0.9fr 1fr 1fr 0.9fr;
-    gap: 5px;
+    gap: 4px;
     background: #ffffff;
     border: 1px solid #e5e7eb;
-    padding: 7px 6px;
-    margin-bottom: 6px;
-    border-radius: 8px;
+    padding: 6px 5px;
+    margin-bottom: 4px;
+    border-radius: 6px;
     align-items: center;
     text-align: center;
     font-size: 1.05em;
     color: var(--text-main);
     font-variant-numeric: tabular-nums;
-    box-shadow: 0 1px 2px rgba(27, 16, 53, 0.04);
 }
 
 #posCart div.cartRow:nth-child(even) {
@@ -252,21 +243,20 @@ input:focus-visible {
     white-space: normal;
     word-break: break-word;
     font-weight: 700;
-    line-height: 1.3;
+    line-height: 1.25;
     color: #1f2937;
 }
 
 #posCart div.cartRow span.remove button {
-    font-size: 0.95em;
+    font-size: 0.9em;
     font-weight: 700;
-    padding: 5px 8px;
-    min-width: 36px;
-    min-height: 36px;
+    padding: 3px 7px;
+    min-width: 30px;
+    min-height: 30px;
     background: #ef4444;
     color: #ffffff;
     border: none;
-    border-radius: 6px;
-    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.25);
+    border-radius: 5px;
 }
 
 #posCart div.cartRow span.remove button:hover {
@@ -276,19 +266,19 @@ input:focus-visible {
 /* 折扣與現金輸入框 */
 #discountContainer {
     display: flex;
-    gap: 8px;
-    margin: 6px 0;
+    gap: 6px;
+    margin: 5px 0;
 }
 
 #discountContainer input,
 #cashPanel input {
     width: 100%;
-    padding: 8px 10px;
-    min-height: 40px;
-    border: 2px solid #c4b5fd;
-    border-radius: 8px;
+    padding: 6px 10px;
+    min-height: 36px;
+    border: 1.5px solid #c4b5fd;
+    border-radius: 7px;
     text-align: right;
-    font-size: 1.05em;
+    font-size: 1em;
     font-weight: 700;
     color: var(--text-main);
     background: #ffffff;
@@ -308,28 +298,27 @@ input:focus-visible {
 
 #cashPanel {
     display: block;
-    margin-top: 6px;
+    margin-top: 5px;
 }
 
 /* 稅別按鈕 */
 #taxContainer {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
-    margin: 6px 0;
+    gap: 5px;
+    margin: 5px 0;
 }
 
 #taxContainer button {
     flex: 1 1 30%;
-    min-height: 40px;
-    padding: 6px;
-    border: 2px solid #d1d5db;
-    border-radius: 8px;
+    min-height: 36px;
+    padding: 5px;
+    border: 1.5px solid #d1d5db;
+    border-radius: 7px;
     background: #ffffff;
     color: #1f2937;
-    font-size: 1em;
+    font-size: 0.95em;
     font-weight: 600;
-    box-shadow: var(--shadow-sm);
 }
 
 #taxContainer button:hover {
@@ -347,21 +336,20 @@ input:focus-visible {
 /* 付款方式按鈕 */
 #paymentButtons {
     display: flex;
-    gap: 8px;
-    margin: 8px 0;
+    gap: 6px;
+    margin: 6px 0;
 }
 
 #paymentButtons .payBtn {
-    min-height: 42px;
-    padding: 6px 8px;
-    border-radius: 8px;
+    min-height: 38px;
+    padding: 5px 6px;
+    border-radius: 7px;
     background: #ffffff;
     color: #1f2937;
-    border: 2px solid #d1d5db;
+    border: 1.5px solid #d1d5db;
     flex: 1;
-    font-size: 1.05em;
+    font-size: 1em;
     font-weight: 600;
-    box-shadow: var(--shadow-sm);
 }
 
 #paymentButtons .payBtn:hover {
@@ -376,19 +364,19 @@ input:focus-visible {
     border: 2px solid #2e1b5b;
 }
 
-/* 結帳買單主按鈕 */
+/* 結帳主按鈕 */
 #posCheckout {
-    margin-top: 8px;
-    padding: 10px 14px;
-    min-height: 50px;
-    font-size: 1.25em;
+    margin-top: 6px;
+    padding: 8px 12px;
+    min-height: 44px;
+    font-size: 1.15em;
     font-weight: 800;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     background: var(--accent-green);
     color: #ffffff;
     border: none;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(21, 128, 61, 0.28);
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(21, 128, 61, 0.25);
 }
 
 #posCheckout:hover {
@@ -397,26 +385,25 @@ input:focus-visible {
 
 #posCheckout.minAlert {
     background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%) !important;
-    box-shadow: 0 4px 12px rgba(194, 65, 12, 0.28);
 }
 
-/* 帳單金額明細卡片 */
+/* 帳單金額明細 */
 #taxSummary {
-    margin-top: 6px;
-    padding: 10px 12px;
+    margin-top: 5px;
+    padding: 8px 10px;
     background: #ffffff;
-    border-radius: 10px;
+    border-radius: 8px;
     border: 1px solid var(--border-soft);
-    border-left: 5px solid #7c3aed;
+    border-left: 4px solid #7c3aed;
     box-shadow: var(--shadow-sm);
-    font-size: 1.05em;
+    font-size: 1em;
 }
 
 #taxSummary .taxRow {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 4px 0;
+    margin: 3px 0;
     white-space: nowrap;
 }
 
@@ -426,7 +413,7 @@ input:focus-visible {
 }
 
 #taxSummary .value {
-    min-width: 110px;
+    min-width: 100px;
     text-align: right;
     font-family: 'Courier New', monospace;
     font-weight: 700;
@@ -435,12 +422,12 @@ input:focus-visible {
 }
 
 #taxSummary .taxRow.total {
-    margin: 8px 0 0 0;
-    padding: 7px 10px;
+    margin: 6px 0 0 0;
+    padding: 5px 8px;
     border-radius: 6px;
     background: #fdf2f8;
     border: 1px solid #fbcfe8;
-    font-size: 1.1em;
+    font-size: 1.08em;
 }
 
 #taxSummary .taxRow.total .label {
@@ -451,26 +438,26 @@ input:focus-visible {
 #taxSummary .total .value {
     color: #9d174d;
     font-weight: 900;
-    font-size: 1.15em;
+    font-size: 1.12em;
 }
 
-/* 今日業績統計卡片 */
+/* 今日業績統計卡片（同步精簡高度） */
 #todaySalesDisplay {
-    margin-top: 8px;
-    padding: 10px 12px;
-    border-radius: 10px;
+    margin-top: 6px;
+    padding: 8px 10px;
+    border-radius: 8px;
     background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
     border: 1px solid #ddd6fe;
-    border-left: 5px solid #6d28d9;
+    border-left: 4px solid #6d28d9;
     box-shadow: var(--shadow-sm);
-    font-size: 0.95em;
-    line-height: 1.5;
+    font-size: 0.92em;
+    line-height: 1.4;
     color: #1f2937;
     white-space: pre-line;
 }
 
 #todaySalesDisplay b {
-    font-size: 1.05em;
+    font-size: 1em;
     color: #4c1d95;
 }
 
@@ -480,16 +467,16 @@ input:focus-visible {
 .search-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 10px;
+    gap: 5px;
+    margin-bottom: 8px;
     align-items: center;
 }
 
 .search-container button {
-    min-width: 105px;
-    height: 40px;
-    padding: 0 12px;
-    font-size: 0.98em;
+    min-width: 96px;
+    height: 36px;
+    padding: 0 10px;
+    font-size: 0.95em;
     font-weight: 700;
     background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
     border: none;
@@ -497,41 +484,39 @@ input:focus-visible {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(91, 33, 182, 0.25);
+    gap: 4px;
+    border-radius: 7px;
 }
 
 .search-container input {
     flex: 1;
-    min-width: 120px;
-    height: 40px;
+    min-width: 110px;
+    height: 36px;
     padding: 0 10px;
-    font-size: 1em;
-    border: 2px solid #c4b5fd;
-    border-radius: 8px;
+    font-size: 0.95em;
+    border: 1.5px solid #c4b5fd;
+    border-radius: 7px;
     color: var(--text-main);
     background: #ffffff;
 }
 
 /* =========================================
-   包廂掛單分頁區 (Tabs)
+   包廂掛單分頁區 (Tabs) - 緊湊省空間
    ========================================= */
 #openTabsContainer {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-bottom: 10px;
+    gap: 6px;
+    margin-bottom: 8px;
     background: #1e143b;
-    padding: 10px;
-    border-radius: 10px;
-    box-shadow: var(--shadow-sm);
+    padding: 8px;
+    border-radius: 8px;
     border: 1px solid #3b2a6e;
 }
 
 #tabList {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
 }
 
@@ -539,25 +524,23 @@ input:focus-visible {
     display: inline-flex;
     align-items: center;
     background: #3b2a6e;
-    border-radius: 8px;
+    border-radius: 6px;
     overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.22);
-    border: 2px solid rgba(255, 255, 255, 0.14);
+    border: 1.5px solid rgba(255, 255, 255, 0.14);
 }
 
 .tab-wrapper.active {
     background: var(--accent-gold);
-    border: 2px solid #ffffff;
-    box-shadow: 0 3px 10px rgba(245, 158, 11, 0.35);
+    border: 1.5px solid #ffffff;
 }
 
 .tab-btn {
     background: transparent;
     color: #f8fafc;
     border: none;
-    padding: 8px 12px;
-    min-height: 38px;
-    font-size: 1em;
+    padding: 5px 10px;
+    min-height: 32px;
+    font-size: 0.95em;
     font-weight: 700;
 }
 
@@ -569,10 +552,10 @@ input:focus-visible {
     background: rgba(0, 0, 0, 0.25);
     color: #ffffff;
     border: none;
-    padding: 8px 10px;
-    min-width: 36px;
-    min-height: 38px;
-    font-size: 1em;
+    padding: 5px 8px;
+    min-width: 30px;
+    min-height: 32px;
+    font-size: 0.95em;
     font-weight: 700;
     border-left: 1px solid rgba(255, 255, 255, 0.2);
 }
@@ -591,10 +574,10 @@ input:focus-visible {
 .tab-badge {
     background: #db2777;
     color: #ffffff;
-    border-radius: 16px;
-    padding: 1px 7px;
-    font-size: 0.85em;
-    margin-left: 6px;
+    border-radius: 12px;
+    padding: 1px 6px;
+    font-size: 0.8em;
+    margin-left: 5px;
     border: 1px solid #ffffff;
 }
 
@@ -602,16 +585,11 @@ input:focus-visible {
     background: var(--accent-green);
     color: #ffffff;
     border: none;
-    padding: 8px 14px;
-    min-height: 40px;
-    border-radius: 8px;
-    font-size: 1em;
+    padding: 6px 12px;
+    min-height: 34px;
+    border-radius: 6px;
+    font-size: 0.95em;
     font-weight: 700;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
-}
-
-#addTabBtn:hover {
-    filter: brightness(1.08);
 }
 
 /* =========================================
@@ -620,20 +598,19 @@ input:focus-visible {
 #logoutBtn {
     color: #ffffff;
     background: linear-gradient(135deg, #be123c 0%, #9f1239 100%);
-    min-height: 42px;
-    font-size: 1em;
+    min-height: 36px;
+    font-size: 0.95em;
     font-weight: 700;
     border: none;
-    border-radius: 8px;
-    padding: 8px 14px;
-    box-shadow: 0 2px 6px rgba(159, 18, 57, 0.25);
+    border-radius: 7px;
+    padding: 6px 12px;
 }
 
 #logoutBtn.active {
     animation: btnPulse 2s infinite ease-in-out;
     color: #ffffff;
     position: relative;
-    border: 2px solid #fde047;
+    border: 1.5px solid #fde047;
 }
 
 @keyframes btnPulse {
@@ -645,7 +622,7 @@ input:focus-visible {
     content: '●';
     animation: blink 2s infinite;
     position: absolute;
-    right: 10px;
+    right: 8px;
     top: 50%;
     transform: translateY(-50%);
     color: #fde047;
@@ -657,7 +634,7 @@ input:focus-visible {
 }
 
 /* =========================================
-   KTV 毛玻璃彈窗與擬真立體鍵盤
+   彈出數字鍵盤視窗
    ========================================= */
 #editModal,
 #posKeypadModal {
@@ -666,9 +643,9 @@ input:focus-visible {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(17, 12, 36, 0.65);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+    background: rgba(17, 12, 36, 0.6);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
     display: none;
     justify-content: center;
     align-items: center;
@@ -682,10 +659,10 @@ input:focus-visible {
 #editModal .modalContent,
 .keypadBox {
     background: linear-gradient(180deg, #221742 0%, #130d26 100%);
-    padding: 20px 18px;
+    padding: 16px;
     width: 90%;
-    max-width: 350px;
-    border-radius: 16px;
+    max-width: 320px;
+    border-radius: 14px;
     box-shadow: var(--shadow-lg);
     text-align: center;
     position: relative;
@@ -700,9 +677,9 @@ input:focus-visible {
     position: absolute;
     top: -10px;
     right: -10px;
-    width: 38px;
-    height: 38px;
-    line-height: 34px;
+    width: 34px;
+    height: 34px;
+    line-height: 30px;
     text-align: center;
     border-radius: 50%;
     background: #ef4444;
@@ -710,8 +687,8 @@ input:focus-visible {
     border: 2px solid #ffffff;
     cursor: pointer;
     font-weight: bold;
-    font-size: 20px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.45);
+    font-size: 18px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
     z-index: 10;
 }
 
@@ -720,30 +697,29 @@ input:focus-visible {
 }
 
 #posKeypadTitle {
-    margin-bottom: 10px;
-    font-size: 20px;
+    margin-bottom: 8px;
+    font-size: 18px;
     font-weight: 700;
     color: #fde047;
     letter-spacing: 1px;
 }
 
-/* 內嵌式 LED 收銀螢幕 */
 #modalInput,
 #posKeypadInput {
     width: 100%;
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 800;
-    padding: 10px 12px;
-    margin: 0 auto 14px auto;
+    padding: 8px 10px;
+    margin: 0 auto 12px auto;
     display: block;
     text-align: right;
-    border: 2px solid #5b4694;
-    border-radius: 10px;
+    border: 1.5px solid #5b4694;
+    border-radius: 8px;
     background: #090612;
     color: #fde047;
     letter-spacing: 2px;
     font-variant-numeric: tabular-nums;
-    box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.85);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.85);
 }
 
 #modalInput {
@@ -757,34 +733,33 @@ input:focus-visible {
     height: 0 !important;
 }
 
-/* 立體計算機按鍵 */
 #numpad {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-top: 6px;
+    gap: 8px;
+    margin-top: 5px;
 }
 
 #numpad button,
 .posKeypadGrid button {
-    height: 56px;
-    font-size: 22px;
+    height: 48px;
+    font-size: 20px;
     font-weight: 700;
     background: #36295c;
     color: #ffffff;
     border: 1px solid #5b4694;
-    border-radius: 10px;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 3px 0 #0b0717;
+    border-radius: 8px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 3px 0 #0b0717;
 }
 
 .posKeypadGrid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+    gap: 8px;
 }
 
 .posKeypadGrid button {
-    font-size: 20px;
+    font-size: 18px;
 }
 
 .posKeypadGrid button:active,
@@ -801,45 +776,43 @@ input:focus-visible {
 .posKeypadGrid button.confirm {
     background: #16a34a;
     border-color: #4ade80;
-    font-size: 20px;
+    font-size: 18px;
 }
 
-/* 優惠 / 折扣按鈕 */
 #promoButtons {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-    margin-top: 10px;
+    gap: 6px;
+    margin-top: 8px;
 }
 
 #promoButtons button {
-    padding: 10px 8px;
-    min-height: 44px;
+    padding: 8px 6px;
+    min-height: 38px;
     background: #6d28d9;
     color: #ffffff;
-    font-size: 1em;
+    font-size: 0.95em;
     font-weight: 700;
     border: 1px solid #8b5cf6;
-    border-radius: 8px;
+    border-radius: 7px;
     box-shadow: 0 2px 0 #2e1065;
 }
 
-/* 彈窗底部動作鈕 */
 .modalActions {
-    margin-top: 14px;
+    margin-top: 12px;
     display: flex;
-    gap: 10px;
+    gap: 8px;
 }
 
 .modalActions button {
     flex: 1;
-    min-height: 48px;
-    font-size: 18px;
+    min-height: 42px;
+    font-size: 16px;
     font-weight: 700;
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     color: #ffffff;
-    box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
 }
 
 .modalActions .cancel  { background: #dc2626; }
@@ -852,11 +825,11 @@ input:focus-visible {
 @media (max-width: 600px) {
     #numpad button,
     .posKeypadGrid button {
-        height: 62px;
-        font-size: 24px;
+        height: 54px;
+        font-size: 22px;
     }
     #editModal input {
-        font-size: 1.8em;
+        font-size: 1.6em;
     }
 }
 
