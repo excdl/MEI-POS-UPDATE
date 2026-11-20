@@ -1033,7 +1033,7 @@ function updateExpenseNoteOptions() {
   items.forEach((item, index) => {
     const opt = document.createElement("option");
     opt.value = item;
-    opt.textContent = `${index + 1}. ${item}`;
+    opt.textContent = item;
     selectEl.appendChild(opt);
   });
 
