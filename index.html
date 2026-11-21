@@ -48,7 +48,7 @@
     <h3>分類</h3>
   </div>
 
-  <!-- 中欄：商品展示區（縮小 10% 正方形大字卡片） -->
+  <!-- 中欄：商品展示區（縮小 10% 正方形超大字卡片） -->
   <div id="posProducts"></div>
 
   <!-- 右欄：購物車與結帳區 -->
@@ -299,7 +299,7 @@ justify-content:center;align-items:center;">
 
 <script src="app.js"></script>
 
-<!-- 輔助腳本：1. 分類兩行置中  2. 商品名稱智慧換行置中  3. 今日營業額 Dashboard  4. 手機版線上點餐模式 -->
+<!-- 輔助腳本：1. 分類兩行置中  2. 商品名稱智慧換行＋防超框  3. 今日營業額 Dashboard  4. 手機版線上點餐模式 -->
 <script>
 (function () {
   /* 1. 分類文字拆兩行置中 */
@@ -347,7 +347,7 @@ justify-content:center;align-items:center;">
     });
   }
 
-  /* 2. 商品名稱智慧換行（例如：蘋果西打(小) -> 第一行 蘋果西打 / 第二行置中 (小)） */
+  /* 2. 商品名稱智慧換行 ＋ 超大字體自動防爆框 */
   var PROD_SUFFIXES = [
     '清潔費', '人頭費', '開瓶費', '包廂費', '服務費',
     '烏龍茶', '氣泡水', '礦泉水', '威士忌', '白蘭地', '高粱酒', '龍舌蘭',
@@ -358,53 +358,76 @@ justify-content:center;align-items:center;">
     '薯條', '雞塊', '毛豆', '水餃', '炒飯', '炒麵', '牛肉麵', '鹽酥雞', '甜不辣', '冰塊'
   ];
 
+  // 視覺寬度：中文全形=1，英數字=0.58，點號/空白=0.35
+  function getVisualLen(str) {
+    var total = 0;
+    for (var i = 0; i < str.length; i++) {
+      var ch = str[i];
+      if (/[\.\uff0e\s\u3000]/.test(ch)) {
+        total += 0.35;
+      } else if (/[\x00-\xff]/.test(ch)) {
+        total += 0.58;
+      } else {
+        total += 1;
+      }
+    }
+    return total;
+  }
+
   function splitProductName(txt) {
     if (!txt) return null;
     var trimmed = txt.trim();
     if (!trimmed) return null;
 
-    // A. 優先偵測括號規格：如 蘋果西打(小)、海尼根（大）
+    // A. 括號規格永遠換行置中：如 蘋果西打(小)
     var parenMatch = txt.match(/^(.+?)(\s*[\(（][^\)）]+[\)）].*)$/);
     if (parenMatch && parenMatch[1].trim() && parenMatch[2].trim()) {
       return { line1: parenMatch[1], line2: parenMatch[2], isSub: true };
     }
 
-    // B. 斜線分隔：如 威士忌/杯
+    // B. 斜線分隔
     var slashIdx = txt.indexOf('/');
     if (slashIdx > 0 && slashIdx < txt.length - 1) {
       return { line1: txt.slice(0, slashIdx + 1), line2: txt.slice(slashIdx + 1), isSub: true };
     }
 
-    // C. 空白分隔（較長品名）
-    var spaceIdx = trimmed.indexOf(' ');
-    if (spaceIdx > 0 && trimmed.length >= 5) {
-      return { line1: trimmed.slice(0, spaceIdx + 1), line2: trimmed.slice(spaceIdx + 1), isSub: false };
+    // 視覺寬度 <= 4.5（如 J.W. 金、J.W.金、J.W. 金牌、蘋果西打）：單行顯示絕不拆行
+    if (getVisualLen(trimmed) <= 4.5) {
+      return null;
     }
 
-    // D. 中英文或數字單位結尾（總長 >= 5）：如 金牌台啤600ml、歡唱1小時
+    // C. 數字單位結尾：如 金牌台啤600ml
     var unitMatch = trimmed.match(/^(.{2,}?)(\s*\d+\s*(?:ml|cc|g|kg|oz|L|小時|分鐘|分|瓶|杯|壺|桶|盤|份|支|罐|人).*)$/i);
-    if (unitMatch && trimmed.length >= 5) {
+    if (unitMatch && unitMatch[1].trim().length >= 2) {
       return { line1: unitMatch[1], line2: unitMatch[2], isSub: true };
     }
 
-    // E. 中英文混排
+    // D. 空白分隔（第二段至少 2 字）
+    var spaceIdx = trimmed.indexOf(' ');
+    if (spaceIdx > 1 && trimmed.slice(spaceIdx + 1).trim().length >= 2) {
+      return { line1: trimmed.slice(0, spaceIdx + 1), line2: trimmed.slice(spaceIdx + 1), isSub: false };
+    }
+
+    // E. 常見詞尾優先斷行
+    for (var i = 0; i < PROD_SUFFIXES.length; i++) {
+      var suf = PROD_SUFFIXES[i];
+      if (trimmed.length > suf.length + 1 && trimmed.slice(-suf.length) === suf) {
+        return {
+          line1: trimmed.slice(0, trimmed.length - suf.length),
+          line2: suf,
+          isSub: false
+        };
+      }
+    }
+
+    // F. 中英文混排（第二行至少 2 字）
     var twoLang = splitTwoLines(txt);
-    if (twoLang && trimmed.length >= 5) {
+    if (twoLang && twoLang[0].trim().length >= 2 && twoLang[1].trim().length >= 2) {
       return { line1: twoLang[0], line2: twoLang[1], isSub: false };
     }
 
-    // F. 純中文較長名稱（>= 5 字）：先找自然詞尾，再平均拆分
+    // G. 其餘長名稱平均拆分
     if (trimmed.length >= 5) {
-      for (var i = 0; i < PROD_SUFFIXES.length; i++) {
-        var suf = PROD_SUFFIXES[i];
-        if (trimmed.length > suf.length + 1 && trimmed.slice(-suf.length) === suf) {
-          return {
-            line1: trimmed.slice(0, trimmed.length - suf.length),
-            line2: suf,
-            isSub: false
-          };
-        }
-      }
       var mid = Math.ceil(trimmed.length / 2);
       return {
         line1: trimmed.slice(0, mid),
@@ -416,31 +439,68 @@ justify-content:center;align-items:center;">
     return null;
   }
 
+  function fitProductText(card) {
+    if (!card || card.clientWidth === 0) return;
+    var h4 = card.querySelector('h4');
+    var wrap = h4 ? h4.querySelector('.prod-name-wrap') : null;
+    if (!h4 || !wrap) return;
+
+    h4.style.fontSize = '';
+    var pEl = card.querySelector('p');
+    var pH = pEl ? pEl.offsetHeight : 26;
+    var availW = Math.max(40, card.clientWidth - 14);
+    var availH = Math.max(36, card.clientWidth - pH - 18);
+    var curSize = parseFloat(window.getComputedStyle(h4).fontSize) || 26;
+
+    var guard = 0;
+    while (guard < 20 && curSize > 13) {
+      var overW = wrap.scrollWidth > availW;
+      var overH = wrap.offsetHeight > availH;
+      if (!overW && !overH) break;
+      curSize -= 1;
+      h4.style.fontSize = curSize + 'px';
+      guard++;
+    }
+  }
+
   function formatProductTitle(h4) {
-    if (!h4 || h4.dataset.prodFormatted === '1') return;
-    if (h4.children.length > 0) return;
+    if (!h4) return;
+    var card = h4.closest('.product-card');
+
+    if (h4.dataset.prodFormatted === '1') {
+      fitProductText(card);
+      return;
+    }
 
     var txt = h4.textContent || '';
     var res = splitProductName(txt);
     h4.dataset.prodFormatted = '1';
-    if (!res) return;
 
     var wrap = document.createElement('span');
     wrap.className = 'prod-name-wrap';
-    wrap.appendChild(document.createTextNode(res.line1));
-    wrap.appendChild(document.createElement('br'));
 
-    if (res.isSub) {
-      var sub = document.createElement('span');
-      sub.className = 'prod-sub';
-      sub.textContent = res.line2;
-      wrap.appendChild(sub);
+    if (res) {
+      wrap.appendChild(document.createTextNode(res.line1));
+      wrap.appendChild(document.createElement('br'));
+
+      if (res.isSub) {
+        var sub = document.createElement('span');
+        sub.className = 'prod-sub';
+        sub.textContent = res.line2;
+        wrap.appendChild(sub);
+      } else {
+        wrap.appendChild(document.createTextNode(res.line2));
+      }
     } else {
-      wrap.appendChild(document.createTextNode(res.line2));
+      // 未拆行短名稱（如 J.W. 金）加上 is-single 鎖死單行不換行
+      wrap.classList.add('is-single');
+      wrap.style.whiteSpace = 'nowrap';
+      wrap.textContent = txt.trim();
     }
 
     h4.textContent = '';
     h4.appendChild(wrap);
+    fitProductText(card);
   }
 
   function scanProducts() {
@@ -528,7 +588,7 @@ justify-content:center;align-items:center;">
     el.appendChild(grid);
   }
 
-  /* 4. 手機版線上點餐模式：同步底部購物車數量 / 金額與切換結帳視圖 */
+  /* 4. 手機版線上點餐模式：同步底部購物車與切換結帳視圖 */
   var lastQty = -1;
   function syncMobileCartBar() {
     var posCart = document.getElementById('posCart');
@@ -594,6 +654,16 @@ justify-content:center;align-items:center;">
       }).observe(prodEl, { childList: true, subtree: true });
     }
 
+    var posApp = document.getElementById('posApp');
+    if (posApp) {
+      new MutationObserver(function () {
+        if (posApp.style.display !== 'none') {
+          scanProducts();
+        }
+      }).observe(posApp, { attributes: true, attributeFilter: ['style', 'class'] });
+    }
+    window.addEventListener('resize', scanProducts);
+
     var salesEl = document.getElementById('todaySalesDisplay');
     if (salesEl) {
       renderSalesDashboard(salesEl);
@@ -602,7 +672,6 @@ justify-content:center;align-items:center;">
       }).observe(salesEl, { childList: true, characterData: true, subtree: true });
     }
 
-    var posApp = document.getElementById('posApp');
     var goCheckoutBtn = document.getElementById('mobileGoCheckoutBtn');
     var cartInfo = document.getElementById('mobileCartInfo');
     var backToMenuBtn = document.getElementById('mobileBackToMenuBtn');
