@@ -89,7 +89,7 @@ input:focus-visible {
     /* 分類 9 宮格（3 欄並排方形磚） */
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 6px;
+    gap: 7px;
     align-content: start;
 }
 
@@ -109,7 +109,7 @@ input:focus-visible {
 }
 
 #storeInfo {
-    font-size: 0.95em;
+    font-size: 0.98em;
     font-weight: 800;
     color: #fde047;
     white-space: nowrap;
@@ -118,22 +118,22 @@ input:focus-visible {
 }
 
 #loginTime {
-    font-size: 0.72em;
+    font-size: 0.75em;
     color: #cbd5e1;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-/* 登出單獨按鈕（高辨識 crimson） */
+/* 登出獨立按鈕 */
 #posCategories .sidebar-top-bar #logoutBtn {
     aspect-ratio: auto;
     width: auto;
     flex-shrink: 0;
-    min-height: 42px;
+    min-height: 44px;
     padding: 6px 16px;
     margin: 0;
-    font-size: 0.95em;
+    font-size: 1.02em;
     font-weight: 800;
     color: #ffffff;
     background: linear-gradient(135deg, #e11d48 0%, #9f1239 100%);
@@ -185,10 +185,10 @@ input:focus-visible {
     min-height: 46px;
     padding: 6px 6px;
     margin: 0;
-    font-size: 0.92em;
+    font-size: 0.98em;
     font-weight: 800;
     background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.22);
     border-top: none;
     color: #ffffff;
     border-radius: 10px;
@@ -205,9 +205,9 @@ input:focus-visible {
 #posCategories .search-container input {
     grid-column: 1 / -1;
     width: 100%;
-    height: 40px;
+    height: 42px;
     padding: 0 12px;
-    font-size: 0.95em;
+    font-size: 1em;
     font-weight: 700;
     border: 2px solid #c4b5fd;
     border-radius: 10px;
@@ -219,32 +219,32 @@ input:focus-visible {
     grid-column: 1 / -1;
     margin: 2px 0 0 0;
     padding-bottom: 4px;
-    font-size: 1.05em;
+    font-size: 1.1em;
     font-weight: 800;
     letter-spacing: 1px;
     color: #fde047;
     border-bottom: 2px solid rgba(253, 224, 71, 0.28);
 }
 
-/* 9 宮格方形分類按鈕 */
+/* 9 宮格方形分類按鈕：依按鈕寬度等比例放大字體 */
 #posCategories button {
     width: 100%;
     aspect-ratio: 1 / 1;
     margin: 0;
     padding: 6px 4px;
-    font-size: 0.95em;
-    font-weight: 800;
-    border: 1.5px solid rgba(255, 255, 255, 0.22);
-    border-top: 4px solid rgba(253, 224, 71, 0.55);
+    font-size: clamp(1.12rem, 1.8vw, 1.42rem);
+    font-weight: 900;
+    border: 1.5px solid rgba(255, 255, 255, 0.24);
+    border-top: 4px solid rgba(253, 224, 71, 0.65);
     border-radius: 14px;
-    background: rgba(255, 255, 255, 0.12);
-    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    line-height: 1.28;
+    line-height: 1.2;
     word-break: keep-all;
     overflow-wrap: break-word;
     text-wrap: balance;
@@ -252,7 +252,7 @@ input:focus-visible {
 }
 
 #posCategories button:hover {
-    background: rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.24);
 }
 
 #posCategories button.active {
@@ -264,27 +264,26 @@ input:focus-visible {
 }
 
 /* =========================================
-   2. 中間欄：商品展示區 (34%) - 3 欄圓角正方形卡片
+   2. 中間欄：商品展示區 (34%) - 寬版長方形大字卡片
    ========================================= */
 #posProducts {
     width: 34%;
     flex: none;
     padding: 10px;
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
     align-content: start;
     overflow-y: auto;
 }
 
 .product-card {
-    aspect-ratio: 1 / 1;
-    min-height: 92px;
+    min-height: 86px;
     background: var(--bg-card);
     border: 1.5px solid var(--border-soft);
     border-top: 5px solid #7c3aed;
-    border-radius: 16px;
-    padding: 8px 6px;
+    border-radius: 14px;
+    padding: 10px 8px;
     box-shadow: var(--shadow-sm);
     display: flex;
     flex-direction: column;
@@ -304,14 +303,14 @@ input:focus-visible {
 }
 
 .product-card:active {
-    transform: scale(0.95);
+    transform: scale(0.96);
     background: #f3e8ff;
 }
 
 .product-card h4 {
-    margin: auto 0;
-    font-size: 0.98em;
-    font-weight: 800;
+    margin: 0;
+    font-size: 1.24em;
+    font-weight: 900;
     color: var(--text-main);
     line-height: 1.25;
     white-space: normal;
@@ -321,26 +320,26 @@ input:focus-visible {
 }
 
 .product-card p {
-    margin: 4px 0 0 0;
-    padding: 2px 8px;
-    border-radius: 14px;
+    margin: 8px 0 0 0;
+    padding: 3px 12px;
+    border-radius: 16px;
     background: #fdf2f8;
     border: 1px solid #fbcfe8;
-    font-size: 0.92em;
+    font-size: 1.1em;
     font-weight: 900;
     color: #9d174d;
     font-variant-numeric: tabular-nums;
 }
 
 /* =========================================
-   3. 右邊欄：購物車與結帳區 (38%) - 大字＋單頁免外層捲動
+   3. 右邊欄：購物車與結帳區 (38%) - 商品不設捲軸，整體可捲動
    ========================================= */
 #posCartContainer {
     width: 38%;
     height: 100vh;
     height: 100dvh;
     background: #faf9fc;
-    padding: 8px 10px;
+    padding: 10px 12px;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
@@ -355,9 +354,9 @@ input:focus-visible {
     align-items: center;
     justify-content: space-between;
     gap: 6px;
-    margin-bottom: 5px;
+    margin-bottom: 6px;
     background: #1e143b;
-    padding: 5px 7px;
+    padding: 6px 8px;
     border-radius: 10px;
     border: 1px solid #3b2a6e;
     flex-shrink: 0;
@@ -391,9 +390,9 @@ input:focus-visible {
     background: transparent;
     color: #f8fafc;
     border: none;
-    padding: 5px 9px;
-    min-height: 36px;
-    font-size: 0.92em;
+    padding: 5px 10px;
+    min-height: 38px;
+    font-size: 0.95em;
     font-weight: 800;
     white-space: nowrap;
 }
@@ -407,9 +406,9 @@ input:focus-visible {
     color: #ffffff;
     border: none;
     padding: 5px 8px;
-    min-width: 32px;
-    min-height: 36px;
-    font-size: 0.92em;
+    min-width: 34px;
+    min-height: 38px;
+    font-size: 0.95em;
     font-weight: 700;
     border-left: 1px solid rgba(255, 255, 255, 0.2);
 }
@@ -440,18 +439,18 @@ input:focus-visible {
     background: var(--accent-green);
     color: #ffffff;
     border: none;
-    padding: 6px 11px;
-    min-height: 36px;
+    padding: 6px 12px;
+    min-height: 38px;
     border-radius: 8px;
-    font-size: 0.92em;
+    font-size: 0.95em;
     font-weight: 800;
     white-space: nowrap;
 }
 
 /* 訂單明細標題與表頭 */
 #posCartContainer .cart-title {
-    margin: 0 0 3px 0;
-    font-size: 0.92em;
+    margin: 0 0 4px 0;
+    font-size: 0.98em;
     font-weight: 800;
     color: #4c1d95;
     flex-shrink: 0;
@@ -461,24 +460,22 @@ input:focus-visible {
     font-weight: 800;
     background: #2e1b5b;
     color: #ffffff;
-    font-size: 0.86em;
+    font-size: 0.92em;
     display: grid;
     grid-template-columns: 2.3fr 0.8fr 1fr 1fr 0.8fr;
     gap: 4px;
-    padding: 6px 6px;
+    padding: 7px 8px;
     border-radius: 8px;
     text-align: center;
-    margin-bottom: 4px;
+    margin-bottom: 5px;
     flex-shrink: 0;
 }
 
-/* 購物車清單區：獨立捲動，下方結帳永不跑版 */
+/* 購物車商品清單：不設內部垂直捲軸，直接自然展開 */
 #posCart {
-    flex: 1 1 95px;
-    min-height: 85px;
-    overflow-y: auto;
-    margin-bottom: 5px;
-    padding-right: 2px;
+    flex: none;
+    overflow: visible;
+    margin-bottom: 6px;
 }
 
 #posCart div.cartRow {
@@ -487,12 +484,12 @@ input:focus-visible {
     gap: 4px;
     background: #ffffff;
     border: 1px solid #e5e7eb;
-    padding: 6px 6px;
-    margin-bottom: 4px;
+    padding: 7px 8px;
+    margin-bottom: 5px;
     border-radius: 8px;
     align-items: center;
     text-align: center;
-    font-size: 0.95em;
+    font-size: 1em;
     font-weight: 700;
     color: var(--text-main);
     font-variant-numeric: tabular-nums;
@@ -514,11 +511,11 @@ input:focus-visible {
 }
 
 #posCart div.cartRow span.remove button {
-    font-size: 0.88em;
+    font-size: 0.92em;
     font-weight: 800;
     padding: 4px 6px;
-    min-width: 36px;
-    min-height: 36px;
+    min-width: 38px;
+    min-height: 38px;
     background: #ef4444;
     color: #ffffff;
     border: none;
@@ -531,12 +528,12 @@ input:focus-visible {
     grid-template-columns: auto auto 1fr;
     gap: 6px;
     align-items: center;
-    margin: 0 0 5px 0;
-    padding: 5px 8px;
+    margin: 0 0 6px 0;
+    padding: 6px 8px;
     background: #ffffff;
     border: 1px solid var(--border-soft);
     border-radius: 8px;
-    font-size: 0.88em;
+    font-size: 0.9em;
     font-weight: 800;
     flex-shrink: 0;
 }
@@ -544,28 +541,28 @@ input:focus-visible {
 .table-field {
     display: inline-flex;
     align-items: center;
-    gap: 3px;
+    gap: 4px;
     white-space: nowrap;
 }
 
 .table-field input {
-    height: 34px;
+    height: 36px;
     border: 1.5px solid #c4b5fd;
     border-radius: 6px;
-    padding: 2px 5px;
-    font-size: 0.96em;
+    padding: 2px 6px;
+    font-size: 0.98em;
     font-weight: 800;
     color: var(--text-main);
     background: #faf9fc;
 }
 
 #peopleCount {
-    width: 44px;
+    width: 46px;
     text-align: center;
 }
 
 #minConsumeInput {
-    width: 62px;
+    width: 64px;
     text-align: right;
 }
 
@@ -575,15 +572,15 @@ input:focus-visible {
 
 #salesInput {
     width: 100%;
-    min-width: 66px;
+    min-width: 70px;
 }
 
 /* 稅別與折扣同行 */
 .tax-discount-row {
     display: grid;
     grid-template-columns: 1.15fr 1fr;
-    gap: 6px;
-    margin-bottom: 5px;
+    gap: 8px;
+    margin-bottom: 6px;
     flex-shrink: 0;
 }
 
@@ -595,13 +592,13 @@ input:focus-visible {
 
 #taxContainer button {
     flex: 1;
-    min-height: 40px;
+    min-height: 42px;
     padding: 4px 6px;
     border: 2px solid #d1d5db;
     border-radius: 8px;
     background: #ffffff;
     color: #1f2937;
-    font-size: 0.96em;
+    font-size: 0.98em;
     font-weight: 800;
 }
 
@@ -619,12 +616,12 @@ input:focus-visible {
 
 #discountContainer input {
     width: 100%;
-    height: 40px;
+    height: 42px;
     padding: 4px 10px;
     border: 2px solid #c4b5fd;
     border-radius: 8px;
     text-align: right;
-    font-size: 1em;
+    font-size: 1.05em;
     font-weight: 800;
     color: var(--text-main);
     background: #ffffff;
@@ -637,13 +634,13 @@ input:focus-visible {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 6px;
-    margin: 0 0 5px 0;
-    padding: 5px 8px;
+    margin: 0 0 6px 0;
+    padding: 6px 10px;
     background: #ffffff;
     border-radius: 8px;
     border: 1px solid var(--border-soft);
     border-left: 5px solid #7c3aed;
-    font-size: 0.86em;
+    font-size: 0.88em;
     flex-shrink: 0;
 }
 
@@ -672,8 +669,8 @@ input:focus-visible {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 6px 12px;
-    margin-bottom: 5px;
+    padding: 7px 12px;
+    margin-bottom: 6px;
     border-radius: 8px;
     background: #fdf2f8;
     border: 1.5px solid #fbcfe8;
@@ -682,20 +679,20 @@ input:focus-visible {
 
 .final-total-row .label {
     color: #831843;
-    font-size: 1.08em;
+    font-size: 1.12em;
     font-weight: 900;
 }
 
 .final-total-row .value {
     color: #9d174d;
     font-family: 'Courier New', monospace;
-    font-size: 1.32em;
+    font-size: 1.38em;
     font-weight: 900;
     font-variant-numeric: tabular-nums;
 }
 
 #minConsumeAlert {
-    margin-bottom: 4px;
+    margin-bottom: 5px;
     flex-shrink: 0;
 }
 
@@ -703,19 +700,19 @@ input:focus-visible {
 #paymentButtons {
     display: flex;
     gap: 6px;
-    margin: 0 0 5px 0;
+    margin: 0 0 6px 0;
     flex-shrink: 0;
 }
 
 #paymentButtons .payBtn {
-    min-height: 42px;
+    min-height: 44px;
     padding: 4px 6px;
     border-radius: 8px;
     background: #ffffff;
     color: #1f2937;
     border: 2px solid #d1d5db;
     flex: 1;
-    font-size: 1em;
+    font-size: 1.02em;
     font-weight: 800;
 }
 
@@ -726,32 +723,52 @@ input:focus-visible {
     border: 2.5px solid #2e1b5b;
 }
 
-/* 現金找零條 */
+/* 收現金置左＋現金框加長一倍＋找零 */
 #cashPanel {
-    margin: 0 0 5px 0;
-    padding: 5px 8px;
+    margin: 0 0 6px 0;
+    padding: 6px 10px;
     background: #fffbeb;
-    border: 1.5px solid #f59e0b;
+    border: 2px solid #f59e0b;
     border-radius: 8px;
-    font-size: 0.96em;
+    font-size: 1em;
     font-weight: 800;
-    text-align: center;
     flex-shrink: 0;
 }
 
+.cash-panel-row {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    width: 100%;
+}
+
+.cash-label {
+    white-space: nowrap;
+    flex-shrink: 0;
+    color: #111827;
+}
+
 #cashPanel input {
-    display: inline-block;
-    width: 100px;
-    height: 34px;
-    padding: 2px 8px;
-    margin: 0 6px 0 4px;
-    border: 1.5px solid #c4b5fd;
-    border-radius: 6px;
+    flex: 1 1 180px;
+    min-width: 155px;
+    height: 40px;
+    padding: 4px 10px;
+    border: 2px solid #7c3aed;
+    border-radius: 8px;
     text-align: right;
-    font-size: 1.02em;
+    font-size: 1.15em;
     font-weight: 900;
     background: #ffffff;
+    color: #111827;
     font-variant-numeric: tabular-nums;
+}
+
+.change-box {
+    white-space: nowrap;
+    flex-shrink: 0;
+    color: #9d174d;
+    font-weight: 900;
 }
 
 /* 客戶姓名與手機並排 */
@@ -759,17 +776,17 @@ input:focus-visible {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 6px;
-    margin-bottom: 5px;
+    margin-bottom: 6px;
     flex-shrink: 0;
 }
 
 .customer-inputs-row input {
     width: 100%;
-    height: 38px;
-    padding: 4px 8px;
+    height: 40px;
+    padding: 4px 10px;
     border: 1.5px solid #c4b5fd;
     border-radius: 8px;
-    font-size: 0.92em;
+    font-size: 0.94em;
     font-weight: 700;
     background: #ffffff;
     color: var(--text-main);
@@ -778,9 +795,9 @@ input:focus-visible {
 /* 結帳列印主按鈕 */
 #posCheckout {
     margin-top: 0;
-    padding: 8px 14px;
-    min-height: 50px;
-    font-size: 1.3em;
+    padding: 10px 14px;
+    min-height: 54px;
+    font-size: 1.35em;
     font-weight: 900;
     letter-spacing: 2px;
     background: var(--accent-green);
@@ -799,43 +816,108 @@ input:focus-visible {
 #shiftDailyContainer {
     display: flex;
     gap: 6px;
-    margin: 5px 0 0 0;
+    margin: 6px 0 0 0;
     flex-shrink: 0;
 }
 
 #shiftEndBtn,
 #dailySalesBtn {
     flex: 1;
-    min-height: 38px;
+    min-height: 40px;
     padding: 6px 8px;
     color: #ffffff;
     border: none;
     border-radius: 8px;
-    font-size: 0.96em;
+    font-size: 0.98em;
     font-weight: 800;
 }
 
 #shiftEndBtn { background: #c0392b; }
 #dailySalesBtn { background: #2980b9; }
 
+/* =========================================
+   今日營業額 Dashboard 並排卡片樣式
+   ========================================= */
 #todaySalesDisplay {
-    margin-top: 5px;
-    padding: 8px 10px;
-    border-radius: 8px;
-    background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
-    border: 1px solid #ddd6fe;
-    border-left: 5px solid #6d28d9;
-    font-size: 0.9em;
-    line-height: 1.45;
-    color: #1f2937;
-    white-space: pre-line;
-    max-height: 95px;
-    overflow-y: auto;
+    margin-top: 8px;
     flex-shrink: 0;
 }
 
 #todaySalesDisplay:empty {
     display: none;
+}
+
+.sales-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    padding: 8px;
+    border-radius: 12px;
+    background: #ede9fe;
+    border: 1.5px solid #c4b5fd;
+}
+
+.sales-kpi-header {
+    grid-column: 1 / -1;
+    background: #2e1b5b;
+    color: #fde047;
+    font-size: 0.96em;
+    font-weight: 900;
+    padding: 6px 10px;
+    border-radius: 8px;
+    text-align: center;
+    letter-spacing: 1px;
+}
+
+.sales-kpi-card {
+    background: #ffffff;
+    border: 1px solid #ddd6fe;
+    border-left: 5px solid #7c3aed;
+    border-radius: 10px;
+    padding: 8px 10px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.sales-kpi-card .kpi-label {
+    font-size: 0.85em;
+    font-weight: 700;
+    color: #4b5563;
+}
+
+.sales-kpi-card .kpi-value {
+    font-size: 1.12em;
+    font-weight: 900;
+    color: #111827;
+    font-family: 'Courier New', monospace;
+    font-variant-numeric: tabular-nums;
+}
+
+.sales-kpi-card.is-total {
+    grid-column: 1 / -1;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border: 2px solid #f59e0b;
+    border-left: 6px solid #d97706;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.sales-kpi-card.is-total .kpi-label {
+    font-size: 1em;
+    font-weight: 900;
+    color: #92400e;
+}
+
+.sales-kpi-card.is-total .kpi-value {
+    font-size: 1.28em;
+    color: #b45309;
+}
+
+.sales-kpi-card.is-full {
+    grid-column: 1 / -1;
 }
 
 /* =========================================
@@ -1012,10 +1094,10 @@ input:focus-visible {
 /* =========================================
    不同平板尺寸響應式微調
    ========================================= */
-/* 大型平板 (1280px 以上)：商品區改為 4 欄方形卡片 */
+/* 大型平板 (1280px 以上)：商品區改為 3 欄寬版長方形卡片 */
 @media (min-width: 1280px) {
     #posProducts {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
 
@@ -1028,7 +1110,7 @@ input:focus-visible {
     }
     #posProducts {
         width: 32%;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: 1fr;
     }
     #posCartContainer { width: 40%; }
     #tableInfo {
@@ -1036,6 +1118,12 @@ input:focus-visible {
     }
     .table-field-sales {
         grid-column: 1 / -1;
+    }
+    .cash-panel-row {
+        flex-wrap: wrap;
+    }
+    #cashPanel input {
+        min-width: 120px;
     }
 }
 
