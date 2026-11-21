@@ -281,22 +281,19 @@ justify-content:center;align-items:center;">
 
 <script src="app.js"></script>
 
-<!-- 輔助腳本：1. 分類中英文 / 斜線自動分兩行置中  2. 今日營業額自動轉成 4 欄並排 Dashboard -->
+<!-- 輔助腳本：1. 僅分類按鈕中英文 / 斜線分兩行置中  2. 今日營業額轉成 4 欄並排 Dashboard -->
 <script>
 (function () {
-  /* 1. 將文字拆成「第一行 + <br> + 第二行」並包裹置中（保留原始 textContent） */
+  /* 1. 將分類文字拆成「第一行 + <br> + 第二行」並包裹置中（保留原始 textContent） */
   function splitTwoLines(txt) {
-    // 優先規則 A：含「/」，從「/」後方完整換行
     var slashIdx = txt.indexOf('/');
     if (slashIdx !== -1 && slashIdx > 0 && slashIdx < txt.length - 1) {
       return [txt.slice(0, slashIdx + 1), txt.slice(slashIdx + 1)];
     }
-    // 規則 B：英文（可含前方數字如 12Y）+ 中文 -> 拆成英文行 / 中文行
     var enZh = txt.match(/^([0-9]*[A-Za-z][A-Za-z0-9\s&\-\.]*?)(\s*[\(\[]?[\u4e00-\u9fff].*)$/);
     if (enZh && enZh[1].trim() && enZh[2].trim()) {
       return [enZh[1], enZh[2]];
     }
-    // 規則 C：中文 + 英文 -> 拆成中文行 / 英文行
     var zhEn = txt.match(/^([\u4e00-\u9fff\u3000-\u303f\uff00-\uffef0-9\s]+?)(\s*[\(\[]?[A-Za-z][A-Za-z0-9\s&\-\/\.\(\)\[\]]*)$/);
     if (zhEn && zhEn[1].trim() && zhEn[2].trim()) {
       return [zhEn[1], zhEn[2]];
@@ -322,20 +319,15 @@ justify-content:center;align-items:center;">
     el.dataset.lineFormatted = '1';
   }
 
-  function scanCategoriesAndProducts() {
+  function scanCategories() {
     var catEl = document.getElementById('posCategories');
-    if (catEl) {
-      // 只處理直屬分類按鈕（排除登出鈕與 4 大功能鈕）
-      Array.prototype.forEach.call(catEl.children, function (child) {
-        if (child.tagName === 'BUTTON') {
-          formatTwoLineCenter(child);
-        }
-      });
-    }
-    var prodEl = document.getElementById('posProducts');
-    if (prodEl) {
-      prodEl.querySelectorAll('.product-card h4').forEach(formatTwoLineCenter);
-    }
+    if (!catEl) return;
+    // 僅格式化分類按鈕，商品欄維持不換行
+    Array.prototype.forEach.call(catEl.children, function (child) {
+      if (child.tagName === 'BUTTON') {
+        formatTwoLineCenter(child);
+      }
+    });
   }
 
   /* 2. 將 #todaySalesDisplay 內容轉換成 4 欄並排 Dashboard 卡片 */
@@ -413,15 +405,13 @@ justify-content:center;align-items:center;">
   }
 
   document.addEventListener('DOMContentLoaded', function () {
-    scanCategoriesAndProducts();
-
-    ['posCategories', 'posProducts'].forEach(function (id) {
-      var el = document.getElementById(id);
-      if (!el) return;
+    var catEl = document.getElementById('posCategories');
+    if (catEl) {
+      scanCategories();
       new MutationObserver(function () {
-        scanCategoriesAndProducts();
-      }).observe(el, { childList: true, subtree: true });
-    });
+        scanCategories();
+      }).observe(catEl, { childList: true, subtree: true });
+    }
 
     var salesEl = document.getElementById('todaySalesDisplay');
     if (salesEl) {
