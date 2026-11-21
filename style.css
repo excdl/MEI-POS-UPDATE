@@ -74,10 +74,10 @@ input:focus-visible {
 }
 
 /* =========================================
-   1. 左邊欄：功能與 9 宮格方形分類區 (28%)
+   1. 左邊欄：功能與 9 宮格方形分類區 (29%)
    ========================================= */
 #posCategories {
-    width: 28%;
+    width: 29%;
     background: var(--bg-sidebar);
     padding: 8px 10px 10px 10px;
     color: #ffffff;
@@ -169,7 +169,7 @@ input:focus-visible {
     50%      { opacity: 1; }
 }
 
-/* 4 大功能 2×2 並排 + 搜尋框 */
+/* 4 大功能 2×2 並排（高度增加 50% -> 69px）+ 搜尋框 */
 #posCategories .search-container {
     grid-column: 1 / -1;
     display: grid;
@@ -182,24 +182,24 @@ input:focus-visible {
     aspect-ratio: auto;
     width: 100%;
     min-width: 0;
-    min-height: 46px;
-    padding: 6px 6px;
+    min-height: 69px;
+    padding: 8px 6px;
     margin: 0;
-    font-size: 0.98em;
+    font-size: 1.1em;
     font-weight: 800;
     background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
     border: 1px solid rgba(255, 255, 255, 0.22);
     border-top: none;
     color: #ffffff;
-    border-radius: 10px;
+    border-radius: 12px;
     line-height: 1.2;
     white-space: nowrap;
-    box-shadow: 0 2px 6px rgba(91, 33, 182, 0.3);
+    box-shadow: 0 3px 8px rgba(91, 33, 182, 0.32);
 }
 
 #posCategories .search-container .customer-btn {
     background: linear-gradient(135deg, #e43b62, #9b2f80);
-    box-shadow: 0 2px 6px rgba(155, 47, 128, 0.35);
+    box-shadow: 0 3px 8px rgba(155, 47, 128, 0.35);
 }
 
 #posCategories .search-container input {
@@ -226,13 +226,13 @@ input:focus-visible {
     border-bottom: 2px solid rgba(253, 224, 71, 0.28);
 }
 
-/* 9 宮格方形分類按鈕：依按鈕寬度等比例放大字體 */
+/* 9 宮格方形分類按鈕：文字加大 50%，中英文兩行置中 */
 #posCategories button {
     width: 100%;
     aspect-ratio: 1 / 1;
     margin: 0;
-    padding: 6px 4px;
-    font-size: clamp(1.12rem, 1.8vw, 1.42rem);
+    padding: 4px 3px;
+    font-size: clamp(1.4rem, 2.2vw, 1.95rem);
     font-weight: 900;
     border: 1.5px solid rgba(255, 255, 255, 0.24);
     border-top: 4px solid rgba(253, 224, 71, 0.65);
@@ -240,15 +240,21 @@ input:focus-visible {
     background: rgba(255, 255, 255, 0.14);
     color: #ffffff;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     text-align: center;
-    line-height: 1.2;
+    line-height: 1.16;
     word-break: keep-all;
     overflow-wrap: break-word;
-    text-wrap: balance;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.22);
+}
+
+#posCategories button .cat-inner,
+.product-card h4 .cat-inner {
+    display: block;
+    width: 100%;
+    text-align: center;
+    pointer-events: none;
 }
 
 #posCategories button:hover {
@@ -264,10 +270,10 @@ input:focus-visible {
 }
 
 /* =========================================
-   2. 中間欄：商品展示區 (34%) - 寬版長方形大字卡片
+   2. 中間欄：商品展示區 (33%) - 寬版長方形大字卡片
    ========================================= */
 #posProducts {
-    width: 34%;
+    width: 33%;
     flex: none;
     padding: 10px;
     display: grid;
@@ -836,7 +842,7 @@ input:focus-visible {
 #dailySalesBtn { background: #2980b9; }
 
 /* =========================================
-   今日營業額 Dashboard 並排卡片樣式
+   今日營業額 Dashboard 4 欄並排卡片樣式
    ========================================= */
 #todaySalesDisplay {
     margin-top: 8px;
@@ -849,9 +855,9 @@ input:focus-visible {
 
 .sales-kpi-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-    padding: 8px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    padding: 6px;
     border-radius: 12px;
     background: #ede9fe;
     border: 1.5px solid #c4b5fd;
@@ -861,9 +867,9 @@ input:focus-visible {
     grid-column: 1 / -1;
     background: #2e1b5b;
     color: #fde047;
-    font-size: 0.96em;
+    font-size: 0.94em;
     font-weight: 900;
-    padding: 6px 10px;
+    padding: 5px 8px;
     border-radius: 8px;
     text-align: center;
     letter-spacing: 1px;
@@ -872,52 +878,69 @@ input:focus-visible {
 .sales-kpi-card {
     background: #ffffff;
     border: 1px solid #ddd6fe;
-    border-left: 5px solid #7c3aed;
+    border-top: 4px solid #7c3aed;
     border-radius: 10px;
-    padding: 8px 10px;
+    padding: 7px 4px;
     box-shadow: var(--shadow-sm);
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
     gap: 3px;
+    min-width: 0;
 }
 
 .sales-kpi-card .kpi-label {
-    font-size: 0.85em;
-    font-weight: 700;
+    font-size: 0.78em;
+    font-weight: 800;
     color: #4b5563;
+    line-height: 1.2;
+    word-break: keep-all;
 }
 
 .sales-kpi-card .kpi-value {
-    font-size: 1.12em;
+    font-size: 0.96em;
     font-weight: 900;
     color: #111827;
     font-family: 'Courier New', monospace;
     font-variant-numeric: tabular-nums;
+    line-height: 1.2;
+    word-break: break-word;
 }
 
 .sales-kpi-card.is-total {
-    grid-column: 1 / -1;
     background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
     border: 2px solid #f59e0b;
-    border-left: 6px solid #d97706;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
+    border-top: 4px solid #d97706;
 }
 
 .sales-kpi-card.is-total .kpi-label {
-    font-size: 1em;
     font-weight: 900;
     color: #92400e;
 }
 
 .sales-kpi-card.is-total .kpi-value {
-    font-size: 1.28em;
+    font-size: 1.02em;
     color: #b45309;
 }
 
 .sales-kpi-card.is-full {
     grid-column: 1 / -1;
+    flex-direction: row;
+    justify-content: space-between;
+    text-align: left;
+    padding: 8px 12px;
+    border-top: 1px solid #f59e0b;
+    border-left: 6px solid #d97706;
+}
+
+.sales-kpi-card.is-full .kpi-label {
+    font-size: 0.98em;
+}
+
+.sales-kpi-card.is-full .kpi-value {
+    font-size: 1.24em;
 }
 
 /* =========================================
@@ -1105,11 +1128,11 @@ input:focus-visible {
 @media (max-width: 900px) {
     body { font-size: 16px; }
     #posCategories {
-        width: 28%;
+        width: 29%;
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
     #posProducts {
-        width: 32%;
+        width: 31%;
         grid-template-columns: 1fr;
     }
     #posCartContainer { width: 40%; }
@@ -1124,6 +1147,9 @@ input:focus-visible {
     }
     #cashPanel input {
         min-width: 120px;
+    }
+    .sales-kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
