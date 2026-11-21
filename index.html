@@ -25,17 +25,22 @@
 <!-- POS 主頁 -->
 <div id="posApp" style="display:none;">
 
-  <!-- 左欄：功能與商品分類（方形磚並排） -->
+  <!-- 左欄：功能與商品分類（9宮格方形磚） -->
   <div id="posCategories">
-    <div id="storeInfo"></div>
-    <div id="loginTime"></div>
+    <!-- 頂部：門市資訊 + 獨立登出按鈕 -->
+    <div class="sidebar-top-bar">
+      <div class="store-meta">
+        <div id="storeInfo"></div>
+        <div id="loginTime"></div>
+      </div>
+      <button id="logoutBtn">登出</button>
+    </div>
 
-    <button id="logoutBtn">登出</button>
-    <button class="customer-btn" onclick="openExpenseModal()">💸 支出記帳</button>
-
+    <!-- 4 大功能 2×2 並排 + 搜尋框 -->
     <div class="search-container">
-      <button id="checkWineBtn">🍾 查詢存酒</button>
       <button id="checkSongBtn">🎵 歌單查詢</button>
+      <button class="customer-btn" onclick="openExpenseModal()">💸 支出記帳</button>
+      <button id="checkWineBtn">🍾 查詢存酒</button>
       <button id="checkInventoryBtn" class="action-btn" onclick="window.open('https://script.google.com/macros/s/AKfycbwzPoldx5z4_jx1awoEIOocPiZcgyqmSrqZiJ3rb3FlyKmMPfJzNv5zpXoD_nNsWOnnVg/exec', '_blank')">📦 庫存盤點</button>
       <input type="text" id="searchBox" placeholder="🔍 搜尋商品名稱...">
     </div>
@@ -43,12 +48,12 @@
     <h3>分類</h3>
   </div>
 
-  <!-- 中欄：商品展示區（3 欄方形卡片） -->
+  <!-- 中欄：商品展示區（3 欄圓角正方形卡片） -->
   <div id="posProducts"></div>
 
-  <!-- 右欄：購物車與結帳區（平板免外層捲動配置） -->
+  <!-- 右欄：購物車與結帳區（平板免外層捲動） -->
   <div id="posCartContainer">
-    <!-- 開桌桌號暫存列（同行配置） -->
+    <!-- 開桌桌號暫存列 -->
     <div id="openTabsContainer">
       <div id="tabList"></div>
       <button id="addTabBtn" onclick="createNewTab()">＋ 開桌</button>
@@ -60,7 +65,7 @@
     </div>
     <div id="posCart"></div>
 
-    <!-- 業代 / 人數 / 低消 同行 -->
+    <!-- 人數 / 低消 / 業代 同行 -->
     <div id="tableInfo">
       <label class="table-field">
         <span>人數</span>
@@ -111,7 +116,7 @@
       <span class="value"><span id="posTotal">0</span> 元</span>
     </div>
 
-    <div id="minConsumeAlert" style="display:none;color:#c0392b;font-weight:bold;font-size:0.9em;">
+    <div id="minConsumeAlert" style="display:none;color:#c0392b;font-weight:bold;font-size:0.95em;">
       ⚠ 未達低消，已以低消計算
     </div>
 
@@ -154,7 +159,6 @@
     <h4 id="modalProductName" style="color:#fff;">輸入</h4>
     <input id="modalInput">
 
-    <!-- 小鍵盤 -->
     <div id="numpad">
       <button onclick="np('7')">7</button><button onclick="np('8')">8</button><button onclick="np('9')">9</button>
       <button onclick="np('4')">4</button><button onclick="np('5')">5</button><button onclick="np('6')">6</button>
@@ -162,10 +166,8 @@
       <button onclick="np('0')">0</button><button onclick="np('.')">.</button><button onclick="backspace()">←</button>
     </div>
 
-    <!-- 優惠方案按鈕 -->
     <div id="promoButtons"></div>
 
-    <!-- 小鍵盤確認/取消按鈕 -->
     <div class="modalActions">
       <button class="cancel" onclick="closeModal()">取消</button>
       <button class="confirm" onclick="confirmEdit()">確定</button>
@@ -208,30 +210,30 @@
 style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;
 background:rgba(0,0,0,0.45);z-index:100000;
 justify-content:center;align-items:center;">
-  <div style="background:white;padding:20px;border-radius:12px;width:90%;max-width:360px;text-align:center;">
-    <h3 style="color:#e67e22;margin-top:0;">⚠ 低消補差確認</h3>
-    <p id="minConsumeConfirmText"></p>
-    <div style="display:flex;gap:10px;">
-      <button onclick="cancelMinConsumeCheckout()" style="flex:1;">取消</button>
-      <button onclick="confirmMinConsumeCheckout()" style="flex:1;background:#e67e22;color:white;">確認結帳</button>
+  <div style="background:white;padding:24px;border-radius:14px;width:90%;max-width:400px;text-align:center;">
+    <h3 style="color:#e67e22;margin-top:0;font-size:1.4em;">⚠ 低消補差確認</h3>
+    <p id="minConsumeConfirmText" style="font-size:1.1em;"></p>
+    <div style="display:flex;gap:12px;">
+      <button onclick="cancelMinConsumeCheckout()" style="flex:1;min-height:50px;font-size:1.1em;font-weight:bold;border-radius:10px;border:none;background:#e5e7eb;">取消</button>
+      <button onclick="confirmMinConsumeCheckout()" style="flex:1;min-height:50px;font-size:1.1em;font-weight:bold;border-radius:10px;border:none;background:#e67e22;color:white;">確認結帳</button>
     </div>
   </div>
 </div>
 
-<!-- ===== 存酒選擇 Modal ===== -->
-<div id="storeWineModal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.65); backdrop-filter:blur(4px); justify-content:center; align-items:center; z-index:9999; padding:20px;">
-  <div style="position:relative; width:100%; max-width:340px; background:#1e293b; color:#f8fafc; border:1px solid #334155; border-radius:16px; padding:26px 20px 20px; text-align:center; box-shadow:0 20px 40px rgba(0,0,0,0.45); box-sizing:border-box;">
+<!-- ===== 存酒選擇 Modal（加大字體＋高反差對比） ===== -->
+<div id="storeWineModal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.75); backdrop-filter:blur(4px); justify-content:center; align-items:center; z-index:9999; padding:20px;">
+  <div style="position:relative; width:100%; max-width:460px; background:#1e293b; color:#f8fafc; border:2px solid #475569; border-radius:20px; padding:30px 24px 26px; text-align:center; box-shadow:0 24px 48px rgba(0,0,0,0.55); box-sizing:border-box;">
     <button id="storeWineCloseBtn" type="button" onclick="closeStoreWineModal()" title="關閉"
-      style="position:absolute; top:12px; right:12px; width:34px; height:34px; border-radius:50%; border:none; background:#334155; color:#e2e8f0; font-size:20px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1;">×</button>
+      style="position:absolute; top:12px; right:12px; width:42px; height:42px; border-radius:50%; border:2px solid #fff; background:#ef4444; color:#fff; font-size:24px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1;">×</button>
 
-    <div style="font-size:0.95rem; color:#94a3b8; margin-bottom:4px;">請選擇此商品銷售方式</div>
-    <h3 id="storeWineTitle" style="margin:0 0 18px 0; font-size:1.3rem; color:#fbbf24;"></h3>
+    <div style="font-size:1.25rem; color:#e2e8f0; font-weight:700; margin-bottom:8px;">請選擇此商品銷售方式</div>
+    <h3 id="storeWineTitle" style="margin:0 0 24px 0; font-size:1.75rem; color:#fde047; font-weight:900;"></h3>
 
-    <div style="display:flex; gap:10px;">
+    <div style="display:flex; gap:14px;">
       <button type="button" onclick="confirmStoreWine(true)"
-        style="flex:1; height:52px; border:none; border-radius:10px; background:#16a34a; color:#fff; font-size:1.1rem; font-weight:bold; cursor:pointer;">🧊 存酒</button>
+        style="flex:1; min-height:88px; border:3px solid #7dd3fc; border-radius:14px; background:linear-gradient(135deg, #0284c7, #0369a1); color:#ffffff; font-size:1.55rem; font-weight:900; cursor:pointer; box-shadow:0 6px 16px rgba(2,132,199,0.45);">🧊 存酒</button>
       <button type="button" onclick="confirmStoreWine(false)"
-        style="flex:1; height:52px; border:none; border-radius:10px; background:#2563eb; color:#fff; font-size:1.1rem; font-weight:bold; cursor:pointer;">🥂 直接販售</button>
+        style="flex:1; min-height:88px; border:3px solid #fef08a; border-radius:14px; background:linear-gradient(135deg, #fde047, #f59e0b); color:#111827; font-size:1.55rem; font-weight:900; cursor:pointer; box-shadow:0 6px 16px rgba(245,158,11,0.45);">🥂 直接販售</button>
     </div>
   </div>
 </div>
@@ -273,6 +275,44 @@ justify-content:center;align-items:center;">
 <div id="printArea"></div>
 
 <script src="app.js"></script>
+
+<!-- 分類 / 商品遇「/」自動完整換行（保留原始 textContent 不影響 JS 判斷） -->
+<script>
+(function () {
+  function applySlashLineBreak(el) {
+    if (!el || el.dataset.slashFormatted === '1') return;
+    if (el.children.length > 0) return;
+    var txt = el.textContent || '';
+    var idx = txt.indexOf('/');
+    if (idx !== -1 && idx > 0 && idx < txt.length - 1) {
+      var before = txt.slice(0, idx + 1);
+      var after = txt.slice(idx + 1);
+      el.textContent = '';
+      el.appendChild(document.createTextNode(before));
+      el.appendChild(document.createElement('br'));
+      el.appendChild(document.createTextNode(after));
+      el.dataset.slashFormatted = '1';
+    }
+  }
+
+  function scanContainer(container) {
+    if (!container) return;
+    container.querySelectorAll('button, .product-card h4').forEach(applySlashLineBreak);
+  }
+
+  document.addEventListener('DOMContentLoaded', function () {
+    ['posCategories', 'posProducts'].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      scanContainer(el);
+      var obs = new MutationObserver(function () {
+        scanContainer(el);
+      });
+      obs.observe(el, { childList: true, subtree: true });
+    });
+  });
+})();
+</script>
 </body>
 </html>
 
