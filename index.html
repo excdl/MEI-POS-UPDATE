@@ -36,7 +36,7 @@
       <button id="logoutBtn">登出</button>
     </div>
 
-    <!-- 4 大功能 2×2 並排 + 搜尋框 -->
+    <!-- 4 大功能 2×2 並排（加高 50%）+ 搜尋框 -->
     <div class="search-container">
       <button id="checkSongBtn">🎵 歌單查詢</button>
       <button class="customer-btn" onclick="openExpenseModal()">💸 支出記帳</button>
@@ -51,7 +51,7 @@
   <!-- 中欄：商品展示區（寬版圓角長方形大字卡片） -->
   <div id="posProducts"></div>
 
-  <!-- 右欄：購物車與結帳區（商品不設內捲軸，整體長版可捲動） -->
+  <!-- 右欄：購物車與結帳區（商品不設捲軸，整體可捲動） -->
   <div id="posCartContainer">
     <!-- 開桌桌號暫存列 -->
     <div id="openTabsContainer">
@@ -152,7 +152,7 @@
       <button id="dailySalesBtn">當日營業額</button>
     </div>
 
-    <!-- 今日營業額 Dashboard 顯示區 -->
+    <!-- 今日營業額 Dashboard（4 欄並排） -->
     <div id="todaySalesDisplay"></div>
   </div>
 </div>
@@ -188,9 +188,9 @@
     <input id="posKeypadInput" readonly>
     <div class="posKeypadGrid">
       <button class="big" onclick="kpInput('1000')">1000</button>
-      <button class="big" onclick="kpInput('7')" style="background:#36295c;border-color:#5b4694;">7</button>
-      <button class="big" onclick="kpInput('8')" style="background:#36295c;border-color:#5b4694;">8</button>
-      <button class="big" onclick="kpInput('9')" style="background:#36295c;border-color:#5b4694;">9</button>
+      <button onclick="kpInput('7')">7</button>
+      <button onclick="kpInput('8')">8</button>
+      <button onclick="kpInput('9')">9</button>
 
       <button class="big" onclick="kpInput('500')">500</button>
       <button onclick="kpInput('4')">4</button>
@@ -281,32 +281,64 @@ justify-content:center;align-items:center;">
 
 <script src="app.js"></script>
 
-<!-- 輔助腳本：1. 分類/商品「/」完整換行  2. 今日營業額自動轉成並排 Dashboard 卡片 -->
+<!-- 輔助腳本：1. 分類中英文 / 斜線自動分兩行置中  2. 今日營業額自動轉成 4 欄並排 Dashboard -->
 <script>
 (function () {
-  /* 1. 遇到「/」完整換兩行（保留原始 textContent） */
-  function applySlashLineBreak(el) {
-    if (!el || el.dataset.slashFormatted === '1') return;
+  /* 1. 將文字拆成「第一行 + <br> + 第二行」並包裹置中（保留原始 textContent） */
+  function splitTwoLines(txt) {
+    // 優先規則 A：含「/」，從「/」後方完整換行
+    var slashIdx = txt.indexOf('/');
+    if (slashIdx !== -1 && slashIdx > 0 && slashIdx < txt.length - 1) {
+      return [txt.slice(0, slashIdx + 1), txt.slice(slashIdx + 1)];
+    }
+    // 規則 B：英文（可含前方數字如 12Y）+ 中文 -> 拆成英文行 / 中文行
+    var enZh = txt.match(/^([0-9]*[A-Za-z][A-Za-z0-9\s&\-\.]*?)(\s*[\(\[]?[\u4e00-\u9fff].*)$/);
+    if (enZh && enZh[1].trim() && enZh[2].trim()) {
+      return [enZh[1], enZh[2]];
+    }
+    // 規則 C：中文 + 英文 -> 拆成中文行 / 英文行
+    var zhEn = txt.match(/^([\u4e00-\u9fff\u3000-\u303f\uff00-\uffef0-9\s]+?)(\s*[\(\[]?[A-Za-z][A-Za-z0-9\s&\-\/\.\(\)\[\]]*)$/);
+    if (zhEn && zhEn[1].trim() && zhEn[2].trim()) {
+      return [zhEn[1], zhEn[2]];
+    }
+    return null;
+  }
+
+  function formatTwoLineCenter(el) {
+    if (!el || el.dataset.lineFormatted === '1') return;
     if (el.children.length > 0) return;
     var txt = el.textContent || '';
-    var idx = txt.indexOf('/');
-    if (idx !== -1 && idx > 0 && idx < txt.length - 1) {
-      var before = txt.slice(0, idx + 1);
-      var after = txt.slice(idx + 1);
-      el.textContent = '';
-      el.appendChild(document.createTextNode(before));
-      el.appendChild(document.createElement('br'));
-      el.appendChild(document.createTextNode(after));
-      el.dataset.slashFormatted = '1';
+    var parts = splitTwoLines(txt);
+    if (!parts) return;
+
+    var wrap = document.createElement('span');
+    wrap.className = 'cat-inner';
+    wrap.appendChild(document.createTextNode(parts[0]));
+    wrap.appendChild(document.createElement('br'));
+    wrap.appendChild(document.createTextNode(parts[1]));
+
+    el.textContent = '';
+    el.appendChild(wrap);
+    el.dataset.lineFormatted = '1';
+  }
+
+  function scanCategoriesAndProducts() {
+    var catEl = document.getElementById('posCategories');
+    if (catEl) {
+      // 只處理直屬分類按鈕（排除登出鈕與 4 大功能鈕）
+      Array.prototype.forEach.call(catEl.children, function (child) {
+        if (child.tagName === 'BUTTON') {
+          formatTwoLineCenter(child);
+        }
+      });
+    }
+    var prodEl = document.getElementById('posProducts');
+    if (prodEl) {
+      prodEl.querySelectorAll('.product-card h4').forEach(formatTwoLineCenter);
     }
   }
 
-  function scanSlashContainer(container) {
-    if (!container) return;
-    container.querySelectorAll('button, .product-card h4').forEach(applySlashLineBreak);
-  }
-
-  /* 2. 將 #todaySalesDisplay 內容轉換成 2 欄並排 Dashboard 卡片 */
+  /* 2. 將 #todaySalesDisplay 內容轉換成 4 欄並排 Dashboard 卡片 */
   function renderSalesDashboard(el) {
     if (!el) return;
     if (el.querySelector('.sales-kpi-grid')) return;
@@ -314,7 +346,6 @@ justify-content:center;align-items:center;">
     var rawHtml = el.innerHTML || '';
     if (!rawHtml.trim()) return;
 
-    // 將 HTML 斷行轉成純文字行
     var tmp = document.createElement('div');
     tmp.innerHTML = rawHtml
       .replace(/<br\s*\/?>/gi, '\n')
@@ -335,7 +366,6 @@ justify-content:center;align-items:center;">
       var sepIdx = line.indexOf('：');
       if (sepIdx === -1) sepIdx = line.indexOf(':');
 
-      // 沒有冒號的文字視為標題或單行訊息
       if (sepIdx === -1) {
         var header = document.createElement('div');
         header.className = 'sales-kpi-header';
@@ -367,9 +397,15 @@ justify-content:center;align-items:center;">
       kpiCards.push(card);
     });
 
-    // 若一般卡片總數為奇數且最後一張非總計卡，也維持整齊，或總計卡自動滿版
     if (kpiCards.length === 1) {
       kpiCards[0].classList.add('is-full');
+    } else if (kpiCards.length % 4 === 1) {
+      var totalCard = kpiCards.find(function (c) { return c.classList.contains('is-total'); });
+      if (totalCard) {
+        totalCard.classList.add('is-full');
+      } else {
+        kpiCards[kpiCards.length - 1].classList.add('is-full');
+      }
     }
 
     el.textContent = '';
@@ -377,12 +413,13 @@ justify-content:center;align-items:center;">
   }
 
   document.addEventListener('DOMContentLoaded', function () {
+    scanCategoriesAndProducts();
+
     ['posCategories', 'posProducts'].forEach(function (id) {
       var el = document.getElementById(id);
       if (!el) return;
-      scanSlashContainer(el);
       new MutationObserver(function () {
-        scanSlashContainer(el);
+        scanCategoriesAndProducts();
       }).observe(el, { childList: true, subtree: true });
     });
 
@@ -396,9 +433,5 @@ justify-content:center;align-items:center;">
   });
 })();
 </script>
-</body>
-</html>
-
-<script src="app.js"></script>
 </body>
 </html>
