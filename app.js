@@ -1071,10 +1071,9 @@ async function startCheckoutFlow(checkoutBtn, originalText) {
 // ===== 💸 支出管理相關功能 =====
 // =========================
 const EXPENSE_NOTE_MAP = {
-    "進貨成本": ["蔬菜一批", "檸檬", "調味料"],
-    "房租水電": ["房租", "水費", "電費", "瓦斯費"],
+    "進貨成本": ["菜錢", "檸檬", "廚房雜貨"],
     "設備維修": ["製冰機", "換濾心"],
-    "雜支零用": ["廚房用品", "其他支出"]
+    "雜支零用": ["垃圾費", "其他"]
 };
 
 function updateExpenseNoteOptions() {
