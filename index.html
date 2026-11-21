@@ -281,7 +281,7 @@ justify-content:center;align-items:center;">
 
 <script src="app.js"></script>
 
-<!-- 輔助腳本：1. 僅分類按鈕中英文 / 斜線分兩行置中  2. 今日營業額轉成 4 欄並排 Dashboard -->
+<!-- 輔助腳本：1. 僅分類按鈕中英文 / 斜線分兩行置中  2. 今日營業額轉成 4 欄並排 Dashboard（自動過濾虛線分隔列） -->
 <script>
 (function () {
   /* 1. 將分類文字拆成「第一行 + <br> + 第二行」並包裹置中（保留原始 textContent） */
@@ -322,7 +322,6 @@ justify-content:center;align-items:center;">
   function scanCategories() {
     var catEl = document.getElementById('posCategories');
     if (!catEl) return;
-    // 僅格式化分類按鈕，商品欄維持不換行
     Array.prototype.forEach.call(catEl.children, function (child) {
       if (child.tagName === 'BUTTON') {
         formatTwoLineCenter(child);
@@ -346,7 +345,12 @@ justify-content:center;align-items:center;">
     var lines = (tmp.textContent || '')
       .split(/\r?\n/)
       .map(function (s) { return s.trim(); })
-      .filter(Boolean);
+      .filter(function (s) {
+        if (!s) return false;
+        // 過濾掉純虛線、底線、等號等分隔符號行
+        if (/^[-=_─━┄┈—–~.*•\s]+$/.test(s)) return false;
+        return true;
+      });
 
     if (lines.length === 0) return;
 
