@@ -48,7 +48,7 @@
     <h3>分類</h3>
   </div>
 
-  <!-- 中欄：商品展示區（直式圓角大字卡片） -->
+  <!-- 中欄：商品展示區（縮小 10% 正方形大字卡片） -->
   <div id="posProducts"></div>
 
   <!-- 右欄：購物車與結帳區 -->
@@ -221,8 +221,8 @@
       <button class="big" onclick="kpInput('3')">3</button>
 
       <button class="confirm" onclick="kpConfirm()">確認</button>
-      <button onclick="kpInput('00')">00</button>
-      <button onclick="kpInput('0')">0</button>
+      <button class="big" onclick="kpInput('00')">00</button>
+      <button class="big" onclick="kpInput('0')">0</button>
       <button onclick="kpBack()">←</button>
     </div>
   </div>
@@ -299,10 +299,10 @@ justify-content:center;align-items:center;">
 
 <script src="app.js"></script>
 
-<!-- 輔助腳本：1. 分類中英文兩行置中  2. 今日營業額 Dashboard  3. 手機版線上點餐模式切換與同步 -->
+<!-- 輔助腳本：1. 分類兩行置中  2. 商品名稱智慧換行置中  3. 今日營業額 Dashboard  4. 手機版線上點餐模式 -->
 <script>
 (function () {
-  /* 1. 將分類文字拆成「第一行 + <br> + 第二行」並包裹置中 */
+  /* 1. 分類文字拆兩行置中 */
   function splitTwoLines(txt) {
     var slashIdx = txt.indexOf('/');
     if (slashIdx !== -1 && slashIdx > 0 && slashIdx < txt.length - 1) {
@@ -347,7 +347,110 @@ justify-content:center;align-items:center;">
     });
   }
 
-  /* 2. 將 #todaySalesDisplay 內容轉換成 4 欄並排 Dashboard 卡片 */
+  /* 2. 商品名稱智慧換行（例如：蘋果西打(小) -> 第一行 蘋果西打 / 第二行置中 (小)） */
+  var PROD_SUFFIXES = [
+    '清潔費', '人頭費', '開瓶費', '包廂費', '服務費',
+    '烏龍茶', '氣泡水', '礦泉水', '威士忌', '白蘭地', '高粱酒', '龍舌蘭',
+    '拼盤', '套餐', '組合', '禮盒', '大份', '中份', '小份',
+    '一手', '半打', '一打', '一箱', '一瓶', '一壺', '一桶', '一杯', '一盤', '一碗', '一份',
+    '歡唱', '包廂', '小時', '分鐘', '加時',
+    '紅茶', '綠茶', '奶茶', '青茶', '果汁', '汽水', '沙瓦', '啤酒', '生啤', '紅酒', '白酒', '調酒',
+    '薯條', '雞塊', '毛豆', '水餃', '炒飯', '炒麵', '牛肉麵', '鹽酥雞', '甜不辣', '冰塊'
+  ];
+
+  function splitProductName(txt) {
+    if (!txt) return null;
+    var trimmed = txt.trim();
+    if (!trimmed) return null;
+
+    // A. 優先偵測括號規格：如 蘋果西打(小)、海尼根（大）
+    var parenMatch = txt.match(/^(.+?)(\s*[\(（][^\)）]+[\)）].*)$/);
+    if (parenMatch && parenMatch[1].trim() && parenMatch[2].trim()) {
+      return { line1: parenMatch[1], line2: parenMatch[2], isSub: true };
+    }
+
+    // B. 斜線分隔：如 威士忌/杯
+    var slashIdx = txt.indexOf('/');
+    if (slashIdx > 0 && slashIdx < txt.length - 1) {
+      return { line1: txt.slice(0, slashIdx + 1), line2: txt.slice(slashIdx + 1), isSub: true };
+    }
+
+    // C. 空白分隔（較長品名）
+    var spaceIdx = trimmed.indexOf(' ');
+    if (spaceIdx > 0 && trimmed.length >= 5) {
+      return { line1: trimmed.slice(0, spaceIdx + 1), line2: trimmed.slice(spaceIdx + 1), isSub: false };
+    }
+
+    // D. 中英文或數字單位結尾（總長 >= 5）：如 金牌台啤600ml、歡唱1小時
+    var unitMatch = trimmed.match(/^(.{2,}?)(\s*\d+\s*(?:ml|cc|g|kg|oz|L|小時|分鐘|分|瓶|杯|壺|桶|盤|份|支|罐|人).*)$/i);
+    if (unitMatch && trimmed.length >= 5) {
+      return { line1: unitMatch[1], line2: unitMatch[2], isSub: true };
+    }
+
+    // E. 中英文混排
+    var twoLang = splitTwoLines(txt);
+    if (twoLang && trimmed.length >= 5) {
+      return { line1: twoLang[0], line2: twoLang[1], isSub: false };
+    }
+
+    // F. 純中文較長名稱（>= 5 字）：先找自然詞尾，再平均拆分
+    if (trimmed.length >= 5) {
+      for (var i = 0; i < PROD_SUFFIXES.length; i++) {
+        var suf = PROD_SUFFIXES[i];
+        if (trimmed.length > suf.length + 1 && trimmed.slice(-suf.length) === suf) {
+          return {
+            line1: trimmed.slice(0, trimmed.length - suf.length),
+            line2: suf,
+            isSub: false
+          };
+        }
+      }
+      var mid = Math.ceil(trimmed.length / 2);
+      return {
+        line1: trimmed.slice(0, mid),
+        line2: trimmed.slice(mid),
+        isSub: false
+      };
+    }
+
+    return null;
+  }
+
+  function formatProductTitle(h4) {
+    if (!h4 || h4.dataset.prodFormatted === '1') return;
+    if (h4.children.length > 0) return;
+
+    var txt = h4.textContent || '';
+    var res = splitProductName(txt);
+    h4.dataset.prodFormatted = '1';
+    if (!res) return;
+
+    var wrap = document.createElement('span');
+    wrap.className = 'prod-name-wrap';
+    wrap.appendChild(document.createTextNode(res.line1));
+    wrap.appendChild(document.createElement('br'));
+
+    if (res.isSub) {
+      var sub = document.createElement('span');
+      sub.className = 'prod-sub';
+      sub.textContent = res.line2;
+      wrap.appendChild(sub);
+    } else {
+      wrap.appendChild(document.createTextNode(res.line2));
+    }
+
+    h4.textContent = '';
+    h4.appendChild(wrap);
+  }
+
+  function scanProducts() {
+    var prodEl = document.getElementById('posProducts');
+    if (!prodEl) return;
+    var titles = prodEl.querySelectorAll('.product-card h4');
+    Array.prototype.forEach.call(titles, formatProductTitle);
+  }
+
+  /* 3. 今日營業額轉成 4 欄並排 Dashboard 卡片 */
   function renderSalesDashboard(el) {
     if (!el) return;
     if (el.querySelector('.sales-kpi-grid')) return;
@@ -425,7 +528,7 @@ justify-content:center;align-items:center;">
     el.appendChild(grid);
   }
 
-  /* 3. 手機版線上點餐模式：同步底部購物車數量 / 金額與切換結帳視圖 */
+  /* 4. 手機版線上點餐模式：同步底部購物車數量 / 金額與切換結帳視圖 */
   var lastQty = -1;
   function syncMobileCartBar() {
     var posCart = document.getElementById('posCart');
@@ -483,6 +586,14 @@ justify-content:center;align-items:center;">
       }).observe(catEl, { childList: true, subtree: true });
     }
 
+    var prodEl = document.getElementById('posProducts');
+    if (prodEl) {
+      scanProducts();
+      new MutationObserver(function () {
+        scanProducts();
+      }).observe(prodEl, { childList: true, subtree: true });
+    }
+
     var salesEl = document.getElementById('todaySalesDisplay');
     if (salesEl) {
       renderSalesDashboard(salesEl);
@@ -491,7 +602,6 @@ justify-content:center;align-items:center;">
       }).observe(salesEl, { childList: true, characterData: true, subtree: true });
     }
 
-    /* 手機版點餐頁 / 結帳頁切換與即時監聽 */
     var posApp = document.getElementById('posApp');
     var goCheckoutBtn = document.getElementById('mobileGoCheckoutBtn');
     var cartInfo = document.getElementById('mobileCartInfo');
