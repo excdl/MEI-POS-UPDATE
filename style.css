@@ -1123,7 +1123,7 @@ input:focus-visible {
 .modalActions .convert { background: #d97706; }
 
 /* =========================================
-   不同平板尺寸響應式微調
+   跨裝置響應式微調（大平板 / 直式平板 / 手機）
    ========================================= */
 @media (min-width: 1280px) {
     #posProducts {
@@ -1131,17 +1131,122 @@ input:focus-visible {
     }
 }
 
+/* 直式平板／小平板 (768px ~ 900px) */
 @media (max-width: 900px) {
     body { font-size: 16px; }
+
     #posCategories {
-        width: 29%;
+        width: 28%;
+        padding: 8px 6px;
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-    #posProducts {
-        width: 31%;
-        grid-template-columns: 1fr;
+    #posCategories .search-container button {
+        min-height: 58px;
+        font-size: 0.9em;
+        white-space: normal;
+        padding: 6px 4px;
     }
-    #posCartContainer { width: 40%; }
+    #posCategories button {
+        font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+    }
+
+    #posProducts {
+        width: 32%;
+        grid-template-columns: 1fr;
+        padding: 8px;
+    }
+
+    #posCartContainer {
+        width: 40%;
+        padding: 8px;
+    }
+    .cartHeader,
+    #posCart div.cartRow {
+        grid-template-columns: 2fr 0.7fr 0.9fr 0.9fr 0.75fr;
+        font-size: 0.88em;
+        padding: 6px 4px;
+    }
+    #posCart div.cartRow span.remove button {
+        min-width: 32px;
+        min-height: 32px;
+        padding: 2px 4px;
+    }
+    #tableInfo {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .table-field-sales {
+        grid-column: 1 / -1;
+    }
+    #taxSummary {
+        font-size: 0.8em;
+        gap: 4px;
+        padding: 5px 6px;
+    }
+    .cash-panel-row {
+        flex-wrap: wrap;
+    }
+    #cashPanel input {
+        min-width: 120px;
+    }
+    .sales-kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* 手機與超小螢幕 (<= 767px)：自動改為上下直向單欄排版 */
+@media (max-width: 767px) {
+    body {
+        font-size: 16px;
+        overflow-y: auto;
+    }
+
+    #posApp {
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+        overflow: visible;
+    }
+
+    /* 1. 分類區改滿版：維持 3 欄方形 9 宮格 */
+    #posCategories {
+        width: 100%;
+        overflow-y: visible;
+        border-radius: 0 0 18px 18px;
+        padding: 10px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    #posCategories .search-container button {
+        min-height: 56px;
+        font-size: 1em;
+        white-space: nowrap;
+    }
+    #posCategories button {
+        font-size: clamp(1.15rem, 4.3vw, 1.55rem);
+    }
+
+    /* 2. 商品區改滿版：2 欄並排長方形大卡片 */
+    #posProducts {
+        width: 100%;
+        overflow-y: visible;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding: 10px;
+    }
+
+    /* 3. 結帳區改滿版：順暢往下捲動 */
+    #posCartContainer {
+        width: 100%;
+        height: auto;
+        overflow-y: visible;
+        border-left: none;
+        border-top: 2px solid #ddd6fe;
+        padding: 12px 10px 30px 10px;
+    }
+    .cartHeader,
+    #posCart div.cartRow {
+        grid-template-columns: 2.1fr 0.75fr 0.95fr 0.95fr 0.8fr;
+        font-size: 0.92em;
+    }
     #tableInfo {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -1152,7 +1257,7 @@ input:focus-visible {
         flex-wrap: wrap;
     }
     #cashPanel input {
-        min-width: 120px;
+        min-width: 140px;
     }
     .sales-kpi-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
