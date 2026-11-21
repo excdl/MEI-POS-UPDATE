@@ -194,9 +194,28 @@ input:focus-visible {
     box-shadow: 0 3px 8px rgba(91, 33, 182, 0.32);
 }
 
+/* 1. 歌單查詢：深紫羅蘭 */
+#posCategories .search-container #checkSongBtn {
+    background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+    box-shadow: 0 3px 8px rgba(91, 33, 182, 0.35);
+}
+
+/* 2. 支出記帳：深玫瑰紅 */
 #posCategories .search-container .customer-btn {
-    background: linear-gradient(135deg, #e43b62, #9b2f80);
-    box-shadow: 0 3px 8px rgba(155, 47, 128, 0.35);
+    background: linear-gradient(135deg, #db2777 0%, #9d174d 100%);
+    box-shadow: 0 3px 8px rgba(157, 23, 77, 0.35);
+}
+
+/* 3. 查詢存酒：深海藍 */
+#posCategories .search-container #checkWineBtn {
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    box-shadow: 0 3px 8px rgba(3, 105, 161, 0.35);
+}
+
+/* 4. 庫存盤點：翡翠綠 */
+#posCategories .search-container #checkInventoryBtn {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    box-shadow: 0 3px 8px rgba(4, 120, 87, 0.35);
 }
 
 #posCategories .search-container input {
