@@ -25,7 +25,7 @@
 <!-- POS 主頁 -->
 <div id="posApp" style="display:none;">
 
-  <!-- 左欄：功能與商品分類（9宮格方形磚） -->
+  <!-- 左欄：功能與 9 宮格方形分類 -->
   <div id="posCategories">
     <!-- 頂部：門市資訊 + 獨立登出按鈕 -->
     <div class="sidebar-top-bar">
@@ -48,10 +48,10 @@
     <h3>分類</h3>
   </div>
 
-  <!-- 中欄：商品展示區（3 欄圓角正方形卡片） -->
+  <!-- 中欄：商品展示區（寬版圓角長方形大字卡片） -->
   <div id="posProducts"></div>
 
-  <!-- 右欄：購物車與結帳區（平板免外層捲動） -->
+  <!-- 右欄：購物車與結帳區（商品不設內捲軸，整體長版可捲動） -->
   <div id="posCartContainer">
     <!-- 開桌桌號暫存列 -->
     <div id="openTabsContainer">
@@ -127,9 +127,13 @@
       <button class="payBtn" data-pay="Line Pay">Line Pay</button>
     </div>
 
+    <!-- 收現金置左＋加長現金框＋找零 -->
     <div id="cashPanel" style="display:none;">
-      收現金：<input type="number" id="cashInput" value="0" placeholder="收現金額">
-      找零：<span id="changeOut">0</span> 元
+      <div class="cash-panel-row">
+        <span class="cash-label">收現金：</span>
+        <input type="number" id="cashInput" value="0" placeholder="收現金額">
+        <span class="change-box">找零：<span id="changeOut">0</span> 元</span>
+      </div>
     </div>
 
     <input type="hidden" id="posPayment" value="">
@@ -148,6 +152,7 @@
       <button id="dailySalesBtn">當日營業額</button>
     </div>
 
+    <!-- 今日營業額 Dashboard 顯示區 -->
     <div id="todaySalesDisplay"></div>
   </div>
 </div>
@@ -183,9 +188,9 @@
     <input id="posKeypadInput" readonly>
     <div class="posKeypadGrid">
       <button class="big" onclick="kpInput('1000')">1000</button>
-      <button onclick="kpInput('7')">7</button>
-      <button onclick="kpInput('8')">8</button>
-      <button onclick="kpInput('9')">9</button>
+      <button class="big" onclick="kpInput('7')" style="background:#36295c;border-color:#5b4694;">7</button>
+      <button class="big" onclick="kpInput('8')" style="background:#36295c;border-color:#5b4694;">8</button>
+      <button class="big" onclick="kpInput('9')" style="background:#36295c;border-color:#5b4694;">9</button>
 
       <button class="big" onclick="kpInput('500')">500</button>
       <button onclick="kpInput('4')">4</button>
@@ -276,9 +281,10 @@ justify-content:center;align-items:center;">
 
 <script src="app.js"></script>
 
-<!-- 分類 / 商品遇「/」自動完整換行（保留原始 textContent 不影響 JS 判斷） -->
+<!-- 輔助腳本：1. 分類/商品「/」完整換行  2. 今日營業額自動轉成並排 Dashboard 卡片 -->
 <script>
 (function () {
+  /* 1. 遇到「/」完整換兩行（保留原始 textContent） */
   function applySlashLineBreak(el) {
     if (!el || el.dataset.slashFormatted === '1') return;
     if (el.children.length > 0) return;
@@ -295,21 +301,98 @@ justify-content:center;align-items:center;">
     }
   }
 
-  function scanContainer(container) {
+  function scanSlashContainer(container) {
     if (!container) return;
     container.querySelectorAll('button, .product-card h4').forEach(applySlashLineBreak);
+  }
+
+  /* 2. 將 #todaySalesDisplay 內容轉換成 2 欄並排 Dashboard 卡片 */
+  function renderSalesDashboard(el) {
+    if (!el) return;
+    if (el.querySelector('.sales-kpi-grid')) return;
+
+    var rawHtml = el.innerHTML || '';
+    if (!rawHtml.trim()) return;
+
+    // 將 HTML 斷行轉成純文字行
+    var tmp = document.createElement('div');
+    tmp.innerHTML = rawHtml
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<\/(div|p|li|h[1-6]|tr)>/gi, '\n');
+
+    var lines = (tmp.textContent || '')
+      .split(/\r?\n/)
+      .map(function (s) { return s.trim(); })
+      .filter(Boolean);
+
+    if (lines.length === 0) return;
+
+    var grid = document.createElement('div');
+    grid.className = 'sales-kpi-grid';
+
+    var kpiCards = [];
+    lines.forEach(function (line) {
+      var sepIdx = line.indexOf('：');
+      if (sepIdx === -1) sepIdx = line.indexOf(':');
+
+      // 沒有冒號的文字視為標題或單行訊息
+      if (sepIdx === -1) {
+        var header = document.createElement('div');
+        header.className = 'sales-kpi-header';
+        header.textContent = line;
+        grid.appendChild(header);
+        return;
+      }
+
+      var label = line.slice(0, sepIdx).trim();
+      var value = line.slice(sepIdx + 1).trim();
+
+      var card = document.createElement('div');
+      card.className = 'sales-kpi-card';
+      if (/總|合計|小計|淨額/.test(label)) {
+        card.classList.add('is-total');
+      }
+
+      var lblEl = document.createElement('div');
+      lblEl.className = 'kpi-label';
+      lblEl.textContent = label;
+
+      var valEl = document.createElement('div');
+      valEl.className = 'kpi-value';
+      valEl.textContent = value;
+
+      card.appendChild(lblEl);
+      card.appendChild(valEl);
+      grid.appendChild(card);
+      kpiCards.push(card);
+    });
+
+    // 若一般卡片總數為奇數且最後一張非總計卡，也維持整齊，或總計卡自動滿版
+    if (kpiCards.length === 1) {
+      kpiCards[0].classList.add('is-full');
+    }
+
+    el.textContent = '';
+    el.appendChild(grid);
   }
 
   document.addEventListener('DOMContentLoaded', function () {
     ['posCategories', 'posProducts'].forEach(function (id) {
       var el = document.getElementById(id);
       if (!el) return;
-      scanContainer(el);
-      var obs = new MutationObserver(function () {
-        scanContainer(el);
-      });
-      obs.observe(el, { childList: true, subtree: true });
+      scanSlashContainer(el);
+      new MutationObserver(function () {
+        scanSlashContainer(el);
+      }).observe(el, { childList: true, subtree: true });
     });
+
+    var salesEl = document.getElementById('todaySalesDisplay');
+    if (salesEl) {
+      renderSalesDashboard(salesEl);
+      new MutationObserver(function () {
+        renderSalesDashboard(salesEl);
+      }).observe(salesEl, { childList: true, characterData: true, subtree: true });
+    }
   });
 })();
 </script>
