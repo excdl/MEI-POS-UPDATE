@@ -287,7 +287,7 @@ input:focus-visible {
 }
 
 /* =========================================
-   2. 中間欄：商品展示區 (36%) - 縮小 10% 正方形大字卡片
+   2. 中間欄：商品展示區 (36%) - 縮小 10% 正方形超大字卡片
    ========================================= */
 #posProducts {
     width: 36%;
@@ -308,7 +308,7 @@ input:focus-visible {
     border: 1.5px solid var(--border-soft);
     border-top: 5px solid #7c3aed;
     border-radius: 16px;
-    padding: 10px 6px 8px 6px;
+    padding: 8px 4px 6px 4px;
     box-shadow: var(--shadow-sm);
     display: flex;
     flex-direction: column;
@@ -319,6 +319,7 @@ input:focus-visible {
     transition: all 0.14s ease;
     user-select: none;
     touch-action: manipulation;
+    overflow: hidden;
 }
 
 .product-card:hover {
@@ -340,26 +341,30 @@ input:focus-visible {
     width: 100%;
     margin: 0;
     padding: 2px;
-    font-size: clamp(1.38rem, 2.1vw, 1.85rem);
+    font-size: clamp(26px, 2.5vw, 34px);
     font-weight: 900;
     color: var(--text-main);
-    line-height: 1.18;
+    line-height: 1.14;
     white-space: normal;
     word-break: keep-all;
     overflow-wrap: break-word;
 }
 
 .product-card h4 .prod-name-wrap {
-    display: block;
-    width: 100%;
+    display: inline-block;
     text-align: center;
     pointer-events: none;
+}
+
+/* 短品名（如 J.W. 金、J.W.金）鎖定單行絕不換行 */
+.product-card h4 .prod-name-wrap.is-single {
+    white-space: nowrap;
 }
 
 .product-card h4 .prod-sub {
     display: inline-block;
     margin-top: 2px;
-    font-size: 0.86em;
+    font-size: 0.85em;
     font-weight: 900;
     color: #4c1d95;
 }
@@ -367,15 +372,16 @@ input:focus-visible {
 .product-card p {
     width: 92%;
     margin: 0;
-    padding: 4px 6px;
+    padding: 3px 6px;
     border-radius: 10px;
     background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
     border: 1.5px solid #fbcfe8;
-    font-size: clamp(1rem, 1.2vw, 1.2rem);
+    font-size: clamp(16px, 1.25vw, 20px);
     font-weight: 900;
     color: #9d174d;
     font-variant-numeric: tabular-nums;
     line-height: 1.15;
+    flex-shrink: 0;
 }
 
 /* =========================================
@@ -1151,7 +1157,7 @@ input:focus-visible {
 /* =========================================
    跨裝置響應式微調（大螢幕 / 直式平板 / 手機線上點餐模式）
    ========================================= */
-/* 大螢幕電腦 (1280px 以上)：3 欄正方形卡片，保有舒適間距與大字 */
+/* 大螢幕電腦 (1280px 以上)：3 欄正方形卡片，保有舒適間距與超大字體 */
 @media (min-width: 1280px) {
     #posProducts {
         grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1160,15 +1166,15 @@ input:focus-visible {
     }
     .product-card {
         width: 90%;
-        padding: 8px 5px 7px 5px;
+        padding: 7px 4px 6px 4px;
     }
     .product-card h4 {
-        font-size: clamp(1.32rem, 1.8vw, 1.78rem);
-        line-height: 1.16;
+        font-size: clamp(25px, 2.15vw, 34px);
+        line-height: 1.14;
     }
     .product-card p {
-        font-size: clamp(0.95rem, 1.08vw, 1.16rem);
-        padding: 4px 5px;
+        font-size: clamp(16px, 1.15vw, 19px);
+        padding: 3px 5px;
     }
 }
 
@@ -1203,7 +1209,7 @@ input:focus-visible {
         aspect-ratio: 1 / 1;
     }
     .product-card h4 {
-        font-size: 1.32em;
+        font-size: clamp(22px, 2.8vw, 28px);
     }
 
     #posCartContainer {
@@ -1305,15 +1311,15 @@ input:focus-visible {
     .product-card {
         width: 90%;
         aspect-ratio: 1 / 1;
-        padding: 10px 6px 8px 6px;
+        padding: 8px 4px 6px 4px;
     }
     .product-card h4 {
-        font-size: clamp(1.32rem, 4.4vw, 1.7rem);
-        line-height: 1.2;
+        font-size: clamp(24px, 5.6vw, 30px);
+        line-height: 1.16;
     }
     .product-card p {
         font-size: 1.08em;
-        padding: 5px 8px;
+        padding: 4px 8px;
     }
 
     /* 3. 結帳區：預設隱藏（由底部購物車按鈕切換進入） */
