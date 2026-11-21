@@ -2,9 +2,9 @@
 <html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>meimei POS 系統</title>
-    <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -24,120 +24,128 @@
 
 <!-- POS 主頁 -->
 <div id="posApp" style="display:none;">
+
+  <!-- 左欄：功能與商品分類（方形磚並排） -->
   <div id="posCategories">
-    <div id="storeInfo" style="font-size:14px; font-weight:bold; margin-bottom:10px;"></div>
-    <div id="loginTime" style="font-size:12px; color: white; margin-bottom: 10px;"></div>
-    <button id="logoutBtn" style="margin-bottom:10px; font-size:13px; background-color:#d35400; border:none; padding:5px 10px; cursor:pointer; color:white;">
-      登出
-    </button>
-<button class="customer-btn" onclick="openExpenseModal()" style="background: linear-gradient(135deg, #e43b62, #9b2f80); color: white;">💸 支出記帳</button>
-    <!-- 查詢存酒按鈕與歌單查詢按鈕 -->
-<div class="search-container">
-  <button id="checkWineBtn">🍾 查詢存酒</button>
-  <button id="checkSongBtn">🎵 歌單查詢</button>
-  <button id="checkInventoryBtn" class="action-btn" onclick="window.open('https://script.google.com/macros/s/AKfycbwzPoldx5z4_jx1awoEIOocPiZcgyqmSrqZiJ3rb3FlyKmMPfJzNv5zpXoD_nNsWOnnVg/exec', '_blank')">📦 庫存盤點</button>
-  <input type="text" id="searchBox" placeholder="搜尋商品">
-</div>
+    <div id="storeInfo"></div>
+    <div id="loginTime"></div>
+
+    <button id="logoutBtn">登出</button>
+    <button class="customer-btn" onclick="openExpenseModal()">💸 支出記帳</button>
+
+    <div class="search-container">
+      <button id="checkWineBtn">🍾 查詢存酒</button>
+      <button id="checkSongBtn">🎵 歌單查詢</button>
+      <button id="checkInventoryBtn" class="action-btn" onclick="window.open('https://script.google.com/macros/s/AKfycbwzPoldx5z4_jx1awoEIOocPiZcgyqmSrqZiJ3rb3FlyKmMPfJzNv5zpXoD_nNsWOnnVg/exec', '_blank')">📦 庫存盤點</button>
+      <input type="text" id="searchBox" placeholder="🔍 搜尋商品名稱...">
+    </div>
+
     <h3>分類</h3>
   </div>
 
+  <!-- 中欄：商品展示區（3 欄方形卡片） -->
   <div id="posProducts"></div>
 
+  <!-- 右欄：購物車與結帳區（平板免外層捲動配置） -->
   <div id="posCartContainer">
-    <!-- ===== 📱 獨立大按鈕桌號暫存列 ===== -->
+    <!-- 開桌桌號暫存列（同行配置） -->
     <div id="openTabsContainer">
       <div id="tabList"></div>
       <button id="addTabBtn" onclick="createNewTab()">＋ 開桌</button>
     </div>
 
-     <h3 style="font-size:120%;">訂單明細</h3>
+    <h3 class="cart-title">訂單明細</h3>
     <div class="cartHeader">
       <span>商品</span><span>數量</span><span>單價</span><span>小計</span><span>刪除</span>
     </div>
     <div id="posCart"></div>
-  
- <!-- ===== 業代 / 人數 / 低消 同行 ===== -->
-<div id="tableInfo" style="margin:8px 0; font-size:16px; display:flex; align-items:center; gap:10px; flex-wrap:nowrap;">
-  
-    人數：
-    <input id="peopleCount" type="number" min="1" value="1"
-           style="width:55px; font-size:16px; padding:2px 4px;">
-  </label>
 
-  <label style="white-space:nowrap;">
-    低消：
-    <input id="minConsumeInput" type="number" min="0" value="400"
-           style="width:77px; font-size:16px; text-align:right; padding:2px 4px;">
-    元/人
-  </label>
-    <label style="white-space:nowrap;">
-    業代：
-    <input id="salesInput"
-           list="salesList"
-           placeholder="請選擇業代"
-           style="width:132px; font-size:16px; padding:2px 4px;">
-    <datalist id="salesList"></datalist>
-  </label>
-
-  <label style="white-space:nowrap;">
-
-</div>
-  
-  <div id="taxContainer">
-  <button id="taxIncluded" class="active" onclick="setTax('應稅')">應稅</button>
-  <button id="taxExempt" onclick="setTax('免稅')">免稅</button>
-</div>
-
-<div id="taxSummary">
-  <div class="taxRow">
-    <span class="label">稅前金額：</span>
-    <span class="value"><span id="beforeTax">0</span> 元</span>
-  </div>
-  <div class="taxRow">
-    <span class="label">稅額：</span>
-    <span class="value"><span id="taxAmount">0</span> 元</span>
-  </div>
-  <div class="taxRow total">
-    <span class="label">稅後總額：</span>
-    <span class="value"><span id="afterTax">0</span> 元</span>
-  </div>
-</div>
-<div id="discountContainer">
-      <input type="text" id="discount" placeholder="折扣金額" readonly>
+    <!-- 業代 / 人數 / 低消 同行 -->
+    <div id="tableInfo">
+      <label class="table-field">
+        <span>人數</span>
+        <input id="peopleCount" type="number" min="1" value="1">
+      </label>
+      <label class="table-field">
+        <span>低消</span>
+        <input id="minConsumeInput" type="number" min="0" value="400">
+        <span class="unit">元/人</span>
+      </label>
+      <label class="table-field table-field-sales">
+        <span>業代</span>
+        <input id="salesInput" list="salesList" placeholder="選擇業代">
+        <datalist id="salesList"></datalist>
+      </label>
     </div>
-   <div class="taxRow total">
-  <span class="label">應收總額：</span>
-  <span class="value"><span id="posTotal">0</span> 元</span>
+
+    <!-- 稅別 + 折扣 同行並排 -->
+    <div class="tax-discount-row">
+      <div id="taxContainer">
+        <button id="taxIncluded" class="active" onclick="setTax('應稅')">應稅</button>
+        <button id="taxExempt" onclick="setTax('免稅')">免稅</button>
+      </div>
+      <div id="discountContainer">
+        <input type="text" id="discount" placeholder="折扣金額" readonly>
+      </div>
+    </div>
+
+    <!-- 金額明細橫條 -->
+    <div id="taxSummary">
+      <div class="taxRow">
+        <span class="label">稅前</span>
+        <span class="value"><span id="beforeTax">0</span>元</span>
+      </div>
+      <div class="taxRow">
+        <span class="label">稅額</span>
+        <span class="value"><span id="taxAmount">0</span>元</span>
+      </div>
+      <div class="taxRow total">
+        <span class="label">稅後</span>
+        <span class="value"><span id="afterTax">0</span>元</span>
+      </div>
+    </div>
+
+    <!-- 應收總額醒目列 -->
+    <div class="taxRow total final-total-row">
+      <span class="label">應收總額：</span>
+      <span class="value"><span id="posTotal">0</span> 元</span>
+    </div>
+
+    <div id="minConsumeAlert" style="display:none;color:#c0392b;font-weight:bold;font-size:0.9em;">
+      ⚠ 未達低消，已以低消計算
+    </div>
+
+    <!-- 付款方式 -->
+    <div id="paymentButtons">
+      <button class="payBtn" data-pay="現金">現金</button>
+      <button class="payBtn" data-pay="刷卡">刷卡</button>
+      <button class="payBtn" data-pay="Line Pay">Line Pay</button>
+    </div>
+
+    <div id="cashPanel" style="display:none;">
+      收現金：<input type="number" id="cashInput" value="0" placeholder="收現金額">
+      找零：<span id="changeOut">0</span> 元
+    </div>
+
+    <input type="hidden" id="posPayment" value="">
+
+    <!-- 客戶資料左右並排 -->
+    <div class="customer-inputs-row">
+      <input id="customerName" placeholder="客戶姓名（存酒必填）">
+      <input id="customerPhone" placeholder="手機（存酒必填）">
+    </div>
+
+    <!-- 結帳按鈕 -->
+    <button id="posCheckout">結帳列印</button>
+
+    <div id="shiftDailyContainer">
+      <button id="shiftEndBtn">交班結算</button>
+      <button id="dailySalesBtn">當日營業額</button>
+    </div>
+
+    <div id="todaySalesDisplay"></div>
+  </div>
 </div>
-<div id="minConsumeAlert"
-     style="display:none;color:#c0392b;font-weight:bold;font-size:15px;">
-⚠ 未達低消，已以低消計算
-</div>
-
-   <div id="paymentButtons">
-  <button class="payBtn" data-pay="現金">現金</button>
-  <button class="payBtn" data-pay="刷卡">刷卡</button>
-  <button class="payBtn" data-pay="Line Pay">Line Pay</button>
-</div>
-
-<div id="cashPanel" style="display:none; margin-top:10px;">
-  收現金：<input type="number" id="cashInput" value="0" placeholder="收現金額">
-  找零：<span id="changeOut">0</span> 元
-</div>
-
-<input type="hidden" id="posPayment" value="">
-<input id="customerName" placeholder="客戶姓名（存酒必填）">
-<input id="customerPhone" placeholder="手機（存酒必填）">
-
-  <!-- 結帳按鈕 -->
-<button id="posCheckout">結帳列印</button>
-
-<div id="shiftDailyContainer" style="display:flex; gap:10px; margin:20px 0;">
-  <button id="shiftEndBtn" style="flex:1; background:#c0392b; color:white; border:none; border-radius:6px; padding:10px;">交班結算</button>
-  <button id="dailySalesBtn" style="flex:1; background:#2980b9; color:white; border:none; border-radius:6px; padding:10px;">當日營業額</button>
-</div>
-
-<div id="todaySalesDisplay" style="margin-top:10px; white-space:pre-line;"></div>
 
 <!-- ======== 小鍵盤 / 優惠方案共用 Modal ======== -->
 <div id="editModal">
@@ -194,6 +202,7 @@
     </div>
   </div>
 </div>
+
 <!-- ===== 低消補差確認視窗 ===== -->
 <div id="minConsumeConfirm"
 style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;
@@ -208,10 +217,10 @@ justify-content:center;align-items:center;">
     </div>
   </div>
 </div>
+
 <!-- ===== 存酒選擇 Modal ===== -->
 <div id="storeWineModal" style="display:none; position:fixed; inset:0; background:rgba(15,23,42,0.65); backdrop-filter:blur(4px); justify-content:center; align-items:center; z-index:9999; padding:20px;">
   <div style="position:relative; width:100%; max-width:340px; background:#1e293b; color:#f8fafc; border:1px solid #334155; border-radius:16px; padding:26px 20px 20px; text-align:center; box-shadow:0 20px 40px rgba(0,0,0,0.45); box-sizing:border-box;">
-    
     <button id="storeWineCloseBtn" type="button" onclick="closeStoreWineModal()" title="關閉"
       style="position:absolute; top:12px; right:12px; width:34px; height:34px; border-radius:50%; border:none; background:#334155; color:#e2e8f0; font-size:20px; font-weight:bold; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1;">×</button>
 
@@ -226,17 +235,15 @@ justify-content:center;align-items:center;">
     </div>
   </div>
 </div>
-      
+
 <!-- 💸 支出管理 Modal -->
 <div class="modal" id="expenseModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:500; align-items:center; justify-content:center; padding:20px;">
   <div class="modal-box" style="width:100%; max-width:450px; background:#171725; border:1px solid #343449; border-radius:18px; padding:22px; color:#fff; box-sizing:border-box;">
-    
     <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
       <div class="modal-title" style="font-size:1.1rem; font-weight:bold;">💸 店面支出記帳</div>
       <button class="close-btn" onclick="closeExpenseModal()" style="width:35px; height:35px; border-radius:8px; background:#292938; color:white; border:none; cursor:pointer;">×</button>
     </div>
 
-    <!-- 新增支出表單 -->
     <div style="display:flex; flex-direction:column; gap:12px; margin-bottom: 20px;">
       <select id="expenseCategory" onchange="updateExpenseNoteOptions()" style="width:100%; height:45px; padding:0 14px; border-radius:9px; border:1px solid #3a3a4d; background:#10101a; color:white; font-size:0.95rem; box-sizing:border-box; outline:none;">
         <option value="進貨成本">📦 進貨成本</option>
@@ -261,9 +268,13 @@ justify-content:center;align-items:center;">
     </div>
   </div>
 </div>
-    
+
 <!-- 列印收據區 -->
 <div id="printArea"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
 
 <script src="app.js"></script>
 </body>
