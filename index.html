@@ -36,7 +36,7 @@
       <button id="logoutBtn">登出</button>
     </div>
 
-    <!-- 4 大功能 2×2 並排（加高 50%）+ 搜尋框 -->
+    <!-- 4 大功能 + 搜尋框 -->
     <div class="search-container">
       <button id="checkSongBtn">🎵 歌單查詢</button>
       <button class="customer-btn" onclick="openExpenseModal()">💸 支出記帳</button>
@@ -48,11 +48,17 @@
     <h3>分類</h3>
   </div>
 
-  <!-- 中欄：商品展示區（寬版圓角長方形大字卡片） -->
+  <!-- 中欄：商品展示區（直式圓角大字卡片） -->
   <div id="posProducts"></div>
 
-  <!-- 右欄：購物車與結帳區（商品不設捲軸，整體可捲動） -->
+  <!-- 右欄：購物車與結帳區 -->
   <div id="posCartContainer">
+    <!-- 手機版線上訂單結帳頁專用頂部列 -->
+    <div id="mobileCheckoutHeader">
+      <button type="button" id="mobileBackToMenuBtn">← 繼續加點</button>
+      <span class="mobile-checkout-title">📋 訂單明細與結帳</span>
+    </div>
+
     <!-- 開桌桌號暫存列 -->
     <div id="openTabsContainer">
       <div id="tabList"></div>
@@ -155,6 +161,18 @@
     <!-- 今日營業額 Dashboard（4 欄並排） -->
     <div id="todaySalesDisplay"></div>
   </div>
+
+  <!-- 手機版線上點餐模式：底部固定浮動購物車列 -->
+  <div id="mobileCartBar">
+    <div class="mobile-cart-info" id="mobileCartInfo">
+      <div class="mobile-cart-top">
+        <span id="mobileActiveTab">目前訂單</span>
+        <span id="mobileCartBadge">🛒 <span id="mobileCartCount">0</span> 項</span>
+      </div>
+      <div class="mobile-cart-price">應收 <span id="mobileCartTotal">0</span> 元</div>
+    </div>
+    <button type="button" id="mobileGoCheckoutBtn">查看訂單 / 結帳 ➔</button>
+  </div>
 </div>
 
 <!-- ======== 小鍵盤 / 優惠方案共用 Modal ======== -->
@@ -188,19 +206,19 @@
     <input id="posKeypadInput" readonly>
     <div class="posKeypadGrid">
       <button class="big" onclick="kpInput('1000')">1000</button>
-      <button onclick="kpInput('7')">7</button>
-      <button onclick="kpInput('8')">8</button>
-      <button onclick="kpInput('9')">9</button>
+      <button class="big" onclick="kpInput('7')">7</button>
+      <button class="big" onclick="kpInput('8')">8</button>
+      <button class="big" onclick="kpInput('9')">9</button>
 
       <button class="big" onclick="kpInput('500')">500</button>
-      <button onclick="kpInput('4')">4</button>
-      <button onclick="kpInput('5')">5</button>
-      <button onclick="kpInput('6')">6</button>
+      <button class="big" onclick="kpInput('4')">4</button>
+      <button class="big" onclick="kpInput('5')">5</button>
+      <button class="big" onclick="kpInput('6')">6</button>
 
       <button class="big" onclick="kpInput('100')">100</button>
-      <button onclick="kpInput('1')">1</button>
-      <button onclick="kpInput('2')">2</button>
-      <button onclick="kpInput('3')">3</button>
+      <button class="big" onclick="kpInput('1')">1</button>
+      <button class="big" onclick="kpInput('2')">2</button>
+      <button class="big" onclick="kpInput('3')">3</button>
 
       <button class="confirm" onclick="kpConfirm()">確認</button>
       <button onclick="kpInput('00')">00</button>
@@ -244,7 +262,7 @@ justify-content:center;align-items:center;">
 </div>
 
 <!-- 💸 支出管理 Modal -->
-<div class="modal" id="expenseModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:500; align-items:center; justify-content:center; padding:20px;">
+<div class="modal" id="expenseModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:9500; align-items:center; justify-content:center; padding:20px;">
   <div class="modal-box" style="width:100%; max-width:450px; background:#171725; border:1px solid #343449; border-radius:18px; padding:22px; color:#fff; box-sizing:border-box;">
     <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
       <div class="modal-title" style="font-size:1.1rem; font-weight:bold;">💸 店面支出記帳</div>
@@ -281,10 +299,10 @@ justify-content:center;align-items:center;">
 
 <script src="app.js"></script>
 
-<!-- 輔助腳本：1. 僅分類按鈕中英文 / 斜線分兩行置中  2. 今日營業額轉成 4 欄並排 Dashboard（自動過濾虛線分隔列） -->
+<!-- 輔助腳本：1. 分類中英文兩行置中  2. 今日營業額 Dashboard  3. 手機版線上點餐模式切換與同步 -->
 <script>
 (function () {
-  /* 1. 將分類文字拆成「第一行 + <br> + 第二行」並包裹置中（保留原始 textContent） */
+  /* 1. 將分類文字拆成「第一行 + <br> + 第二行」並包裹置中 */
   function splitTwoLines(txt) {
     var slashIdx = txt.indexOf('/');
     if (slashIdx !== -1 && slashIdx > 0 && slashIdx < txt.length - 1) {
@@ -347,7 +365,6 @@ justify-content:center;align-items:center;">
       .map(function (s) { return s.trim(); })
       .filter(function (s) {
         if (!s) return false;
-        // 過濾掉純虛線、底線、等號等分隔符號行
         if (/^[-=_─━┄┈—–~.*•\s]+$/.test(s)) return false;
         return true;
       });
@@ -408,6 +425,55 @@ justify-content:center;align-items:center;">
     el.appendChild(grid);
   }
 
+  /* 3. 手機版線上點餐模式：同步底部購物車數量 / 金額與切換結帳視圖 */
+  var lastQty = -1;
+  function syncMobileCartBar() {
+    var posCart = document.getElementById('posCart');
+    var posTotal = document.getElementById('posTotal');
+    var tabList = document.getElementById('tabList');
+    var countEl = document.getElementById('mobileCartCount');
+    var badgeEl = document.getElementById('mobileCartBadge');
+    var totalEl = document.getElementById('mobileCartTotal');
+    var tabEl = document.getElementById('mobileActiveTab');
+
+    if (!posCart || !countEl || !totalEl) return;
+
+    var rows = posCart.querySelectorAll('.cartRow');
+    var totalQty = 0;
+    Array.prototype.forEach.call(rows, function (row) {
+      var qtyCell = row.children[1];
+      var qty = 1;
+      if (qtyCell) {
+        var input = qtyCell.querySelector('input');
+        var raw = input ? input.value : qtyCell.textContent;
+        var parsed = parseInt((raw || '').replace(/[^\d]/g, ''), 10);
+        if (!isNaN(parsed) && parsed > 0) qty = parsed;
+      }
+      totalQty += qty;
+    });
+
+    countEl.textContent = totalQty;
+    totalEl.textContent = posTotal ? (posTotal.textContent || '0') : '0';
+
+    if (badgeEl && lastQty !== -1 && lastQty !== totalQty) {
+      badgeEl.classList.add('bump');
+      setTimeout(function () { badgeEl.classList.remove('bump'); }, 220);
+    }
+    lastQty = totalQty;
+
+    if (tabEl && tabList) {
+      var activeTabBtn = tabList.querySelector('.tab-wrapper.active .tab-btn');
+      if (activeTabBtn) {
+        var clone = activeTabBtn.cloneNode(true);
+        var badge = clone.querySelector('.tab-badge');
+        if (badge) badge.remove();
+        tabEl.textContent = (clone.textContent || '').trim() || '目前訂單';
+      } else {
+        tabEl.textContent = '目前訂單';
+      }
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     var catEl = document.getElementById('posCategories');
     if (catEl) {
@@ -424,8 +490,45 @@ justify-content:center;align-items:center;">
         renderSalesDashboard(salesEl);
       }).observe(salesEl, { childList: true, characterData: true, subtree: true });
     }
+
+    /* 手機版點餐頁 / 結帳頁切換與即時監聽 */
+    var posApp = document.getElementById('posApp');
+    var goCheckoutBtn = document.getElementById('mobileGoCheckoutBtn');
+    var cartInfo = document.getElementById('mobileCartInfo');
+    var backToMenuBtn = document.getElementById('mobileBackToMenuBtn');
+
+    function openMobileCheckout() {
+      if (!posApp) return;
+      posApp.classList.add('mobile-checkout-view');
+      window.scrollTo(0, 0);
+    }
+
+    function backToMobileMenu() {
+      if (!posApp) return;
+      posApp.classList.remove('mobile-checkout-view');
+      window.scrollTo(0, 0);
+    }
+
+    if (goCheckoutBtn) goCheckoutBtn.addEventListener('click', openMobileCheckout);
+    if (cartInfo) cartInfo.addEventListener('click', openMobileCheckout);
+    if (backToMenuBtn) backToMenuBtn.addEventListener('click', backToMobileMenu);
+
+    syncMobileCartBar();
+    ['posCart', 'posTotal', 'tabList'].forEach(function (id) {
+      var target = document.getElementById(id);
+      if (target) {
+        new MutationObserver(syncMobileCartBar).observe(target, {
+          childList: true,
+          characterData: true,
+          subtree: true
+        });
+      }
+    });
   });
 })();
 </script>
 </body>
 </html>
+
+
+
