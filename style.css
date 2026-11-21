@@ -73,6 +73,12 @@ input:focus-visible {
     background: var(--bg-app);
 }
 
+/* 桌機與平板隱藏手機版專用列 */
+#mobileCartBar,
+#mobileCheckoutHeader {
+    display: none;
+}
+
 /* =========================================
    1. 左邊欄：功能與 9 宮格方形分類區 (29%)
    ========================================= */
@@ -166,7 +172,7 @@ input:focus-visible {
     50%      { opacity: 1; }
 }
 
-/* 4 大功能 2×2 並排（高度增加 50% -> 69px）+ 搜尋框 */
+/* 4 大功能 2×2 並排 + 搜尋框 */
 #posCategories .search-container {
     grid-column: 1 / -1;
     display: grid;
@@ -194,25 +200,21 @@ input:focus-visible {
     box-shadow: 0 3px 8px rgba(91, 33, 182, 0.32);
 }
 
-/* 1. 歌單查詢：深紫羅蘭 */
 #posCategories .search-container #checkSongBtn {
     background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
     box-shadow: 0 3px 8px rgba(91, 33, 182, 0.35);
 }
 
-/* 2. 支出記帳：深玫瑰紅 */
 #posCategories .search-container .customer-btn {
     background: linear-gradient(135deg, #db2777 0%, #9d174d 100%);
     box-shadow: 0 3px 8px rgba(157, 23, 77, 0.35);
 }
 
-/* 3. 查詢存酒：深海藍 */
 #posCategories .search-container #checkWineBtn {
     background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
     box-shadow: 0 3px 8px rgba(3, 105, 161, 0.35);
 }
 
-/* 4. 庫存盤點：翡翠綠 */
 #posCategories .search-container #checkInventoryBtn {
     background: linear-gradient(135deg, #059669 0%, #047857 100%);
     box-shadow: 0 3px 8px rgba(4, 120, 87, 0.35);
@@ -285,7 +287,7 @@ input:focus-visible {
 }
 
 /* =========================================
-   2. 中間欄：商品展示區 (33%) - 寬版長方形大字卡片
+   2. 中間欄：商品展示區 (33%) - 直式大字卡片
    ========================================= */
 #posProducts {
     width: 33%;
@@ -299,12 +301,13 @@ input:focus-visible {
 }
 
 .product-card {
-    min-height: 86px;
+    aspect-ratio: 4 / 5;
+    min-height: 148px;
     background: var(--bg-card);
     border: 1.5px solid var(--border-soft);
-    border-top: 5px solid #7c3aed;
-    border-radius: 14px;
-    padding: 10px 8px;
+    border-top: 6px solid #7c3aed;
+    border-radius: 16px;
+    padding: 14px 10px 12px 10px;
     box-shadow: var(--shadow-sm);
     display: flex;
     flex-direction: column;
@@ -329,30 +332,37 @@ input:focus-visible {
 }
 
 .product-card h4 {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
     margin: 0;
-    font-size: 1.24em;
+    padding: 4px 2px 10px 2px;
+    font-size: 1.28em;
     font-weight: 900;
     color: var(--text-main);
-    line-height: 1.25;
+    line-height: 1.28;
     white-space: normal;
     word-break: keep-all;
     overflow-wrap: break-word;
 }
 
 .product-card p {
-    margin: 8px 0 0 0;
-    padding: 3px 12px;
-    border-radius: 16px;
-    background: #fdf2f8;
-    border: 1px solid #fbcfe8;
-    font-size: 1.1em;
+    width: 100%;
+    margin: 0;
+    padding: 7px 10px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #fdf2f8 0%, #fce7f3 100%);
+    border: 1.5px solid #fbcfe8;
+    font-size: 1.15em;
     font-weight: 900;
     color: #9d174d;
     font-variant-numeric: tabular-nums;
 }
 
 /* =========================================
-   3. 右邊欄：購物車與結帳區 (38%) - 商品不設捲軸，整體可捲動
+   3. 右邊欄：購物車與結帳區 (38%)
    ========================================= */
 #posCartContainer {
     width: 38%;
@@ -735,7 +745,6 @@ input:focus-visible {
     border: 2.5px solid #2e1b5b;
 }
 
-/* 收現金置左＋現金框加長一倍＋找零 */
 #cashPanel {
     margin: 0 0 6px 0;
     padding: 6px 10px;
@@ -1123,7 +1132,7 @@ input:focus-visible {
 .modalActions .convert { background: #d97706; }
 
 /* =========================================
-   跨裝置響應式微調（大平板 / 直式平板 / 手機）
+   跨裝置響應式微調（大平板 / 直式平板 / 手機線上點餐模式）
    ========================================= */
 @media (min-width: 1280px) {
     #posProducts {
@@ -1154,6 +1163,10 @@ input:focus-visible {
         width: 32%;
         grid-template-columns: 1fr;
         padding: 8px;
+    }
+    .product-card {
+        aspect-ratio: auto;
+        min-height: 118px;
     }
 
     #posCartContainer {
@@ -1193,7 +1206,7 @@ input:focus-visible {
     }
 }
 
-/* 手機與超小螢幕 (<= 767px)：自動改為上下直向單欄排版 */
+/* 手機版 (<= 767px)：線上點餐雙分頁模式（點餐瀏覽頁 + 底部浮動購物車 + 結帳頁） */
 @media (max-width: 767px) {
     body {
         font-size: 16px;
@@ -1208,40 +1221,192 @@ input:focus-visible {
         overflow: visible;
     }
 
-    /* 1. 分類區改滿版：維持 3 欄方形 9 宮格 */
+    /* 1. 頂部精簡分類與功能區 */
     #posCategories {
         width: 100%;
         overflow-y: visible;
         border-radius: 0 0 18px 18px;
-        padding: 10px;
+        padding: 10px 10px 12px 10px;
         grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-    #posCategories .search-container button {
-        min-height: 56px;
-        font-size: 1em;
-        white-space: nowrap;
-    }
-    #posCategories button {
-        font-size: clamp(1.15rem, 4.3vw, 1.55rem);
+        gap: 6px;
     }
 
-    /* 2. 商品區改滿版：2 欄並排長方形大卡片 */
+    /* 4 大功能改為單排 4 格精簡列，省空間又一目瞭然 */
+    #posCategories .search-container {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 5px;
+    }
+    #posCategories .search-container button {
+        min-height: 50px;
+        padding: 5px 3px;
+        font-size: 0.84em;
+        white-space: normal;
+        line-height: 1.15;
+        border-radius: 10px;
+    }
+    #posCategories .search-container input {
+        height: 42px;
+        font-size: 0.98em;
+    }
+
+    /* 分類改為精簡 3 欄膠囊方塊（不佔滿整個螢幕） */
+    #posCategories button {
+        aspect-ratio: auto;
+        min-height: 52px;
+        padding: 6px 4px;
+        border-radius: 10px;
+        font-size: 1.02rem;
+        line-height: 1.15;
+    }
+
+    /* 2. 中間商品區：2 欄直式卡片 + 預留底部浮動購物車空間 */
     #posProducts {
         width: 100%;
         overflow-y: visible;
         grid-template-columns: repeat(2, minmax(0, 1fr));
-        padding: 10px;
+        gap: 10px;
+        padding: 12px 10px 100px 10px;
+    }
+    .product-card {
+        aspect-ratio: 5 / 6;
+        min-height: 148px;
+        padding: 12px 8px 10px 8px;
+    }
+    .product-card h4 {
+        font-size: 1.18em;
+    }
+    .product-card p {
+        font-size: 1.08em;
+        padding: 6px 8px;
     }
 
-    /* 3. 結帳區改滿版：順暢往下捲動 */
+    /* 3. 結帳區：預設隱藏（由底部購物車按鈕切換進入） */
     #posCartContainer {
+        display: none;
         width: 100%;
         height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
         overflow-y: visible;
         border-left: none;
-        border-top: 2px solid #ddd6fe;
-        padding: 12px 10px 30px 10px;
+        border-top: none;
+        padding: 0 10px 36px 10px;
     }
+
+    /* 進入「結帳頁」時的狀態切換 */
+    #posApp.mobile-checkout-view #posCategories,
+    #posApp.mobile-checkout-view #posProducts,
+    #posApp.mobile-checkout-view #mobileCartBar {
+        display: none !important;
+    }
+    #posApp.mobile-checkout-view #posCartContainer {
+        display: flex;
+    }
+
+    /* 結帳頁頂部固定返回列 */
+    #mobileCheckoutHeader {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        position: sticky;
+        top: 0;
+        z-index: 40;
+        margin: 0 -10px 10px -10px;
+        padding: 10px 12px;
+        background: linear-gradient(135deg, #1b1035 0%, #2d1b54 100%);
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(27, 16, 53, 0.25);
+    }
+    #mobileBackToMenuBtn {
+        min-height: 42px;
+        padding: 6px 14px;
+        border: 1.5px solid rgba(255, 255, 255, 0.35);
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.14);
+        color: #ffffff;
+        font-size: 0.98em;
+        font-weight: 800;
+    }
+    .mobile-checkout-title {
+        font-size: 1.08em;
+        font-weight: 900;
+        color: #fde047;
+    }
+
+    /* 底部固定浮動購物車列（外送點餐模式） */
+    #mobileCartBar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 400;
+        padding: 10px 12px calc(10px + env(safe-area-inset-bottom)) 12px;
+        background: linear-gradient(135deg, #1b1035 0%, #2d1b54 100%);
+        border-top: 2px solid #fde047;
+        box-shadow: 0 -6px 20px rgba(17, 12, 36, 0.38);
+    }
+    .mobile-cart-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+        cursor: pointer;
+    }
+    .mobile-cart-top {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.88em;
+        font-weight: 800;
+        color: #e9d5ff;
+    }
+    #mobileActiveTab {
+        background: rgba(255, 255, 255, 0.16);
+        padding: 1px 7px;
+        border-radius: 6px;
+        color: #ffffff;
+        max-width: 110px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    #mobileCartBadge {
+        background: #db2777;
+        color: #ffffff;
+        padding: 1px 8px;
+        border-radius: 999px;
+        border: 1px solid #fbcfe8;
+        font-weight: 900;
+        transition: transform 0.18s ease;
+    }
+    #mobileCartBadge.bump {
+        transform: scale(1.18);
+    }
+    .mobile-cart-price {
+        font-size: 1.25em;
+        font-weight: 900;
+        color: #fde047;
+        font-family: 'Courier New', monospace;
+        font-variant-numeric: tabular-nums;
+    }
+    #mobileGoCheckoutBtn {
+        flex-shrink: 0;
+        min-height: 48px;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 12px;
+        background: var(--accent-gold);
+        color: #111827;
+        font-size: 1.05em;
+        font-weight: 900;
+        box-shadow: 0 3px 10px rgba(245, 158, 11, 0.45);
+    }
+
     .cartHeader,
     #posCart div.cartRow {
         grid-template-columns: 2.1fr 0.75fr 0.95fr 0.95fr 0.8fr;
@@ -1287,3 +1452,4 @@ input:focus-visible {
 #printArea td.right {
     text-align: right;
 }
+
